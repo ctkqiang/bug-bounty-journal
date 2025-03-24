@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MYJPJ移动应用安全审计报告 - 上饶满星科技</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Navigation Update -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-shield-halved text-blue-600 text-xl"></i>
+            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              安全审计报告 20250324-24f24c
+            </span>
+          </div>
+          <div class="space-x-6">
+            <a href="#overview" class="nav-link hover:text-blue-600 transition-colors">
+              <i class="fas fa-bug mr-2"></i>漏洞概览
+            </a>
+            <a href="#technical" class="nav-link hover:text-blue-600 transition-colors">
+              <i class="fas fa-microscope mr-2"></i>技术细节
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t">
+      <div class="px-4 py-3 space-y-4">
+        <a href="#overview" class="block nav-link hover:text-blue-600">
+          <i class="fas fa-bug mr-2"></i>漏洞概览
+        </a>
+        <a href="#technical" class="block nav-link hover:text-blue-600">
+          <i class="fas fa-microscope mr-2"></i>技术细节
+        </a>
+      </div>
+    </div>
+</nav>
+
+<!-- Add this script before </body> -->
+<script>
+  // Mobile menu toggle
+  document.getElementById('mobile-menu-button').addEventListener('click', function() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  });
+  
+  // Close menu on click outside
+  document.addEventListener('click', function(event) {
+    const menu = document.getElementById('mobile-menu');
+    const button = document.getElementById('mobile-menu-button');
+    if (!menu.contains(event.target) && !button.contains(event.target)) {
+      menu.classList.add('hidden');
+    }
+  });
+</script>
+
+    <!-- Main Content Update -->
+    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Section Header Enhancement -->
+      <section class="mb-20">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            MYJPJ移动应用安全审计报告
+          </h2>
+
+<div class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500 mb-8">
+  <h4 class="text-lg font-semibold text-blue-800 mb-4 flex items-center">
+    <i class="fas fa-heart text-blue-600 mr-2"></i>
+    善意声明
+  </h4>
+  <strong>
+    <p class="text-blue-700 leading-relaxed">
+        作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+    </p>
+    <p class="text-blue-700 mt-4">
+        衷心期待通过白帽黑客与开发团队的良性互动，共同为政府和企业的信息安全保驾护航，为广大用户筑起更坚实的数据保护屏障。
+    </p>
+  </strong>
+</div>
+          <div class="bg-red-100 p-6 rounded-lg border-l-4 border-red-500" style="margin-top: 50px;margin-bottom:50px;">
+            <h4 class="text-red-800">
+                严重性等级: <span class="font-bold">CRITICAL (CVSS 9.1)</span>
+            </h4>
+          </div>
+
+          <div class="flex justify-center space-x-2">
+            <span class="badge bg-red-100 text-red-800">
+              <i class="fas fa-triangle-exclamation mr-2"></i>高危漏洞
+            </span>
+            <span class="badge bg-purple-100 text-purple-800">
+              <i class="fas fa-shield-alt mr-2"></i>PDPA合规
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Analysis Section Update -->
+      <section id="technical" class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i class="fas fa-layer-group text-blue-600 mr-3 bg-blue-50 p-3 rounded-lg"></i>
+            技术证据链分析
+          </h2>
+          
+          <!-- Enhanced Data Exposure Table -->
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+            <div class="bg-gray-50 px-6 py-4 border-b border-gray-200">
+              <h3 class="text-xl font-semibold text-gray-800">
+                <i class="fas fa-table mr-2 text-blue-600"></i>
+                个人信息暴露矩阵
+              </h3>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full divide-y divide-gray-200">
+                <thead class="bg-blue-50">
+                  <tr>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800">字段名</th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800">数据类型</th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800">PDPA分类</th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800">泄露途径</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 bg-white">
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">Token</td>
+                    <td class="px-6 py-4">API访问令牌</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-key mr-1"></i>系统凭证
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">日志输出</td>
+                  </tr>
+                  tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">ID</td>
+                    <td class="px-6 py-4">API用户标识</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-fingerprint mr-1"></i>系统标识符
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">日志输出</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">PASSWORD</td>
+                    <td class="px-6 py-4">API密钥/JWT令牌</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-lock mr-1"></i>认证凭证
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">日志输出</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">AUTH BEARER</td>
+                    <td class="px-6 py-4">HTTP认证令牌</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-key mr-1"></i>访问凭证
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">请求头部</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">noic</td>
+                    <td class="px-6 py-4">车主身份证号</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-id-card mr-1"></i>敏感个人信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">nokp</td>
+                    <td class="px-6 py-4">身份证号码</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-id-card mr-1"></i>敏感个人信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">nokenderaan</td>
+                    <td class="px-6 py-4">车牌号码</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-car mr-1"></i>车辆信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">jnsBody</td>
+                    <td class="px-6 py-4">车身类型</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-car-side mr-1"></i>车辆信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">kodKegunaan</td>
+                    <td class="px-6 py-4">车辆用途</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-car mr-1"></i>车辆信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">birthDate</td>
+                    <td class="px-6 py-4">出生日期</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-calendar mr-1"></i>敏感个人信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">addres1</td>
+                    <td class="px-6 py-4">地址第一行</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-home mr-1"></i>个人地址信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">postcode</td>
+                    <td class="px-6 py-4">邮政编码</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-map-marker-alt mr-1"></i>位置信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">city</td>
+                    <td class="px-6 py-4">城市</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-city mr-1"></i>位置信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">state</td>
+                    <td class="px-6 py-4">州属</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-map mr-1"></i>位置信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">image</td>
+                    <td class="px-6 py-4">用户照片</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-camera mr-1"></i>生物识别信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                  <tr class="hover:bg-blue-50 transition-colors">
+                    <td class="px-6 py-4 font-mono">qrCode</td>
+                    <td class="px-6 py-4">用户二维码</td>
+                    <td class="px-6 py-4">
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        <i class="fas fa-qrcode mr-1"></i>身份验证信息
+                      </span>
+                    </td>
+                    <td class="px-6 py-4">API响应</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Enhanced Code Blocks -->
+          <div class="mt-8 group relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg -rotate-1 -z-10"></div>
+            <div class="relative">
+              <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
+                <div class="flex items-center space-x-2">
+                  <i class="fas fa-terminal text-gray-400"></i>
+                  <span class="font-mono text-sm text-gray-200">敏感数据日志示例</span>
+                </div>
+                <button class="text-gray-400 hover:text-white transition-colors">
+                  <i class="far fa-copy"></i>
+                </button>
+              </div>
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-b-lg overflow-x-auto">
+                <code class="language-bash">
+21:31:02.047125+0800  kernel  App Store Fast Path -> /Runner.app/Frameworks/webview_flutter_wkwebview.framework/webview_flutter_wkwebview  
+21:31:02.129863+0800  kernel  App Store Fast Path -> /Runner.app/Frameworks/Flutter.framework/Flutter  
+21:31:02.612610+0800  Runner  flutter: Permission granted: true  
+21:31:03.221663+0800  Runner  flutter: false  
+21:31:03.729068+0800  Runner  flutter: {"status":"00","message":"Set Player ID Success"}  
+21:31:04.139558+0800  Runner  flutter: Final Push status check:  
+21:31:04.139616+0800  Runner  flutter: Opted in: true  
+21:31:04.139645+0800  Runner  flutter: Token: {敏感信息已脱敏}  
+21:31:04.139697+0800  Runner  flutter: ID: {敏感信息已脱敏}  
+21:31:04.139739+0800  Runner  flutter: PASSWORD: {敏感信息已脱敏}  
+21:31:31.972259+0800  Runner  flutter: 200  
+21:31:43.021980+0800  Runner  flutter: {Content-Type: application/json; charset=UTF-8, Accept: application/json, Authorization: Bearer {敏感信息已脱敏}, Accept-Language: ms}  
+21:31:43.239563+0800  Runner  flutter: 200  
+21:31:43.239747+0800  Runner  flutter: {"noic":"{敏感信息已脱敏}","status":"01","status_message":"NOT FOUND","saman":[]}  
+21:32:03.509769+0800  Runner  flutter: error data from api  
+21:32:03.663134+0800  Runner  flutter: {nokenderaan: {敏感信息已脱敏}, jnsBody: MKR, kodKegunaan: AB, nokp: null, share: 0}  
+21:32:05.535017+0800  Runner  flutter: true  
+21:32:11.995522+0800  Runner  flutter: {Content-Type: application/json; charset=UTF-8, Accept: application/json, Authorization: Bearer {敏感信息已脱敏}, Accept-Language: ms}  
+21:32:13.335059+0800  Runner  flutter: 200  
+21:32:13.336601+0800  Runner  flutter: response body : {"connStatus":200,"user":"{敏感信息已脱敏}","nokp":"{敏感信息已脱敏}","status":"{敏感信息已脱敏}","message":"TRANSACTION SUCCESSFUL","nationality":"MALAYSIA","birthDate":"{敏感信息已脱敏}","refNo":"{敏感信息已脱敏}","addres1":"{敏感信息已脱敏}","addres2":"{敏感信息已脱敏}","addres3":"{敏感信息已脱敏}","postcode":"{敏感信息已脱敏}","city":"{敏感信息已脱敏}","state":"{敏感信息已脱敏}","country":"MALAYSIA","image":"{敏感信息已脱敏}"}  
+21:32:13.377635+0800  Runner  flutter: {"connStatus":200,"msg":"Success","lesenCDL":"1","lesenPDL":"0","lesenLDL":"0","lesenVOC":"0"}  
+21:33:02.038156+0800  Runner  flutter: {"connStatus":200,"result":[{"response_code":"GLB000000I - Transaksi Berjaya","nokp":"{敏感信息已脱敏}","nama":"{敏感信息已脱敏}","noKenderaan":"{敏感信息已脱敏}","effectiveDate":"{敏感信息已脱敏}","expiredDate":"{敏感信息已脱敏}","lkmAmount":"90.00","kodTransaksi":"{敏感信息已脱敏}","kodKegunaan":"AB","bodyType":"MKR","kodCaw":"0116103","kodSekuriti":"{敏感信息已脱敏}","region":"SEMENANJUNG","cc":"{敏感信息已脱敏}","jnsKegunaan":"PERSENDIRIAN","qrkod":"{敏感信息已脱敏}"}]}  
+21:34:07.660425+0800  Runner  flutter: {"status":200,"icno":"{敏感信息已脱敏}","vehicleRegno":"{敏感信息已脱敏}","message":"Tiada rekod senarai hitam."}  
+21:34:23.682576+0800  Runner  flutter: {"statusSaman":[{"status":"11","message":"Tiada Saman Yang Boleh Dibayar|No Summons Can Be Paid","totalSummon":"0"}],"senaraiSaman":[]}  
+                </code>
+              </pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- App Information Section -->
+      <section class="mb-16">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+          <h3 class="text-xl font-semibold mb-4">应用信息</h3>
+          <div class="space-y-4">
+            <div>
+              <p><strong>应用名称:</strong> MYJPJ Mobile App</p>
+              <p><strong>开发框架:</strong> Flutter</p>
+              <p><strong>应用类型:</strong> 马来西亚陆路交通局(JPJ)官方移动应用</p>
+            </div>
+
+            <!-- 免责声明 -->
+            <div class="bg-blue-50 p-4 rounded-md">
+              <h4 class="font-semibold mb-2">免责声明</h4>
+              <p class="mb-4">本安全测试报告仅用于帮助改进应用程序安全性，严格遵守马来西亚《个人数据保护法》(PDPA)的规定。</p>
+              
+              <h5 class="font-semibold mb-2">安全研究承诺：</h5>
+              <ul class="list-disc pl-6 space-y-1">
+                <li>不会对应用程序进行任何破坏性操作</li>
+                <li>不会恶意利用或泄露测试过程中发现的任何敏感信息</li>
+                <li>遵守负责任的漏洞披露原则</li>
+                <li>及时向开发团队报告发现的安全问题</li>
+                <li>协助开发团队修复安全漏洞</li>
+              </ul>
+              
+              <p class="mt-4">本测试完全遵守马来西亚PDPA关于个人数据收集、使用和保护的相关规定。</p>
+            </div>
+          </div>
+
+          
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Main Content -->
+    <main class="pt-20 pb-12 px-4 max-w-7xl mx-auto">
+      <!-- Vulnerability Overview -->
+      <section id="overview" class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">漏洞影响链</h2>
+        <img
+          src="./assets/20250324-24f24c.png"
+          class="rounded-lg shadow-xl w-full mb-8"
+          alt="数据泄露影响链示意图"
+        />
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">合规性违规</h3>
+            <ul class="list-disc pl-6 space-y-2 text-red-600">
+              <li>PDPA 2010 第7原则（安全原则）</li>
+              <li>PDPA 2010 第9原则（保留限制原则）</li>
+              <li>OWASP Mobile Top 10 M2/M3</li>
+            </ul>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">数据暴露统计</h3>
+            <div class="space-y-2">
+              <div class="flex justify-between">
+                <span>身份凭证</span>
+                <span class="font-bold">4处</span>
+              </div>
+              <div class="flex justify-between">
+                <span>个人信息</span>
+                <span class="font-bold">12类</span>
+              </div>
+              <div class="flex justify-between">
+                <span>API端点</span>
+                <span class="font-bold">3个</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Analysis -->
+      <section id="technical" class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">技术分析详情</h2>
+
+        <!-- Testing Methodology -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 class="text-xl font-semibold mb-4">测试方法</h3>
+          <div class="space-y-4">
+            <div class="bg-gray-50 p-4 rounded-md">
+              <h4 class="font-semibold mb-2">使用工具：</h4>
+              <ul class="list-disc pl-6">
+                <li>adb logcat - 用于Android日志分析</li>
+                <li>Flutter日志分析工具</li>
+                <li>Wireshark - 用于网络流量分析</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Issues -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 class="text-xl font-semibold mb-4">安全问题发现</h3>
+          
+          <!-- Developer Actions Required -->
+          <div class="bg-red-50 p-4 rounded-md mb-6">
+            <h4 class="font-semibold mb-2">开发团队必要行动</h4>
+            <p class="text-red-700 font-semibold">严重警告：应用程序不得在控制台打印任何敏感数据！</p>
+          </div>
+
+          <!-- Security Analysis -->
+          <div class="space-y-4">
+            <div>
+              <h4 class="font-semibold mb-2">问题描述</h4>
+              <p>该应用程序的开发团队在日志处理方面存在严重的安全隐患。通过分析日志发现，开发者直接将用户的敏感个人信息打印到控制台日志中，包括但不限于：</p>
+              <ul class="list-disc pl-6 mt-2">
+                <li>用户身份证号码</li>
+                <li>车牌号码</li>
+                <li>完整的家庭住址信息</li>
+                <li>个人联系方式</li>
+                <li>API访问密钥和认证Token</li>
+                <li>Bearer Token等授权信息</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-2">潜在风险</h4>
+              <ul class="list-disc pl-6">
+                <li>个人身份信息被盗用</li>
+                <li>用户隐私数据泄露</li>
+                <li>API凭证被恶意使用</li>
+                <li>违反数据保护相关法律法规</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 class="font-semibold mb-2">建议措施</h4>
+              <ul class="list-disc pl-6">
+                <li>移除所有包含敏感信息的日志打印</li>
+                <li>仅保留必要的系统运行状态日志</li>
+                <li>对现有日志进行安全审计</li>
+                <li>实施严格的日志记录策略</li>
+                <li>加强开发团队的安全意识培训</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- After Security Issues section and before Technical Details -->
+              <!-- Security Researcher Comment Section -->
+              <div class="bg-yellow-50 p-4 md:p-6 rounded-lg shadow-md mb-8">  <!-- Added responsive padding -->
+                <h3 class="text-lg md:text-xl font-semibold mb-4 text-yellow-800">🔍 安全研究员观点</h3>  <!-- Responsive text size -->
+                <div class="space-y-4">
+                  <div class="border-l-4 border-yellow-500 pl-4">
+                    <p class="text-gray-800 italic text-sm md:text-base">  <!-- Responsive text size -->
+                      "这个应用程序绝对是安全漏洞的集大成者..."
+                    </p>
+                  </div>
+                  
+                  <div class="bg-white p-4 rounded-md">
+                    <h4 class="font-semibold mb-2 text-red-600">关键问题</h4>
+                    <ul class="list-disc pl-6 space-y-2">
+                      <li>开发团队对安全性概念严重缺失</li>
+                      <li>完全无视用户隐私保护原则</li>
+                      <li>违反多项PDPA法律条款</li>
+                      <li>急需立即整改以避免更大的安全隐患</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+        <!-- Rest of the sections remain unchanged -->
+      </section>
+
+      <!-- Header -->
+      
+
+      <!-- Technical Details -->
+      <section id="technical" class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">技术证据链分析</h2>
+
+        <!-- Log Analysis Section -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 class="text-xl font-semibold mb-4">1. 日志分析详情</h3>
+          
+          <!-- Analysis Method -->
+          <div class="bg-blue-50 p-4 rounded-md mb-6">
+            <h4 class="font-semibold mb-2">分析方法</h4>
+            <ul class="list-disc pl-6">
+              <li>使用adb logcat进行日志捕获</li>
+              <li>Flutter日志分析</li>
+              <li>Wireshark网络流量分析</li>
+            </ul>
+          </div>
+
+          <!-- API Keys Exposure -->
+          <div class="space-y-6">
+            <div class="border-l-4 border-red-500 pl-4">
+              <h4 class="font-semibold mb-2">API凭证泄露</h4>
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"><code class="language-bash">默认 21:31:04.139645+0800 Runner flutter: Token: {敏感信息已脱敏}
+默认 21:31:04.139697+0800 Runner flutter: ID: {敏感信息已脱敏}
+默认 21:31:04.139739+0800 Runner flutter: PASSWORD:{敏感信息已脱敏}</code></pre>
+            </div>
+
+            <!-- Bearer Token Exposure -->
+            <div class="border-l-4 border-red-500 pl-4">
+              <h4 class="font-semibold mb-2">HTTP认证令牌泄露</h4>
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"><code class="language-json">{
+  "Content-Type": "application/json; charset=UTF-8",
+  "Accept": "application/json",
+  "Authorization": "Bearer {敏感信息已脱敏}",
+  "Accept-Language": "ms"
+}</code></pre>
+            </div>
+
+            <!-- Personal Data Exposure -->
+            <div class="border-l-4 border-red-500 pl-4">
+              <h4 class="font-semibold mb-2">个人敏感信息泄露</h4>
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"><code class="language-json">{
+  "connStatus": 200,
+  "user": "{敏感信息已脱敏}",
+  "nokp": "{敏感信息已脱敏}",
+  "nationality": "MALAYSIA",
+  "birthDate": "{敏感信息已脱敏}",
+  "addres1": "{敏感信息已脱敏}",
+  "postcode": "{敏感信息已脱敏}",
+  "city": "{敏感信息已脱敏}",
+  "state": "{敏感信息已脱敏}"
+}</code></pre>
+            </div>
+
+            <!-- Vehicle Information -->
+            <div class="border-l-4 border-red-500 pl-4">
+              <h4 class="font-semibold mb-2">车辆信息泄露</h4>
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"><code class="language-json">{
+  "noKenderaan": "{敏感信息已脱敏}",
+  "effectiveDate": "{敏感信息已脱敏}",
+  "expiredDate": "{敏感信息已脱敏}",
+  "lkmAmount": "90.00",
+  "bodyType": "MKR",
+  "region": "SEMENANJUNG",
+  "jnsKegunaan": "PERSENDIRIAN"
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- PDPA Violation Summary -->
+          <div class="bg-red-50 p-4 rounded-md mt-6">
+            <h4 class="font-semibold mb-2">PDPA违规总结</h4>
+            <ul class="list-disc pl-6">
+              <li>违反第7条原则：未能保护个人数据安全</li>
+              <li>违反第9条原则：不当保留敏感信息</li>
+              <li>违反数据最小化原则：日志中包含过多个人信息</li>
+              <li>违反安全存储原则：明文显示敏感数据</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Rest of the technical details section remains unchanged -->
+      </section>
+
+      <!-- Credential Leaks -->
+      <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h3 class="text-xl font-semibold mb-4">1. 认证凭证泄露</h3>
+        <div class="space-y-4">
+          <pre
+            class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+          >
+<code class="language-bash">21:31:04.139739+0800 Runner flutter: PASSWORD:{隐私数据}
+21:31:43.021980+0800 Runner flutter: Authorization: Bearer {隐私数据}</code></pre>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="p-4 bg-blue-50 rounded-md">
+              <h4 class="font-semibold mb-2">攻击向量</h4>
+              <ul class="list-disc pl-6">
+                <li>逆向工程提取凭证</li>
+                <li>中间人攻击(MITM)</li>
+                <li>日志文件分析</li>
+              </ul>
+            </div>
+
+            <div class="p-4 bg-red-50 rounded-md">
+              <h4 class="font-semibold mb-2">潜在影响</h4>
+              <ul class="list-disc pl-6">
+                <li>完整账户接管</li>
+                <li>API服务滥用</li>
+                <li>数据篡改风险</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data Exposure Table -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 class="text-xl font-semibold mb-6">2. 个人信息暴露矩阵</h3>
+          <div class="overflow-x-auto">
+            <table class="min-w-full table-auto">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-6 py-3 text-left font-medium">字段名</th>
+                  <th class="px-6 py-3 text-left font-medium">数据类型</th>
+                  <th class="px-6 py-3 text-left font-medium">PDPA分类</th>
+                  <th class="px-6 py-3 text-left font-medium">泄露途径</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">Token</td>
+                  <td class="px-6 py-4">API访问令牌</td>
+                  <td class="px-6 py-4 text-red-600">系统凭证</td>
+                  <td class="px-6 py-4">日志输出</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">ID</td>
+                  <td class="px-6 py-4">API用户标识</td>
+                  <td class="px-6 py-4 text-red-600">系统标识符</td>
+                  <td class="px-6 py-4">日志输出</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">PASSWORD</td>
+                  <td class="px-6 py-4">API密钥/JWT令牌</td>
+                  <td class="px-6 py-4 text-red-600">认证凭证</td>
+                  <td class="px-6 py-4">日志输出</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">AUTH BEARER</td>
+                  <td class="px-6 py-4">HTTP认证令牌</td>
+                  <td class="px-6 py-4 text-red-600">访问凭证</td>
+                  <td class="px-6 py-4">请求头部</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">noic</td>
+                  <td class="px-6 py-4">车主身份证号</td>
+                  <td class="px-6 py-4 text-red-600">敏感个人信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">nokp</td>
+                  <td class="px-6 py-4">身份证号码</td>
+                  <td class="px-6 py-4 text-red-600">敏感个人信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">nokenderaan</td>
+                  <td class="px-6 py-4">车牌号码</td>
+                  <td class="px-6 py-4 text-red-600">车辆信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">jnsBody</td>
+                  <td class="px-6 py-4">车身类型</td>
+                  <td class="px-6 py-4 text-red-600">车辆信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">kodKegunaan</td>
+                  <td class="px-6 py-4">车辆用途</td>
+                  <td class="px-6 py-4 text-red-600">车辆信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">birthDate</td>
+                  <td class="px-6 py-4">出生日期</td>
+                  <td class="px-6 py-4 text-red-600">敏感个人信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">addres1</td>
+                  <td class="px-6 py-4">地址第一行</td>
+                  <td class="px-6 py-4 text-red-600">个人地址信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">addres2</td>
+                  <td class="px-6 py-4">地址第二行</td>
+                  <td class="px-6 py-4 text-red-600">个人地址信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">addres3</td>
+                  <td class="px-6 py-4">地址第三行</td>
+                  <td class="px-6 py-4 text-red-600">个人地址信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">postcode</td>
+                  <td class="px-6 py-4">邮政编码</td>
+                  <td class="px-6 py-4 text-red-600">位置信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">city</td>
+                  <td class="px-6 py-4">城市</td>
+                  <td class="px-6 py-4 text-red-600">位置信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">state</td>
+                  <td class="px-6 py-4">州属</td>
+                  <td class="px-6 py-4 text-red-600">位置信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">refNo</td>
+                  <td class="px-6 py-4">交易参考号</td>
+                  <td class="px-6 py-4 text-red-600">交易信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">image</td>
+                  <td class="px-6 py-4">用户照片</td>
+                  <td class="px-6 py-4 text-red-600">生物识别信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">qrCode</td>
+                  <td class="px-6 py-4">用户二维码</td>
+                  <td class="px-6 py-4 text-red-600">身份验证信息</td>
+                  <td class="px-6 py-4">API响应</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Repair Recommendations -->
+      <section id="recommendations" class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">安全加固方案</h2>
+
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">立即措施</h3>
+            <pre
+              class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+            >
+<code class="language-dart">class SecureLogger {
+  static void log(dynamic data) {
+    if (kReleaseMode) {
+      final sanitized = data.toString().replaceAllMapped(
+          RegExp(r'\b(nokp|token|password)=[^&]*'), 
+          (m) => '${m[1]}=[REDACTED]');
+      debugPrint(sanitized);
+    }
+  }
+}</code></pre>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-4">长期方案</h3>
+            <div class="space-y-4">
+              <div class="p-4 bg-green-50 rounded-md">
+                <h4 class="font-semibold">证书绑定</h4>
+                <pre
+                  class="text-sm mt-2"
+                ><code class="language-xml">&lt;network-security-config&gt;
+  &lt;domain-config&gt;
+    &lt;domain includeSubdomains="true"&gt;api.myjpj.gov.my&lt;/domain&gt;
+    &lt;pin-set&gt;
+      &lt;pin digest="SHA-256"&gt;BASE64_HASH&lt;/pin&gt;
+    &lt;/pin-set&gt;
+  &lt;/domain-config&gt;
+&lt;/network-security-config&gt;</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+
+<!-- 安全审计清单 -->
+<section class="mb-12" style="padding-left:200px;padding-right:200px;"> 
+  <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+    <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
+    安全审计清单
+  </h2>
+  
+  <div class="bg-white p-8 rounded-lg shadow-md">
+    <div class="space-y-8">
+      <!-- 日志安全 -->
+      <div class="border-l-4 border-blue-500 pl-6 py-6 transition-all hover:border-blue-600">  <!-- Added vertical padding -->
+        <div class="flex items-center mb-6">  <!-- Increased bottom margin -->
+          <i class="fas fa-file-alt text-blue-600 mr-3"></i>  <!-- Increased icon spacing -->
+          <h4 class="font-semibold text-lg">日志安全检查项</h4>
+          <span class="ml-auto px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm">优先级：高</span>  <!-- Increased padding -->
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
+          <ul class="list-none space-y-4">  <!-- Increased vertical spacing -->
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>移除所有包含个人信息的日志打印</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>实现安全的日志记录机制</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>定期清理日志文件</span>
+            </li>
+          </ul>
+          <ul class="list-none space-y-3">
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>对日志访问进行权限控制</span>
+            </li>
+            <li class="flex items-center">
+              <i class="fas fa-check-circle text-green-500 mr-2"></i>
+              <span>加密存储敏感日志信息</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 数据安全 -->
+      <div class="border-l-4 border-purple-500 pl-6 py-6 transition-all hover:border-purple-600">  <!-- Added vertical padding -->
+        <div class="flex items-center mb-6">
+          <i class="fas fa-shield-alt text-purple-600 mr-3"></i>  <!-- Increased icon spacing -->
+          <h4 class="font-semibold text-lg">数据安全检查项</h4>
+          <span class="ml-auto px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm">优先级：关键</span>
+        </div>
+        <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h5 class="font-medium mb-3">加密措施</h5>
+            <ul class="list-none space-y-3">
+              <li class="flex items-center">
+                <i class="fas fa-lock text-purple-600 mr-2"></i>
+                <span>使用安全的加密算法保护敏感数据</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-key text-purple-600 mr-2"></i>
+                <span>实现安全的密钥管理机制</span>
+              </li>
+            </ul>
+          </div>
+          <div class="bg-purple-50 p-4 rounded-lg">
+            <h5 class="font-medium mb-3">数据管理</h5>
+            <ul class="list-none space-y-3">
+              <li class="flex items-center">
+                <i class="fas fa-sync text-purple-600 mr-2"></i>
+                <span>定期更新加密密钥</span>
+              </li>
+              <li class="flex items-center">
+                <i class="fas fa-trash-alt text-purple-600 mr-2"></i>
+                <span>安全删除临时文件和缓存</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- 网络安全 -->
+      <div class="border-l-4 border-indigo-500 pl-6 py-6 transition-all hover:border-indigo-600">  <!-- Added vertical padding -->
+        <div class="flex items-center mb-6">
+          <i class="fas fa-network-wired text-indigo-600 mr-3"></i>  <!-- Increased icon spacing -->
+          <h4 class="font-semibold text-lg">网络安全检查项</h4>
+          <span class="ml-auto px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm">优先级：高</span>
+        </div>
+        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg">
+          <div class="grid md:grid-cols-3 gap-4">
+            <div>
+              <h5 class="font-medium mb-3 flex items-center">
+                <i class="fas fa-shield-alt text-indigo-600 mr-2"></i>
+                防护措施
+              </h5>
+              <ul class="list-none space-y-3">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>启用SSL证书固定</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>实现请求签名机制</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 class="font-medium mb-3 flex items-center">
+                <i class="fas fa-user-shield text-indigo-600 mr-2"></i>
+                访问控制
+              </h5>
+              <ul class="list-none space-y-3">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>防止中间人攻击</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>限制API访问频率</span>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h5 class="font-medium mb-3 flex items-center">
+                <i class="fas fa-chart-line text-indigo-600 mr-2"></i>
+                监控告警
+              </h5>
+              <ul class="list-none space-y-3">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>监控异常网络活动</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-indigo-600 mr-2"></i>
+                  <span>实时安全告警</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Add PDPA Compliance Section -->
+    <section class="mb-20 px-4" style="padding-left:200px;padding-right:200px;"> <!-- Added px-4 and increased mb-16 to mb-20 -->
+      <h2 class="text-3xl font-bold text-gray-800 mb-10 flex items-center"> <!-- Added flex, items-center and increased mb-8 to mb-10 -->
+        <i class="fas fa-gavel text-blue-600 mr-3"></i> <!-- Added icon -->
+        合规性分析
+      </h2>
+      <div class="bg-white p-8 rounded-lg shadow-md"> <!-- Increased padding from p-6 to p-8 -->
+        <h3 class="text-xl font-semibold mb-6 flex items-center"> <!-- Added flex, items-center and increased mb-4 to mb-6 -->
+          <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+          PDPA 2010违规项
+        </h3>
+        <div class="space-y-6"> <!-- Increased space-y-4 to space-y-6 -->
+          <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
+            <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
+              <i class="fas fa-shield-alt text-red-600 mr-2"></i>
+              第7条原则（安全原则）违规
+            </h4>
+            <p class="mt-2">未能保护个人数据免受未经授权访问</p>
+          </div>
+          <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
+            <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
+              <i class="fas fa-clock text-red-600 mr-2"></i>
+              第9条原则（数据保留）违规
+            </h4>
+            <p class="mt-2">敏感信息在日志中的不当保留</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    </main>
+
+<!-- Contact Section -->
+<section class="mb-16 px-4" style="padding-left:200px;padding-right:200px;">
+  <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+    <i class="fas fa-envelope text-blue-600 mr-3"></i>
+    联系方式
+  </h2>
+
+  <div class="bg-white p-8 rounded-lg shadow-md">
+    <div class="space-y-6">
+      <!-- 安全研究员信息 -->
+      <div class="border-l-4 border-blue-500 pl-6 py-4">
+        <h3 class="text-xl font-semibold mb-4 flex items-center">
+          <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+          安全研究员信息
+        </h3>
+        <div class="grid md:grid-cols-2 gap-6">
+          <div>
+            <p class="mb-2"><strong>姓名:</strong> 钟智强 </p>
+            <p class="mb-2"><strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 | 计算机视觉专家</p>
+          </div>
+          <div>
+            <p class="mb-2"><strong>电子邮件:</strong> <a href="mailto:johnmelodymel@qq.com" class="text-blue-600 hover:underline">johnmelodymel@qq.com</a></p>
+            <p><strong>微信:</strong> ctkqiang</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 响应时间承诺 -->
+      <div class="bg-green-50 p-6 rounded-lg">
+        <h4 class="font-semibold mb-3 flex items-center">
+          <i class="fas fa-clock text-green-600 mr-2"></i>
+          响应时间承诺
+        </h4>
+        <ul class="list-none space-y-2">
+          <li class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>紧急漏洞问题：24小时内响应</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+            <span>一般技术咨询：48小时内回复</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- 沟通渠道 -->
+      <div class="bg-blue-50 p-6 rounded-lg">
+        <h4 class="font-semibold mb-3 flex items-center">
+          <i class="fas fa-comments text-blue-600 mr-2"></i>
+          首选沟通渠道
+        </h4>
+        <div class="space-y-2">
+          <p>1. 电子邮件（安全加密通信）</p>
+          <p>2. 微信语音/视频会议</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">本报告符合ISO/IEC 27001:2022标准要求</p>
+        <p class="text-gray-400 text-sm">© 2025 上饶满星科技. 保留所有权利</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-dart.min.js"></script>
+    <script>
+      // Smooth scroll functionality
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth"
+          });
+        });
+      });
+
+      // Dynamic section highlighting
+      window.addEventListener("scroll", function () {
+        const sections = document.querySelectorAll("section");
+        const navLinks = document.querySelectorAll("nav a");
+
+        sections.forEach((section) => {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 150 && rect.bottom >= 150) {
+            navLinks.forEach((link) => {
+              link.classList.remove("text-blue-600");
+              if (link.getAttribute("href") === `#${section.id}`) {
+                link.classList.add("text-blue-600");
+              }
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

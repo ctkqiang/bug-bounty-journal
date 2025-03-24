@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>安全漏洞案例库 - 上饶满星科技</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-3">
+            <i class="fas fa-shield-halved text-blue-600 text-xl"></i>
+            <span
+              class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            >
+              安全漏洞案例库
+            </span>
+          </div>
+          <div class="hidden lg:flex space-x-6">
+            <a
+              href="#recent"
+              class="nav-link hover:text-blue-600 transition-colors"
+            >
+              <i class="fas fa-bug mr-2"></i>最新案例
+            </a>
+            <a
+              href="#archive"
+              class="nav-link hover:text-blue-600 transition-colors"
+            >
+              <i class="fas fa-archive mr-2"></i>案例归档
+            </a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Case Grid -->
+      <section id="recent" class="mb-16">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8">最新安全案例</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Case 20250324-24f24c -->
+          <a
+            href="case/20250324-24f24c.html"
+            class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+          >
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
+            <div class="relative p-6">
+              <div class="flex items-center justify-between mb-4">
+                <span class="text-sm text-gray-500">2024-03-24</span>
+                <span
+                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+                >
+                  <i class="fas fa-triangle-exclamation mr-1"></i>高危
+                </span>
+              </div>
+              <h3 class="text-xl font-bold text-gray-800 mb-2">
+                <i class="fas fa-shield-virus text-blue-600 mr-2"></i>
+                MYJPJ移动应用数据泄露
+              </h3>
+              <p class="text-gray-600 mb-4">
+                涉及个人身份信息及API凭证的未授权访问漏洞...
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span
+                  class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                >
+                  <i class="fas fa-user-shield mr-1"></i>PDPA违规
+                </span>
+                <span
+                  class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
+                >
+                  <i class="fas fa-database mr-1"></i>数据泄露
+                </span>
+              </div>
+            </div>
+          </a>
+
+          <!-- Template for Future Cases -->
+          <div class="hidden">
+            <!-- Duplicate this block for new cases -->
+            <a
+              href="NEW-CASE.html"
+              class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            >
+              <!-- Same structure as above case -->
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Mobile Menu Script -->
+    <script>
+      // Mobile menu functionality (same as detail pages)
+      document
+        .getElementById("mobile-menu-button")
+        ?.addEventListener("click", function () {
+          const menu = document.getElementById("mobile-menu");
+          menu?.classList.toggle("hidden");
+        });
+    </script>
+  </body>
+</html>
