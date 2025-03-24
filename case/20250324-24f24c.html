@@ -26,6 +26,31 @@
                 font-size: 1.125rem;
             }
         }
+
+        /* 自定义翻译控件样式 */
+        #custom-translator select {
+            background: #f7fafc;
+            border: 1px solid #cbd5e0;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        #custom-translator select:hover {
+            border-color: #a0aec0;
+        }
+
+        #custom-translator button:hover {
+            background: #3182ce;
+        }
+
+        /* 隐藏默认的Google翻译样式 */
+        .goog-te-banner-frame, .goog-te-menu-frame {
+            display: none !important;
+        }
+
+        .skiptranslate iframe {
+            display: none !important;
+        }
     </style>
   </head>
 
@@ -51,6 +76,8 @@
         </div>
       </div>
     </nav>
+
+    <div id="google_translate_element" style="display: none;"></div>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden lg:hidden bg-white border-t">
@@ -1105,6 +1132,91 @@
           }
         });
       });
+
+
+      // 智能语言检测与翻译初始化
+        function initializeTranslation() {
+            // 步骤1：检测用户语言
+            const userLang = navigator.language || navigator.userLanguage;
+            const isChinese = /^zh-(cn|hans|sg)/i.test(userLang);
+            
+            // 步骤2：创建翻译控件
+            const translator = document.createElement('div');
+            translator.id = 'custom-translator';
+            translator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: ${isChinese ? 'none' : 'block'};
+            `;
+
+            // 步骤3：构建翻译界面
+            translator.innerHTML = `
+                <div class="translator-header" style="margin-bottom: 12px;">
+                    <h3 style="margin: 0; color: #2d3748;">🌍 语言选择</h3>
+                    <p style="font-size: 0.9em; color: #718096;">检测到您的首选语言是：${userLang}</p>
+                </div>
+                <select id="language-selector" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <option value="zh-CN">中文（简体）</option>
+                    <option value="en">English</option>
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="auto">自动检测</option>
+                </select>
+                <button onclick="toggleTranslation()" style="margin-left: 10px; padding: 8px 16px; 
+                    background: #4299e1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    切换翻译
+                </button>
+            `;
+
+            document.body.appendChild(translator);
+
+            // 步骤4：初始化Google翻译
+            if (!isChinese) {
+                const script = document.createElement('script');
+                script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                script.async = true;
+                document.head.appendChild(script);
+            }
+        }
+
+        // Google翻译初始化回调
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'zh-CN',
+                includedLanguages: 'en,zh-CN,ms,ta',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        // 高级翻译控制
+        function toggleTranslation() {
+            const translator = document.getElementById('google_translate_element');
+            const isVisible = translator.style.display !== 'none';
+            
+            translator.style.display = isVisible ? 'none' : 'block';
+            localStorage.setItem('translationEnabled', !isVisible);
+            
+            // 添加动画效果
+            translator.style.transition = 'opacity 0.3s ease';
+            translator.style.opacity = isVisible ? 0 : 1;
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            initializeTranslation();
+            
+            // 恢复用户偏好设置
+            if (localStorage.getItem('translationEnabled') === 'true') {
+                toggleTranslation();
+            }
+        });
     </script>
   </body>
 </html>
