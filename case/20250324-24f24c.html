@@ -2,7 +2,7 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>MYJPJ移动应用安全审计报告 - 上饶满星科技</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -10,7 +10,25 @@
       rel="stylesheet"
     />
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+       <style>
+        
+        @media (max-width: 640px) {
+          .body{
+            width: 50%;
+          }
+            .mobile-collapse {
+                width: 100%;
+                display: block;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .mobile-text-lg {
+                font-size: 1.125rem;
+            }
+        }
+    </style>
   </head>
+
   <body class="bg-gray-50 font-sans">
     <!-- Navigation Update -->
     <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
@@ -810,7 +828,7 @@
 
 
 <!-- 安全审计清单 -->
-<section class="mb-12" style="padding-left:200px;padding-right:200px;"> 
+<section class="mb-12" > 
   <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
     <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
     安全审计清单
@@ -955,7 +973,7 @@
 </section>
 
     <!-- Add PDPA Compliance Section -->
-    <section class="mb-20 px-4" style="padding-left:200px;padding-right:200px;"> <!-- Added px-4 and increased mb-16 to mb-20 -->
+    <section class="mb-20 px-4" > <!-- Added px-4 and increased mb-16 to mb-20 -->
       <h2 class="text-3xl font-bold text-gray-800 mb-10 flex items-center"> <!-- Added flex, items-center and increased mb-8 to mb-10 -->
         <i class="fas fa-gavel text-blue-600 mr-3"></i> <!-- Added icon -->
         合规性分析
@@ -986,7 +1004,7 @@
     </main>
 
 <!-- Contact Section -->
-<section class="mb-16 px-4" style="padding-left:200px;padding-right:200px;">
+<section class="mb-16 px-4">
   <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
     <i class="fas fa-envelope text-blue-600 mr-3"></i>
     联系方式
