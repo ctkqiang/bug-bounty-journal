@@ -26,6 +26,31 @@
                 font-size: 1.125rem;
             }
         }
+
+        /* 自定义翻译控件样式 */
+        #custom-translator select {
+            background: #f7fafc;
+            border: 1px solid #cbd5e0;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        #custom-translator select:hover {
+            border-color: #a0aec0;
+        }
+
+        #custom-translator button:hover {
+            background: #3182ce;
+        }
+
+        /* 隐藏默认的Google翻译样式 */
+        .goog-te-banner-frame, .goog-te-menu-frame {
+            display: none !important;
+        }
+
+        .skiptranslate iframe {
+            display: none !important;
+        }
     </style>
   </head>
 
@@ -51,6 +76,8 @@
         </div>
       </div>
     </nav>
+
+    <div id="google_translate_element" style="display: none;"></div>
 
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="hidden lg:hidden bg-white border-t">
@@ -122,6 +149,53 @@
           </div>
         </div>
       </section>
+
+
+<!-- 漏洞报告提交证明 -->
+<section class="mb-16">
+  <div class="bg-white p-6 rounded-lg shadow-md">
+    <h3 class="text-xl font-semibold mb-6 flex items-center">
+      <i class="fas fa-paper-plane text-blue-600 mr-2"></i>
+      漏洞报告提交证明
+    </h3>
+
+    <div class="space-y-6">
+      <!-- 邮件提交证明 -->
+      <div class="border-l-4 border-green-500 pl-6 py-4">
+        <h4 class="font-semibold mb-4">官方邮件提交记录</h4>
+        <div class="bg-gray-50 p-4 rounded-lg">
+          <p class="mb-3"><strong>发送时间:</strong> 2025年3月24日</p>
+          <p class="mb-3"><strong>接收方:</strong> aduan@jpj.gov.my</p>
+          <p class="mb-3"><strong>主题:</strong> [安全漏洞报告] MYJPJ移动应用数据泄露风险通报</p>
+        </div>
+      </div>
+
+      <!-- 邮件截图证明 -->
+      <div class="mt-6">
+        <h4 class="font-semibold mb-4">提交截图证明</h4>
+        <img 
+          src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250324-24f24c-email.png?raw=true"
+          alt="漏洞报告提交邮件截图"
+          class="rounded-lg shadow-md w-full"
+        />
+      </div>
+
+      <!-- 善意声明 -->
+      <div class="bg-blue-50 p-6 rounded-lg mt-6">
+        <h4 class="font-semibold mb-3 text-blue-800">声明</h4>
+        <p class="text-blue-700">
+          本漏洞报告已通过官方渠道提交至马来西亚陆路交通局(JPJ)。作为一名怀着善意的安全研究员，
+          我希望通过及时报告这些安全问题来帮助改进系统安全性，保护用户数据安全。这份工作完全出于善意，
+          绝无任何恶意破坏或利用的企图。希望通过负责任的漏洞披露方式，能够帮助JPJ尽快修复这些安全隐患。
+          
+          在发现政府系统漏洞时需要格外谨慎和负责任。我完全理解马来西亚同胞们对此类披露可能持有疑虑，但我希望能以最大的诚意说明：发现并报告这个漏洞的唯一目的，是为了防止不法分子抢先发现并加以利用。作为一名关心马来西亚网络安全的研究员，我深感有责任通过正当渠道向JPJ报告这一问题。
+          
+          我坚信JPJ作为负责任的政府部门，一定会认真对待这个安全隐患并采取必要的补救措施。毕竟在这个数字化时代，保护公民的个人数据安全是政府的重要职责。我真诚地希望通过这次善意的漏洞披露，能为提升政府系统的安全性贡献一份力量，共同维护马来西亚公民的数据安全。
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
 
       <!-- Technical Analysis Section Update -->
       <section id="technical" class="mb-20">
@@ -1105,6 +1179,91 @@
           }
         });
       });
+
+
+      // 智能语言检测与翻译初始化
+        function initializeTranslation() {
+            // 步骤1：检测用户语言
+            const userLang = navigator.language || navigator.userLanguage;
+            const isChinese = /^zh-(cn|hans|sg)/i.test(userLang);
+            
+            // 步骤2：创建翻译控件
+            const translator = document.createElement('div');
+            translator.id = 'custom-translator';
+            translator.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                z-index: 1000;
+                background: white;
+                padding: 15px;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                display: ${isChinese ? 'none' : 'block'};
+            `;
+
+            // 步骤3：构建翻译界面
+            translator.innerHTML = `
+                <div class="translator-header" style="margin-bottom: 12px;">
+                    <h3 style="margin: 0; color: #2d3748;">🌍 语言选择</h3>
+                    <p style="font-size: 0.9em; color: #718096;">检测到您的首选语言是：${userLang}</p>
+                </div>
+                <select id="language-selector" style="padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0;">
+                    <option value="zh-CN">中文（简体）</option>
+                    <option value="en">English</option>
+                    <option value="ms">Bahasa Melayu</option>
+                    <option value="ta">தமிழ்</option>
+                    <option value="auto">自动检测</option>
+                </select>
+                <button onclick="toggleTranslation()" style="margin-left: 10px; padding: 8px 16px; 
+                    background: #4299e1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                    切换翻译
+                </button>
+            `;
+
+            document.body.appendChild(translator);
+
+            // 步骤4：初始化Google翻译
+            if (!isChinese) {
+                const script = document.createElement('script');
+                script.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                script.async = true;
+                document.head.appendChild(script);
+            }
+        }
+
+        // Google翻译初始化回调
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'zh-CN',
+                includedLanguages: 'en,zh-CN,ms,ta',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        // 高级翻译控制
+        function toggleTranslation() {
+            const translator = document.getElementById('google_translate_element');
+            const isVisible = translator.style.display !== 'none';
+            
+            translator.style.display = isVisible ? 'none' : 'block';
+            localStorage.setItem('translationEnabled', !isVisible);
+            
+            // 添加动画效果
+            translator.style.transition = 'opacity 0.3s ease';
+            translator.style.opacity = isVisible ? 0 : 1;
+        }
+
+        // 页面加载时初始化
+        window.addEventListener('load', () => {
+            initializeTranslation();
+            
+            // 恢复用户偏好设置
+            if (localStorage.getItem('translationEnabled') === 'true') {
+                toggleTranslation();
+            }
+        });
     </script>
   </body>
 </html>
