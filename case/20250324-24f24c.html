@@ -827,241 +827,243 @@
     </main>
 
 
-<!-- 安全审计清单 -->
-<section class="mb-12" > 
-  <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-    <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
-    安全审计清单
-  </h2>
-  
-  <div class="bg-white p-8 rounded-lg shadow-md">
-    <div class="space-y-8">
-      <!-- 日志安全 -->
-      <div class="border-l-4 border-blue-500 pl-6 py-6 transition-all hover:border-blue-600">  <!-- Added vertical padding -->
-        <div class="flex items-center mb-6">  <!-- Increased bottom margin -->
-          <i class="fas fa-file-alt text-blue-600 mr-3"></i>  <!-- Increased icon spacing -->
-          <h4 class="font-semibold text-lg">日志安全检查项</h4>
-          <span class="ml-auto px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm">优先级：高</span>  <!-- Increased padding -->
-        </div>
-        <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
-          <ul class="list-none space-y-4">  <!-- Increased vertical spacing -->
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              <span>移除所有包含个人信息的日志打印</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              <span>实现安全的日志记录机制</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              <span>定期清理日志文件</span>
-            </li>
-          </ul>
-          <ul class="list-none space-y-3">
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              <span>对日志访问进行权限控制</span>
-            </li>
-            <li class="flex items-center">
-              <i class="fas fa-check-circle text-green-500 mr-2"></i>
-              <span>加密存储敏感日志信息</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+    <section style="margin-left: 80px;margin-right: 80px;">
+      <!-- 安全审计清单 -->
+      <section class="mb-12" > 
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <i class="fas fa-clipboard-check text-blue-600 mr-3"></i>
+          安全审计清单
+        </h2>
+        
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="space-y-8">
+            <!-- 日志安全 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-6 transition-all hover:border-blue-600">  <!-- Added vertical padding -->
+              <div class="flex items-center mb-6">  <!-- Increased bottom margin -->
+                <i class="fas fa-file-alt text-blue-600 mr-3"></i>  <!-- Increased icon spacing -->
+                <h4 class="font-semibold text-lg">日志安全检查项</h4>
+                <span class="ml-auto px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm">优先级：高</span>  <!-- Increased padding -->
+              </div>
+              <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
+                <ul class="list-none space-y-4">  <!-- Increased vertical spacing -->
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>移除所有包含个人信息的日志打印</span>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>实现安全的日志记录机制</span>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>定期清理日志文件</span>
+                  </li>
+                </ul>
+                <ul class="list-none space-y-3">
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>对日志访问进行权限控制</span>
+                  </li>
+                  <li class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                    <span>加密存储敏感日志信息</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
 
-      <!-- 数据安全 -->
-      <div class="border-l-4 border-purple-500 pl-6 py-6 transition-all hover:border-purple-600">  <!-- Added vertical padding -->
-        <div class="flex items-center mb-6">
-          <i class="fas fa-shield-alt text-purple-600 mr-3"></i>  <!-- Increased icon spacing -->
-          <h4 class="font-semibold text-lg">数据安全检查项</h4>
-          <span class="ml-auto px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm">优先级：关键</span>
-        </div>
-        <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
-          <div class="bg-purple-50 p-4 rounded-lg">
-            <h5 class="font-medium mb-3">加密措施</h5>
-            <ul class="list-none space-y-3">
-              <li class="flex items-center">
-                <i class="fas fa-lock text-purple-600 mr-2"></i>
-                <span>使用安全的加密算法保护敏感数据</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-key text-purple-600 mr-2"></i>
-                <span>实现安全的密钥管理机制</span>
-              </li>
-            </ul>
-          </div>
-          <div class="bg-purple-50 p-4 rounded-lg">
-            <h5 class="font-medium mb-3">数据管理</h5>
-            <ul class="list-none space-y-3">
-              <li class="flex items-center">
-                <i class="fas fa-sync text-purple-600 mr-2"></i>
-                <span>定期更新加密密钥</span>
-              </li>
-              <li class="flex items-center">
-                <i class="fas fa-trash-alt text-purple-600 mr-2"></i>
-                <span>安全删除临时文件和缓存</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
+            <!-- 数据安全 -->
+            <div class="border-l-4 border-purple-500 pl-6 py-6 transition-all hover:border-purple-600">  <!-- Added vertical padding -->
+              <div class="flex items-center mb-6">
+                <i class="fas fa-shield-alt text-purple-600 mr-3"></i>  <!-- Increased icon spacing -->
+                <h4 class="font-semibold text-lg">数据安全检查项</h4>
+                <span class="ml-auto px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm">优先级：关键</span>
+              </div>
+              <div class="grid md:grid-cols-2 gap-6">  <!-- Increased grid gap -->
+                <div class="bg-purple-50 p-4 rounded-lg">
+                  <h5 class="font-medium mb-3">加密措施</h5>
+                  <ul class="list-none space-y-3">
+                    <li class="flex items-center">
+                      <i class="fas fa-lock text-purple-600 mr-2"></i>
+                      <span>使用安全的加密算法保护敏感数据</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fas fa-key text-purple-600 mr-2"></i>
+                      <span>实现安全的密钥管理机制</span>
+                    </li>
+                  </ul>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                  <h5 class="font-medium mb-3">数据管理</h5>
+                  <ul class="list-none space-y-3">
+                    <li class="flex items-center">
+                      <i class="fas fa-sync text-purple-600 mr-2"></i>
+                      <span>定期更新加密密钥</span>
+                    </li>
+                    <li class="flex items-center">
+                      <i class="fas fa-trash-alt text-purple-600 mr-2"></i>
+                      <span>安全删除临时文件和缓存</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
 
-      <!-- 网络安全 -->
-      <div class="border-l-4 border-indigo-500 pl-6 py-6 transition-all hover:border-indigo-600">  <!-- Added vertical padding -->
-        <div class="flex items-center mb-6">
-          <i class="fas fa-network-wired text-indigo-600 mr-3"></i>  <!-- Increased icon spacing -->
-          <h4 class="font-semibold text-lg">网络安全检查项</h4>
-          <span class="ml-auto px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm">优先级：高</span>
+            <!-- 网络安全 -->
+            <div class="border-l-4 border-indigo-500 pl-6 py-6 transition-all hover:border-indigo-600">  <!-- Added vertical padding -->
+              <div class="flex items-center mb-6">
+                <i class="fas fa-network-wired text-indigo-600 mr-3"></i>  <!-- Increased icon spacing -->
+                <h4 class="font-semibold text-lg">网络安全检查项</h4>
+                <span class="ml-auto px-4 py-2 bg-indigo-100 text-indigo-800 rounded-full text-sm">优先级：高</span>
+              </div>
+              <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg">
+                <div class="grid md:grid-cols-3 gap-4">
+                  <div>
+                    <h5 class="font-medium mb-3 flex items-center">
+                      <i class="fas fa-shield-alt text-indigo-600 mr-2"></i>
+                      防护措施
+                    </h5>
+                    <ul class="list-none space-y-3">
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>启用SSL证书固定</span>
+                      </li>
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>实现请求签名机制</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 class="font-medium mb-3 flex items-center">
+                      <i class="fas fa-user-shield text-indigo-600 mr-2"></i>
+                      访问控制
+                    </h5>
+                    <ul class="list-none space-y-3">
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>防止中间人攻击</span>
+                      </li>
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>限制API访问频率</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h5 class="font-medium mb-3 flex items-center">
+                      <i class="fas fa-chart-line text-indigo-600 mr-2"></i>
+                      监控告警
+                    </h5>
+                    <ul class="list-none space-y-3">
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>监控异常网络活动</span>
+                      </li>
+                      <li class="flex items-center">
+                        <i class="fas fa-check text-indigo-600 mr-2"></i>
+                        <span>实时安全告警</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="bg-gradient-to-r from-indigo-50 to-blue-50 p-4 rounded-lg">
-          <div class="grid md:grid-cols-3 gap-4">
-            <div>
-              <h5 class="font-medium mb-3 flex items-center">
-                <i class="fas fa-shield-alt text-indigo-600 mr-2"></i>
-                防护措施
-              </h5>
-              <ul class="list-none space-y-3">
+      </section>
+
+          <!-- Add PDPA Compliance Section -->
+          <section class="mb-20 px-4" > <!-- Added px-4 and increased mb-16 to mb-20 -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-10 flex items-center"> <!-- Added flex, items-center and increased mb-8 to mb-10 -->
+              <i class="fas fa-gavel text-blue-600 mr-3"></i> <!-- Added icon -->
+              合规性分析
+            </h2>
+            <div class="bg-white p-8 rounded-lg shadow-md"> <!-- Increased padding from p-6 to p-8 -->
+              <h3 class="text-xl font-semibold mb-6 flex items-center"> <!-- Added flex, items-center and increased mb-4 to mb-6 -->
+                <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
+                PDPA 2010违规项
+              </h3>
+              <div class="space-y-6"> <!-- Increased space-y-4 to space-y-6 -->
+                <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
+                  <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
+                    <i class="fas fa-shield-alt text-red-600 mr-2"></i>
+                    第7条原则（安全原则）违规
+                  </h4>
+                  <p class="mt-2">未能保护个人数据免受未经授权访问</p>
+                </div>
+                <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
+                  <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
+                    <i class="fas fa-clock text-red-600 mr-2"></i>
+                    第9条原则（数据保留）违规
+                  </h4>
+                  <p class="mt-2">敏感信息在日志中的不当保留</p>
+                </div>
+              </div>
+            </div>
+          </section>
+          </main>
+
+      <!-- Contact Section -->
+      <section class="mb-16 px-4">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <i class="fas fa-envelope text-blue-600 mr-3"></i>
+          联系方式
+        </h2>
+
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="space-y-6">
+            <!-- 安全研究员信息 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+                安全研究员信息
+              </h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <p class="mb-2"><strong>姓名:</strong> 钟智强 </p>
+                  <p class="mb-2"><strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 | 计算机视觉专家</p>
+                </div>
+                <div>
+                  <p class="mb-2"><strong>电子邮件:</strong> <a href="mailto:johnmelodymel@qq.com" class="text-blue-600 hover:underline">johnmelodymel@qq.com</a></p>
+                  <p><strong>微信:</strong> ctkqiang</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 响应时间承诺 -->
+            <div class="bg-green-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-clock text-green-600 mr-2"></i>
+                响应时间承诺
+              </h4>
+              <ul class="list-none space-y-2">
                 <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>启用SSL证书固定</span>
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>紧急漏洞问题：24小时内响应</span>
                 </li>
                 <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>实现请求签名机制</span>
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>一般技术咨询：48小时内回复</span>
                 </li>
               </ul>
             </div>
-            <div>
-              <h5 class="font-medium mb-3 flex items-center">
-                <i class="fas fa-user-shield text-indigo-600 mr-2"></i>
-                访问控制
-              </h5>
-              <ul class="list-none space-y-3">
-                <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>防止中间人攻击</span>
-                </li>
-                <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>限制API访问频率</span>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h5 class="font-medium mb-3 flex items-center">
-                <i class="fas fa-chart-line text-indigo-600 mr-2"></i>
-                监控告警
-              </h5>
-              <ul class="list-none space-y-3">
-                <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>监控异常网络活动</span>
-                </li>
-                <li class="flex items-center">
-                  <i class="fas fa-check text-indigo-600 mr-2"></i>
-                  <span>实时安全告警</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-    <!-- Add PDPA Compliance Section -->
-    <section class="mb-20 px-4" > <!-- Added px-4 and increased mb-16 to mb-20 -->
-      <h2 class="text-3xl font-bold text-gray-800 mb-10 flex items-center"> <!-- Added flex, items-center and increased mb-8 to mb-10 -->
-        <i class="fas fa-gavel text-blue-600 mr-3"></i> <!-- Added icon -->
-        合规性分析
-      </h2>
-      <div class="bg-white p-8 rounded-lg shadow-md"> <!-- Increased padding from p-6 to p-8 -->
-        <h3 class="text-xl font-semibold mb-6 flex items-center"> <!-- Added flex, items-center and increased mb-4 to mb-6 -->
-          <i class="fas fa-exclamation-triangle text-red-600 mr-2"></i>
-          PDPA 2010违规项
-        </h3>
-        <div class="space-y-6"> <!-- Increased space-y-4 to space-y-6 -->
-          <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
-            <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
-              <i class="fas fa-shield-alt text-red-600 mr-2"></i>
-              第7条原则（安全原则）违规
-            </h4>
-            <p class="mt-2">未能保护个人数据免受未经授权访问</p>
-          </div>
-          <div class="p-6 bg-red-50 rounded-md border-l-4 border-red-500"> <!-- Added border-l-4 and increased padding -->
-            <h4 class="font-semibold mb-3 flex items-center"> <!-- Added flex, items-center -->
-              <i class="fas fa-clock text-red-600 mr-2"></i>
-              第9条原则（数据保留）违规
-            </h4>
-            <p class="mt-2">敏感信息在日志中的不当保留</p>
+            <!-- 沟通渠道 -->
+            <div class="bg-blue-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-comments text-blue-600 mr-2"></i>
+                首选沟通渠道
+              </h4>
+              <div class="space-y-2">
+                <p>1. 电子邮件（安全加密通信）</p>
+                <p>2. 微信语音/视频会议</p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </section>
-    </main>
-
-<!-- Contact Section -->
-<section class="mb-16 px-4">
-  <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-    <i class="fas fa-envelope text-blue-600 mr-3"></i>
-    联系方式
-  </h2>
-
-  <div class="bg-white p-8 rounded-lg shadow-md">
-    <div class="space-y-6">
-      <!-- 安全研究员信息 -->
-      <div class="border-l-4 border-blue-500 pl-6 py-4">
-        <h3 class="text-xl font-semibold mb-4 flex items-center">
-          <i class="fas fa-user-shield text-blue-600 mr-2"></i>
-          安全研究员信息
-        </h3>
-        <div class="grid md:grid-cols-2 gap-6">
-          <div>
-            <p class="mb-2"><strong>姓名:</strong> 钟智强 </p>
-            <p class="mb-2"><strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 | 计算机视觉专家</p>
-          </div>
-          <div>
-            <p class="mb-2"><strong>电子邮件:</strong> <a href="mailto:johnmelodymel@qq.com" class="text-blue-600 hover:underline">johnmelodymel@qq.com</a></p>
-            <p><strong>微信:</strong> ctkqiang</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- 响应时间承诺 -->
-      <div class="bg-green-50 p-6 rounded-lg">
-        <h4 class="font-semibold mb-3 flex items-center">
-          <i class="fas fa-clock text-green-600 mr-2"></i>
-          响应时间承诺
-        </h4>
-        <ul class="list-none space-y-2">
-          <li class="flex items-center">
-            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-            <span>紧急漏洞问题：24小时内响应</span>
-          </li>
-          <li class="flex items-center">
-            <i class="fas fa-check-circle text-green-500 mr-2"></i>
-            <span>一般技术咨询：48小时内回复</span>
-          </li>
-        </ul>
-      </div>
-
-      <!-- 沟通渠道 -->
-      <div class="bg-blue-50 p-6 rounded-lg">
-        <h4 class="font-semibold mb-3 flex items-center">
-          <i class="fas fa-comments text-blue-600 mr-2"></i>
-          首选沟通渠道
-        </h4>
-        <div class="space-y-2">
-          <p>1. 电子邮件（安全加密通信）</p>
-          <p>2. 微信语音/视频会议</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
