@@ -15,6 +15,6 @@
 | 严重等级    | 🔴 CRITICAL (CVSS 9.1)                                                                 |
 | 发现日期    | 2025年3月24日                                                                          |
 | 涉及系统    | 马来西亚陆路交通局(JPJ)移动应用                                                        |
-| 快速访问    | [20250324-24f24c](case/20250324-24f24c.html)方案                                                           |
+| 快速访问    | [20250324-24f24c](https://www.ctkqiang.xin/bug-bounty-journal/case/20250324-24f24c.html)方案                                                           |
 | 审计团队    | 上饶满星科技安全研究部                                                                  |
 | 最新状态    | <span class="badge bg-red-100 text-red-800">待修复</span>                              |
