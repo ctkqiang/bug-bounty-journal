@@ -13,18 +13,55 @@
        <style>
         
         @media (max-width: 640px) {
-          .body{
-            width: 50%;
+          body {
+            font-size: 14px;
           }
-            .mobile-collapse {
-                width: 100%;
-                display: block;
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-            .mobile-text-lg {
-                font-size: 1.125rem;
-            }
+          .mobile-collapse {
+            width: 100%;
+            display: block;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+          }
+          .mobile-text-lg {
+            font-size: 1.125rem;
+          }
+          table {
+            font-size: 0.875rem;
+          }
+          table th, table td {
+            padding: 0.75rem 0.5rem;
+          }
+          pre {
+            font-size: 0.75rem;
+            padding: 0.75rem;
+          }
+          .px-6 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+          }
+          .py-4 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+          }
+          .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+            margin-top: 0.75rem;
+          }
+          .grid {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+          }
+          .text-4xl {
+            font-size: 1.875rem;
+          }
+          .text-3xl {
+            font-size: 1.5rem;
+          }
+          .text-2xl {
+            font-size: 1.25rem;
+          }
+          .text-xl {
+            font-size: 1.125rem;
+          }
         }
 
         /* 自定义翻译控件样式 */
@@ -52,44 +89,87 @@
             display: none !important;
         }
     </style>
-  </head>
+      <script>
+    function copyCode(button) {
+      const pre = button.closest('pre');
+      const code = pre.querySelector('code');
+      const text = code.textContent;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const span = button.querySelector('.copy-text');
+        const originalText = span.textContent;
+        span.textContent = '已复制！';
+        button.classList.add('bg-green-600');
+        
+        setTimeout(() => {
+          span.textContent = originalText;
+          button.classList.remove('bg-green-600');
+        }, 2000);
+      }).catch(err => {
+        console.error('复制失败:', err);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // 为所有代码块添加语法高亮
+      Prism.highlightAll();
+      
+      // 添加平滑滚动
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+          });
+        });
+      });
+    });
+    </script>
+</head>
 
   <body class="bg-gray-50 font-sans">
     <!-- Navigation Update -->
-    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
-      <div class="max-w-7xl mx-auto px-4">
-        <div class="flex justify-between items-center py-4">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-shield-halved text-blue-600 text-xl"></i>
-            <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              安全审计报告 20250324-24f24c
-            </span>
-          </div>
-          <div class="space-x-6">
-            <a href="#overview" class="nav-link hover:text-blue-600 transition-colors">
-              <i class="fas fa-bug mr-2"></i>漏洞概览
-            </a>
-            <a href="#technical" class="nav-link hover:text-blue-600 transition-colors">
-              <i class="fas fa-microscope mr-2"></i>技术细节
-            </a>
-          </div>
-        </div>
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300 ease-in-out">
+  <div class="max-w-7xl mx-auto px-2 sm:px-4">
+    <div class="flex justify-between items-center py-2 sm:py-4">
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <i class="fas fa-shield-halved text-blue-600 text-lg sm:text-xl animate-pulse"></i>
+        <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none">
+          安全审计报告 20250324-24f24c
+        </span>
       </div>
+      <!-- Desktop Navigation -->
+      <div class="hidden md:flex space-x-6">
+        <a href="#overview" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
+          <i class="fas fa-bug mr-2"></i>漏洞概览
+        </a>
+        <a href="#technical" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
+          <i class="fas fa-microscope mr-2"></i>技术细节
+        </a>
+      </div>
+      <!-- Mobile Menu Button -->
+      <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors">
+        <i class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"></i>
+      </button>
+    </div>
+  </div>
     </nav>
 
     <div id="google_translate_element" style="display: none;"></div>
 
     <!-- Mobile Menu -->
-    <div id="mobile-menu" class="hidden lg:hidden bg-white border-t">
-      <div class="px-4 py-3 space-y-4">
-        <a href="#overview" class="block nav-link hover:text-blue-600">
-          <i class="fas fa-bug mr-2"></i>漏洞概览
-        </a>
-        <a href="#technical" class="block nav-link hover:text-blue-600">
-          <i class="fas fa-microscope mr-2"></i>技术细节
-        </a>
-      </div>
-    </div>
+    <div id="mobile-menu" class="hidden lg:hidden bg-white/95 backdrop-blur-sm border-t shadow-lg transform transition-all duration-300 ease-in-out fixed top-[60px] left-0 w-full z-50 max-h-[calc(100vh-60px)] overflow-y-auto">
+  <div class="px-3 py-2 space-y-1">
+    <a href="#overview" class="block nav-link hover:text-blue-600 hover:bg-blue-50 px-3 py-2.5 rounded-lg transition-colors duration-200 active:bg-blue-100 text-sm flex items-center">
+      <i class="fas fa-bug mr-2 text-blue-600"></i>
+      <span>漏洞概览</span>
+    </a>
+    <a href="#technical" class="block nav-link hover:text-blue-600 hover:bg-blue-50 px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm flex items-center">
+      <i class="fas fa-microscope mr-2 text-blue-600"></i>
+      <span>技术细节</span>
+    </a>
+  </div>
+</div>
 </nav>
 
 <!-- Add this script before </body> -->
@@ -214,17 +294,37 @@
               </h3>
             </div>
             <div class="overflow-x-auto">
-              <table class="w-full divide-y divide-gray-200">
-                <thead class="bg-blue-50">
+              <table class="w-full divide-y divide-gray-200 animate-fade-in">
+                <thead class="bg-gradient-to-r from-blue-50 to-blue-100">
                   <tr>
-                    <th class="px-6 py-4 text-left font-medium text-blue-800">字段名</th>
-                    <th class="px-6 py-4 text-left font-medium text-blue-800">数据类型</th>
-                    <th class="px-6 py-4 text-left font-medium text-blue-800">PDPA分类</th>
-                    <th class="px-6 py-4 text-left font-medium text-blue-800">泄露途径</th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800 hover:text-blue-600 transition-colors cursor-pointer">
+                      <div class="flex items-center space-x-2">
+                        <span>字段名</span>
+                        <i class="fas fa-sort text-blue-400"></i>
+                      </div>
+                    </th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800 hover:text-blue-600 transition-colors cursor-pointer">
+                      <div class="flex items-center space-x-2">
+                        <span>数据类型</span>
+                        <i class="fas fa-sort text-blue-400"></i>
+                      </div>
+                    </th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800 hover:text-blue-600 transition-colors cursor-pointer">
+                      <div class="flex items-center space-x-2">
+                        <span>PDPA分类</span>
+                        <i class="fas fa-sort text-blue-400"></i>
+                      </div>
+                    </th>
+                    <th class="px-6 py-4 text-left font-medium text-blue-800 hover:text-blue-600 transition-colors cursor-pointer">
+                      <div class="flex items-center space-x-2">
+                        <span>泄露途径</span>
+                        <i class="fas fa-sort text-blue-400"></i>
+                      </div>
+                    </th>
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
-                  <tr class="hover:bg-blue-50 transition-colors">
+                  <tr class="hover:bg-blue-50 transition-all duration-200 transform hover:scale-[1.01]">
                     <td class="px-6 py-4 font-mono">Token</td>
                     <td class="px-6 py-4">API访问令牌</td>
                     <td class="px-6 py-4">
@@ -391,18 +491,25 @@
 
           <!-- Enhanced Code Blocks -->
           <div class="mt-8 group relative">
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg -rotate-1 -z-10"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg -rotate-1 -z-10 opacity-75 group-hover:opacity-100 transition-opacity"></div>
             <div class="relative">
-              <div class="flex items-center justify-between bg-gray-800 px-4 py-2 rounded-t-lg">
-                <div class="flex items-center space-x-2">
-                  <i class="fas fa-terminal text-gray-400"></i>
-                  <span class="font-mono text-sm text-gray-200">敏感数据日志示例</span>
+              <div class="flex items-center justify-between bg-gray-800 px-4 py-3 rounded-t-lg border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                  <i class="fas fa-terminal text-blue-400"></i>
+                  <span class="font-mono text-sm text-gray-200 font-medium">敏感数据日志示例</span>
                 </div>
-                <button class="text-gray-400 hover:text-white transition-colors">
-                  <i class="far fa-copy"></i>
-                </button>
+                <div class="flex items-center space-x-2">
+                  <button class="px-3 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors duration-200 flex items-center">
+                    <i class="far fa-copy mr-1"></i>
+                    复制代码
+                  </button>
+                </div>
               </div>
-              <pre class="bg-gray-800 text-gray-100 p-4 rounded-b-lg overflow-x-auto">
+              <pre class="bg-gray-800 text-gray-100 p-4 rounded-b-lg overflow-x-auto relative group">
+                <button onclick="copyCode(this)" class="absolute top-2 right-2 px-2 py-1 text-xs bg-gray-700 text-gray-300 rounded hover:bg-gray-600 transition-colors duration-200 opacity-0 group-hover:opacity-100 flex items-center">
+                  <i class="far fa-copy mr-1"></i>
+                  <span class="copy-text">复制代码</span>
+                </button>
                 <code class="language-bash">
 21:31:02.047125+0800  kernel  App Store Fast Path -> /Runner.app/Frameworks/webview_flutter_wkwebview.framework/webview_flutter_wkwebview  
 21:31:02.129863+0800  kernel  App Store Fast Path -> /Runner.app/Frameworks/Flutter.framework/Flutter  

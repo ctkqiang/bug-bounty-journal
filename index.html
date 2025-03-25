@@ -37,6 +37,31 @@
               <i class="fas fa-archive mr-2"></i>案例归档
             </a>
           </div>
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-button"
+            class="lg:hidden text-gray-600 hover:text-blue-600 focus:outline-none"
+            aria-label="导航菜单"
+          >
+            <i class="fas fa-bars text-xl"></i>
+          </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden lg:hidden pb-4">
+          <div class="flex flex-col space-y-4">
+            <a
+              href="#recent"
+              class="nav-link hover:text-blue-600 transition-colors flex items-center"
+            >
+              <i class="fas fa-bug mr-2"></i>最新案例
+            </a>
+            <a
+              href="#archive"
+              class="nav-link hover:text-blue-600 transition-colors flex items-center"
+            >
+              <i class="fas fa-archive mr-2"></i>案例归档
+            </a>
+          </div>
         </div>
       </div>
     </nav>
@@ -45,8 +70,10 @@
     <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
       <!-- Case Grid -->
       <section id="recent" class="mb-16">
-        <h2 class="text-3xl font-bold text-gray-800 mb-8">最新安全案例</h2>
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 md:mb-8">
+          最新安全案例
+        </h2>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           <!-- Case 20250324-24f24c -->
           <a
             href="case/20250324-24f24c.html"
