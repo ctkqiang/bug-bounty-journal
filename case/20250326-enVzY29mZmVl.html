@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <title>ZUS Coffee安全审计报告 - 上饶满星科技</title>
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="ZUS Coffee安全审计报告：详细分析了Web应用与移动应用的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。由上饶满星科技安全研究团队出具的专业漏洞分析报告。"
+    />
+    <meta
+      name="keywords"
+      content="ZUS Coffee,安全审计,漏洞报告,API密钥泄露,移动应用安全,Flutter安全,安全研究"
+    />
+    <meta name="author" content="上饶满星科技安全研究团队" />
+    <meta name="robots" content="index, follow" />
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ZUS Coffee安全审计报告 - 上饶满星科技" />
+    <meta
+      property="og:description"
+      content="详细分析ZUS Coffee Web与移动应用中的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。专业的漏洞分析和修复建议。"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250326-marine.png?raw=true"
+    />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="ZUS Coffee安全审计报告 - 上饶满星科技"
+    />
+    <meta
+      name="twitter:description"
+      content="详细分析ZUS Coffee Web与移动应用中的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。专业的漏洞分析和修复建议。"
+    />
+    <meta
+      name="twitter:image"
+      content="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250326-marine.png?raw=true"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* [Previous styles from 20250324-24f24c.html] */
+      @media (max-width: 640px) {
+        body {
+          font-size: 14px;
+        }
+        .mobile-collapse {
+          width: 100%;
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        /* [Rest of the mobile styles] */
+      }
+
+      /* Custom translator styles */
+      #custom-translator select {
+        background: #f7fafc;
+        border: 1px solid #cbd5e0;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      #custom-translator select:hover {
+        border-color: #a0aec0;
+      }
+
+      #custom-translator button:hover {
+        background: #3182ce;
+      }
+
+      /* Hide default Google translate styles */
+      .goog-te-banner-frame,
+      .goog-te-menu-frame {
+        display: none !important;
+      }
+
+      .skiptranslate iframe {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav
+      class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300 ease-in-out"
+    >
+      <div class="max-w-7xl mx-auto px-2 sm:px-4">
+        <div class="flex justify-between items-center py-2 sm:py-4">
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            <i
+              class="fas fa-shield-halved text-blue-600 text-lg sm:text-xl animate-pulse"
+            ></i>
+            <span
+              class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none"
+            >
+              安全审计报告 20250326-enVzY29mZmVl
+            </span>
+          </div>
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="#overview"
+              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
+            >
+              <i class="fas fa-bug mr-2"></i>漏洞概览
+            </a>
+            <a
+              href="#technical"
+              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
+            >
+              <i class="fas fa-microscope mr-2"></i>技术细节
+            </a>
+          </div>
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-button"
+            class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <i
+              class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Report Header -->
+      <!-- Section Header Enhancement -->
+      <section class="mb-20">
+        <div class="text-center mb-12">
+          <h2
+            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+          >
+            ZUS Coffee 安全测试报告
+          </h2>
+
+          <div
+            class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500 mb-8"
+          >
+            <h4
+              class="text-lg font-semibold text-blue-800 mb-4 flex items-center"
+            >
+              <i class="fas fa-heart text-blue-600 mr-2"></i>
+              善意声明
+            </h4>
+            <strong>
+              <p class="text-blue-700 leading-relaxed">
+                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+              </p>
+              <p class="text-blue-700 mt-4">
+                衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。
+              </p>
+            </strong>
+          </div>
+
+          <div
+            class="bg-red-100 p-6 rounded-lg border-l-4 border-red-500"
+            style="margin-top: 50px; margin-bottom: 50px"
+          >
+            <h4 class="text-red-800">
+              严重性等级: <span class="font-bold">CRITICAL (CVSS 8.9)</span>
+            </h4>
+          </div>
+
+          <div class="flex justify-center space-x-4 mb-8">
+            <span
+              class="badge bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+            >
+              <i class="fas fa-calendar-alt mr-2"></i>2025年3月26日
+            </span>
+            <span
+              class="badge bg-purple-100 text-purple-800 px-3 py-1 rounded-full"
+            >
+              <i class="fas fa-code mr-2"></i>Flutter应用
+            </span>
+            <span class="badge bg-red-100 text-red-800 px-3 py-1 rounded-full">
+              <i class="fas fa-triangle-exclamation mr-2"></i>高危漏洞
+            </span>
+          </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">总体概述</h3>
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-blue-600">Web应用安全性</h4>
+              <p class="text-gray-700">
+                经检测，ZUS Coffee
+                Web部分整体防护措施较为完善，WAF、CloudFront、CORS配置及认证机制均运行正常，未发现明显漏洞，开发团队做得非常出色。
+              </p>
+            </div>
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-red-600">移动应用安全性</h4>
+              <p class="text-gray-700">
+                移动应用基于Flutter开发。通过APK反编译、提取libapp.so文件及字符串分析，我们发现了多个敏感API接口和硬编码敏感信息。这些信息一旦被滥用，可能导致API滥用、数据泄露、虚假推荐操控、会话劫持及推送通知滥用等风险。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!--告提交证明 -->
+        <!-- <section class="mb-16">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-6 flex items-center">
+              <i class="fas fa-paper-plane text-blue-600 mr-2"></i>
+              漏洞报告提交证明
+            </h3>
+
+            <div class="space-y-6">
+
+              <div class="border-l-4 border-green-500 pl-6 py-4">
+                <h4 class="font-semibold mb-4">官方邮件提交记录</h4>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <p class="mb-3"><strong>发送时间:</strong> 2025年3月24日</p>
+                  <p class="mb-3"><strong>接收方:</strong> aduan@jpj.gov.my</p>
+                  <p class="mb-3">
+                    <strong>主题:</strong> [安全漏洞报告]
+                    MYJPJ移动应用数据泄露风险通报
+                  </p>
+                </div>
+              </div>
+
+
+              <div class="mt-6">
+                <h4 class="font-semibold mb-4">提交截图证明</h4>
+                <img
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250324-24f24c-email.png?raw=true"
+                  alt="漏洞报告提交邮件截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+
+
+              <div class="bg-blue-50 p-6 rounded-lg mt-6">
+                <h4 class="font-semibold mb-3 text-blue-800">声明</h4>
+                <p class="text-blue-700">
+                  本漏洞报告已通过官方渠道提交至马来西亚陆路交通局(JPJ)。作为一名怀着善意的安全研究员，
+                  我希望通过及时报告这些安全问题来帮助改进系统安全性，保护用户数据安全。这份工作完全出于善意，
+                  绝无任何恶意破坏或利用的企图。希望通过负责任的漏洞披露方式，能够帮助JPJ尽快修复这些安全隐患。
+                  在发现政府系统漏洞时需要格外谨慎和负责任。我完全理解马来西亚同胞们对此类披露可能持有疑虑，但我希望能以最大的诚意说明：发现并报告这个漏洞的唯一目的，是为了防止不法分子抢先发现并加以利用。作为一名关心马来西亚网络安全的研究员，我深感有责任通过正当渠道向JPJ报告这一问题。
+                  我坚信JPJ作为负责任的政府部门，一定会认真对待这个安全隐患并采取必要的补救措施。毕竟在这个数字化时代，保护公民的个人数据安全是政府的重要职责。我真诚地希望通过这次善意的漏洞披露，能为提升政府系统的安全性贡献一份力量，共同维护马来西亚公民的数据安全。
+                </p>
+              </div>
+          </div>
+        </section> -->
+
+        <!-- After the Overview Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-file-code text-red-600 mr-2"></i>
+            Flutter应用源码分析
+          </h3>
+
+          <!-- Analysis Method -->
+          <div class="mb-8">
+            <h4 class="text-xl font-semibold text-blue-600 mb-4">分析方法</h4>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-gray-700 mb-4">
+                使用自定义的Frida脚本（extract_functions_apk.js）对APK包中的libapp.so进行动态分析：
+              </p>
+              <pre
+                class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+              ><code class="language-javascript">Java.perform(function() {
+    var libName = "libapp.so";
+    var lib = Module.findBaseAddress(libName);
+
+    if (lib) {
+      console.log("[+] Found " + libName + " at " + lib);
+
+      var exports = Module.enumerateExports(libName);
+      exports.forEach(function(exp) {
+        console.log(
+          "[EXPORT] " + exp.type + " " + exp.name + " at " + exp.address
+        );
+      });
+
+      var symbols = Module.enumerateSymbols(libName);
+      symbols.forEach(function(sym) {
+        console.log("[SYMBOL] " + sym.name + " at " + sym.address);
+      });
+    } else {
+      console.log("[-] Library not found");
+    }
+  });
+
+});</code></pre>
+            </div>
+          </div>
+
+          <!-- Security Implications -->
+          <div class="space-y-6">
+            <h4 class="text-xl font-semibold text-red-600 mb-4">
+              安全隐患分析
+            </h4>
+
+            <!-- Source Code Structure -->
+            <div class="border-l-4 border-red-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-folder-open text-red-500 mr-2"></i>
+                1. 源码结构暴露
+              </h5>
+              <div class="bg-red-50 p-4 rounded-lg">
+                <p class="text-gray-700 mb-4 flex items-center">
+                  <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                  通过分析得到的文件结构显示，应用的核心功能模块完全暴露：
+                </p>
+                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm">
+                  <div class="space-y-2">
+                    <div class="flex items-center text-green-400">
+                      <i class="fas fa-file-code mr-2"></i>
+                      <code>
+                        package:love_coffee/screens/home_loyalty_term_condition/components/loyalty_card.dartV
+                        package:love_coffee/providers/product_detail_provider.dart
+                        package:love_coffee/screens/delete_account/delete_account.dart
+                        package:love_coffee/screens/home_menu_main_v3/menu_page.dart
+                        package:love_coffee/models/help_centre/help_search.dart
+                        package:love_coffee/components/payment_details_field.dart
+                        package:love_coffee/models/google_models/google_autocomplete.dart
+                        package:love_coffee/screens/payment/payment_method_page.dart
+                        package:love_coffee/components/message_border.dart
+                        package:love_coffee/services/SharedPreference_tutorial.dart
+                        package:love_coffee/shared_functions/badge_display.dart
+                        package:love_coffee/services/SharedPreference_UUID.dart
+                        package:love_coffee/screens/voucher/referee_perk_details.dart
+                        package:love_coffee/extensions/ordinal_number.dart
+                        package:love_coffee/screens/login_signup/components/phone_number_field.dart
+                        package:love_coffee/providers/country_provider.dart
+                        package:love_coffee/screens/help_centre/component/shimmer_loading.dart
+                        package:love_coffee/models/balance_models/balance_type.dart
+                        package:love_coffee/models/mission_models/mission.dart
+                        package:love_coffee/models/tumbler_models/tumbler_catalogue.dart
+                        package:love_coffee/models/voucher_models/voucher.dart
+                        package:love_coffee/components/conditional_builder.dart
+                        package:love_coffee/components/padded_pdf_table_row.dart
+                        package:love_coffee/components/custom_badge.dart
+                        package:love_coffee/components/countdown_timer_builder.dart
+                        package:love_coffee/screens/home_order_details/components/payment_method_section.dart
+                        package:love_coffee/shared_functions/share_dialog_logout.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_start.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_main.dart
+                        package:love_coffee/global_variable/Global_variable.dart
+                        package:love_coffee/models/product_models/product_category.dart
+                        package:love_coffee/screens/help_centre/faq_category_page.dart
+                        package:love_coffee/providers/help_centre_provider.dart
+                        package:love_coffee/providers/home_provider.dart
+                        package:love_coffee/screens/gift_card/gift_card_history_sent.dart
+                        package:love_coffee/api/api_caller.dart
+                        package:love_coffee/services/SharedPreference_rateOrderId.dart
+                        package:love_coffee/screens/voucher/widgets/loyalty_voucher_item.dart
+                        package:love_coffee/screens/delivery/screens/google_map_screen.dart
+                        package:love_coffee/providers/login_provider.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_reload.dart
+                        package:love_coffee/shared_functions/confirmation_dialogs.dart
+                        package:love_coffee/models/user_models/user_registration.dart
+                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_search_bar.dart
+                        package:love_coffee/managers/yellow_ai_manager.dart,
+                        package:love_coffee/models/referral_models/referral_info.dart
+                        package:love_coffee/components/custom_button.dart
+                        package:love_coffee/components/shimmer_widget.dart
+                        package:love_coffee/models/product_models/product_alternative.dart
+                        package:love_coffee/screens/home_page_main/home_page_main.dart
+                        package:love_coffee/services/SharedPreference_pickup.dart
+                        package:love_coffee/models/loyalty_modals/loyalty_zus_point_history.dart
+                        package:love_coffee/screens/home_menu_main_v3/components/product_search_delegate.dart
+                        package:love_coffee/providers/balance_provider.dart
+                        package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_fourth_page.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_reload_gift_card.dart
+                        package:love_coffee/models/store_models/store.dart
+                        package:love_coffee/screens/mission_reward/redeem_reward_details.dart
+                        package:love_coffee/components/payment_method_field.dart
+                        package:love_coffee/screens/voucher/voucher_details.dart
+                        package:love_coffee/models/get_HereMaps_result.dart
+                        package:love_coffee/screens/checkout_processing/component/out_of_stock_nested_menu.dart
+                        package:love_coffee/screens/sms_confirmation/component/otp_field.dart
+                        package:love_coffee/screens/home_page_main/components/home_action_button.dart
+                        package:love_coffee/shared_functions/navigation_helper.dart
+                        package:love_coffee/screens/product_details/widgets/prdt_hot_ice_selection.dart
+                        package:love_coffee/shared_functions/order_method_dialog.dart
+                        package:love_coffee/shared_functions/payment_function.dart
+                        package:love_coffee/services/SharedPreference_buy1free1banner.dart
+                        package:love_coffee/components/custom_bottom_widget.dart
+                        package:love_coffee/shared_functions/date_range_picker.dart
+                        package:love_coffee/providers/zus_wrapped_provider.dart
+                        package:love_coffee/components/transparent_route.dart
+                        package:love_coffee/screens/user_profile_edit/profile_register_page.dart
+                        package:love_coffee/screens/qr_code/qr_code_scan.dart
+                        package:love_coffee/screens/home_loyalty_term_condition/loyalty_page.dart
+                        package:love_coffee/screens/pickup/pickup_page.dart
+                        package:love_coffee/providers/outlet_provider.dart
+                        package:love_coffee/models/user_models/user_balance.dart
+                        package:love_coffee/screens/user_profile/user_profile_main.dart
+                        package:love_coffee/models/loyalty_modals/loyalty_info.dart
+                        package:love_coffee/models/get_api_token.dart
+                        package:love_coffee/models/mini_game.dart4
+                        package:love_coffee/screens/gift_card/gift_card_history.dart
+                        package:love_coffee/screens/mini_game/screens/mini_game_info.dart
+                        package:love_coffee/models/referral_models/referee_perk.dart
+                        package:love_coffee/managers/dynamic_link_manager.dart
+                        package:love_coffee/providers/auth_provider.dart
+                        package:love_coffee/shared_functions/custom_appbar.dart
+                        package:love_coffee/models/store_models/store_condition.dart
+                        package:love_coffee/screens/full_banner/full_banner_page.dart
+                        package:love_coffee/screens/tutorial_screen/tutorial_main.dart
+                        package:love_coffee/screens/product_details/widgets/product_ingredient_info.dart
+                        package:love_coffee/models/order.dart
+                        package:love_coffee/models/product_models/nutrition_facts.dart
+                        package:love_coffee/screens/product_details/product_details.dart
+                        package:love_coffee/services/SharedPreference_delivery_store.dart
+                        package:love_coffee/screens/home_zus_points_transaction_history/zus_points_transaction_history_page.dart
+                        package:love_coffee/screens/gift_card/gift_card_main_send.dart
+                        package:love_coffee/models/root_product.dart
+                        package:love_coffee/managers/molpay_manager.dart
+                        package:love_coffee/services/firebase_analytics.dart
+                        package:love_coffee/screens/checkout_processing/component/order_summary.dart
+                        package:love_coffee/screens/pickup/component/pickup_shimmer_loading.dart
+                        package:love_coffee/screens/voucher/partnership_voucher_details.dart
+                        package:love_coffee/screens/product_details/widgets/product_upsells.dart
+                        package:love_coffee/screens/order_feedback/order_feedback.dart
+                        package:love_coffee/providers/banner_provider.dart
+                        package:love_coffee/components/redeem_gift_card_overview.dart
+                        package:love_coffee/screens/user_buy1free1_tutorial/buy_one_free_one_tutorial_page.dart
+                        package:love_coffee/extensions/quick_action_shortcut.dart
+                        package:love_coffee/models/balance_models/balance_redeem.dart
+                        package:love_coffee/providers/bottom_navigation_provider.dart
+                        package:love_coffee/screens/help_centre/component/search_bar.dart
+                        package:love_coffee/models/country_models/country_list_option.dart
+                        package:love_coffee/screens/mini_game/widgets/flipper.dart
+                        package:love_coffee/services/SharedPreference_store.dart
+                        package:love_coffee/shared_functions/shake_animation.dart
+                        package:love_coffee/services/post_api_service.dart
+                        package:love_coffee/providers/quick_action_provider.dart
+                        package:love_coffee/screens/web_view/web_view_banner.dart
+                        package:love_coffee/managers/one_signal_manager.dart
+                        package:love_coffee/models/balance_models/balance_invoice.dart
+                        package:love_coffee/services/SharedPreference_favoriteStore.dart
+                        package:love_coffee/screens/voucher/widgets/referee_perk_item.dart
+                        package:love_coffee/screens/delivery/components/delivery_search_bar.dart
+                        package:love_coffee/shared_functions/bottom_sheet.dart
+                        package:love_coffee/components/store_pinned_message_widget.dart
+                        package:love_coffee/screens/home_page_main/components/merchandise_shimmer.dart
+                        package:love_coffee/screens/country_detection/country_detection_page.dart
+                        package:love_coffee/screens/voucher/widgets/partnership_voucher_item.dart
+                        package:love_coffee/providers/reward_provider.dart
+                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_dialog.dart
+                        package:love_coffee/screens/mini_game/screens/mini_game_main.dart
+                        package:love_coffee/models/voucher_models/partnership_voucher.dart
+                        package:love_coffee/models/molpay_models/molpay_result.dart
+                        package:love_coffee/components/benefit_notice.dart
+                        package:love_coffee/providers/day_night_provider.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_transaction_history.dart
+                        package:love_coffee/models/user_models/user_loyalty.dart
+                        package:love_coffee/screens/referral/referral_invite_history.dart
+                        package:love_coffee/models/product_models/product_addon.dart
+                        package:love_coffee/models/get_checkout_pay.dart
+                        package:love_coffee/screens/pickup/pickup_state_outlets.dart
+                        package:love_coffee/models/gift_card_models/gift_card_page.dart
+                        package:love_coffee/screens/order/generate_order_receipt.dart
+                        package:love_coffee/screens/mission_reward/mission_reward_main.dart
+                        package:love_coffee/screens/pickup/pickup_nearby_outlets_hms.dart
+                        package:love_coffee/models/checkout_models/checkout.dart
+                        package:love_coffee/screens/mission_reward/mission_details.dart
+                        package:love_coffee/extensions/duration_format.dart
+                        package:love_coffee/screens/product_details/widgets/product_nutrition_info.dart
+                        package:love_coffee/screens/referral/referral_qr.dart
+                        package:love_coffee/screens/user_profile_edit/component/profile_field.dart
+                        package:love_coffee/models/molpay_models/molpay_info.dart
+                        package:love_coffee/screens/mini_game/screens/mini_game_history.dart
+                        package:love_coffee/models/referral_models/referral_reward_table_row.dart
+                        package:love_coffee/providers/referral_provider.dart
+                        package:love_coffee/screens/home_page_main/components/home_floating_button.dart
+                        package:love_coffee/services/Get_api_service.dart
+                        package:love_coffee/screens/help_centre/faq_answer_page.dart
+                        package:love_coffee/models/tumbler_models/tumbler_info.dart"
+                        package:love_coffee/services/SharedPreference_DeliverType.dart
+                        package:love_coffee/services/SharedPreference_Auth.dart
+                        package:love_coffee/models/balance_models/balance_html.dart
+                        package:love_coffee/screens/sms_confirmation/component/resend_code_option.dart
+                        package:love_coffee/models/google_models/google_place_search.dart
+                        package:love_coffee/screens/voucher/widgets/voucher_item.dart
+                        package:love_coffee/models/conversation.dart
+                        package:love_coffee/screens/delivery/screens/delivery_main.dart
+                        package:love_coffee/models/system_init.dart
+                        package:love_coffee/screens/mission_reward/reward_coming_soon.dart
+                        package:love_coffee/constants/constants.dart
+                        package:love_coffee/screens/delivery/components/bottom_address_display.dart
+                        package:love_coffee/api/api_response.dart
+                        package:love_coffee/screens/help_centre/component/search_result_container.dart
+                        package:love_coffee/screens/home_navigation/home_navigation.dart
+                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_tile.dart
+                        package:love_coffee/models/payment_details.dart
+                        package:love_coffee/screens/mission_reward/redeem_reward_main.dart
+                        package:love_coffee/screens/login_signup/components/received_via_button.dart
+                        package:love_coffee/models/store_models/store_pinned_message.dart
+                        package:love_coffee/providers/user_provider.dart
+                        package:love_coffee/screens/splash_screen/splash_screen.dart
+                        package:love_coffee/components/map_sheet.dart
+                        package:love_coffee/components/custom_search_delegate.dart
+                        package:love_coffee/models/user_models/user_tumbler.dart
+                        package:love_coffee/screens/product_details/widgets/product_basic_info.dart
+                        package:love_coffee/providers/schedule_provider.dart
+                        package:love_coffee/screens/home_menu_checkout/menu_checkout_page.dart
+                        package:love_coffee/models/live_chat.dart
+                        package:love_coffee/models/balance_models/balance_campaign.dart
+                        package:love_coffee/screens/mission_reward/redeem_partnership_details.dart
+                        package:love_coffee/screens/tumbler/tumbler_main.dart
+                        package:love_coffee/models/popups.dart
+                        package:love_coffee/shared_functions/arrow_animation.dart
+                        package:love_coffee/screens/select_country%20/select_country.dart
+                        package:love_coffee/models/checkout_models/cart_item.dart
+                        package:love_coffee/components/custom_drop_down.dart
+                        package:love_coffee/models/delivery_models/delivery_rider.dart
+                        package:love_coffee/screens/referral/referral_journey.dart
+                        package:love_coffee/models/get_out_of_stock_product.dart
+                        package:love_coffee/screens/settings/components/setting_tile.dart
+                        package:love_coffee/providers/contact_provider.dart
+                        package:love_coffee/helper/convert_type_helper.dart
+                        package:love_coffee/models/loyalty_notify_message.dart
+                        package:love_coffee/models/delivery_models/delivery_address.dart
+                        package:love_coffee/models/gift_card_models/gift_card_create.dart
+                        package:love_coffee/providers/event_provider.dart
+                        package:love_coffee/screens/login_signup/components/auth_agreement_section.dart
+                        package:love_coffee/shared_functions/route_animations.dart
+                        package:love_coffee/models/product_models/product.dart
+                        package:love_coffee/screens/pickup/component/outlet_item.dart
+                        package:love_coffee/models/user_models/user.dart
+                        package:love_coffee/services/Post_api_service.dart
+                        package:love_coffee/screens/product_details/widgets/product_bundles.dart
+                        package:love_coffee/models/product_models/product_ingredient.dart
+                        package:love_coffee/screens/gift_card/widgets/redeemed_gift_card.dart
+                        package:love_coffee/enums/day_night.dart
+                        package:love_coffee/providers/product_provider.dart
+                        package:love_coffee/screens/help_centre/help_centre_screen.dart
+                        package:love_coffee/models/balance_models/balance_log.dart
+                        package:love_coffee/providers/gift_card_provider.dart
+                        package:love_coffee/screens/order/order_receipt_preview.dart
+                        package:love_coffee/screens/home_loyalty_faq/loyalty_faq_page.dart
+                        package:love_coffee/extensions/stable_sort_list.dart
+                        package:love_coffee/providers/feedback_provider.dart
+                        package:love_coffee/screens/home_page_main/components/home_order_feedback.dart
+                        package:love_coffee/screens/mission_reward/reward_main.dart
+                        package:love_coffee/screens/home_order_main/home_order_main.dart
+                        package:love_coffee/models/referral_models/referee_onboard_info.dart
+                        package:love_coffee/shared_functions/base_model.dart
+                        package:love_coffee/models/product_models/order_product.dart
+                        package:love_coffee/managers/cdp_manager.dart
+                        package:love_coffee/shared_functions/custom_toast.dart
+                        package:love_coffee/main.dart
+                        package:love_coffee/screens/home_order_main/components/filter.dart
+                        package:love_coffee/components/bouncing_widget.dart
+                        package:love_coffee/screens/gift_card/gift_card_redeem_tab.dart
+                        package:love_coffee/providers/checkout_provider.dart
+                        package:love_coffee/models/referral_models/referee.dart
+                        package:love_coffee/screens/settings/settings.dart
+                        package:love_coffee/services/location_service.dart
+                        package:love_coffee/screens/home_general_feedback/general_feedback_page.dart
+                        package:love_coffee/screens/home_page_main/components/home_banner.dart
+                        package:love_coffee/models/country_models/get_countries.dart
+                        package:love_coffee/models/user_models/user_zus_points.dart
+                        package:love_coffee/extensions/string_ext.dart
+                        package:love_coffee/models/gift_card_models/gift_card_init.dart
+                        package:love_coffee/models/balance_models/balance_details.dart
+                        package:love_coffee/screens/user_profile_edit/component/birthday_bottom_sheet.dart
+                        package:love_coffee/models/gift_card_models/gift_card_background.dart
+                        package:love_coffee/models/checkout_processing.dart
+                        package:love_coffee/providers/splash_provider.dart
+                        package:love_coffee/screens/product_details/widgets/prdt_details_bottom_display.dart
+                        package:love_coffee/api/api_response.g.dart
+                        package:love_coffee/shared_functions/loading_dialog.dart
+                        package:love_coffee/components/show_clear_cart_dialog.dart
+                        package:love_coffee/components/html_page.dart
+                        package:love_coffee/screens/product_details/widgets/prdt_preferrence_selection.dart
+                        package:love_coffee/services/SharedPreference_store_dropdown_menu.dart
+                        package:love_coffee/screens/home_order_details/home_order_details_page.dart
+                        package:love_coffee/providers/global_provider.dart
+                        package:love_coffee/screens/product_details/widgets/product_addons.dart
+                        package:love_coffee/models/app_banner.dart
+                        package:love_coffee/services/sp_service.dart
+                        package:love_coffee/screens/mini_game/models/lucky_draw_model.dart
+                        package:love_coffee/models/balance_models/balance_reload_ref.dart
+                        package:love_coffee/services/SharedPreference_service.dart
+                        package:love_coffee/screens/referral/referral_main.dart
+                        package:love_coffee/screens/gift_card/gift_card_sent_details.dart
+                        package:love_coffee/screens/home_order_main/components/order_list_shimmer.dart
+                        package:love_coffee/models/outlet_state.dart
+                        package:love_coffee/configs/size_config.dart
+                        package:love_coffee/screens/gift_card/gift_card_purchase.dart
+                        package:love_coffee/models/get_generalFeedbacktag.dart
+                        package:love_coffee/screens/home_menu_checkout/components/schedule_time_dropdown.dart
+                        package:love_coffee/providers/pickup_provider.dart
+                        package:love_coffee/models/referral_models/referral_invite_history.dart
+                        package:love_coffee/screens/mission_reward/mission_main.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_transaction_details.dart
+                        package:love_coffee/screens/product_details/widgets/product_reviews.dart
+                        package:love_coffee/utils/signup_util.dart
+                        package:love_coffee/screens/pickup/pickup_nearby_outlets.dart
+                        package:love_coffee/screens/gift_card/gift_card_main.dart
+                        package:love_coffee/providers/order_provider.dart
+                        package:love_coffee/models/payment_models/payment_channel.dart
+                        package:love_coffee/shared_functions/customer_support_dialog.dart
+                        package:love_coffee/models/product_models/product_review.dart
+                        package:love_coffee/screens/home_order_main/components/order_item.dart
+                        package:love_coffee/managers/live_chat_manager.dart
+                        package:love_coffee/screens/setup_bio/setup_biometric_screen.dart
+                        package:love_coffee/screens/home_page_main/components/home_shimmer_loading.dart
+                        package:love_coffee/providers/delivery_provider.dart
+                        package:love_coffee/models/gift_card_models/gift_card.dart
+                        package:love_coffee/shared_functions/scheduling_time_func.dart
+                        package:love_coffee/services/SharedPreference_Delivery.dart
+                        package:love_coffee/screens/voucher/voucher_main.dart
+                        package:love_coffee/services/SharedPreference_faq.dart
+                        package:love_coffee/models/gift_card_models/gift_card_campaign.dart
+                        package:love_coffee/components/custom_alert_dialog.dart
+                        package:love_coffee/screens/home_menu_checkout/components/menu_checkout_item_shimmer.dart
+                        package:love_coffee/models/product_models/product_pool.dart
+                        package:love_coffee/screens/gift_card/gift_card_tnc.dart
+                        package:love_coffee/screens/home_order_main/components/no_order.dart
+                        package:love_coffee/screens/gift_card/gift_card_redeemed_details.dart
+                        package:love_coffee/screens/zus_balance/zus_balance_term.dart
+                        package:love_coffee/components/custom_error_message.dart
+                        package:love_coffee/screens/pickup/component/pickup_location_button.dart
+                        package:love_coffee/screens/delivery/screens/delivery_set_address.dart
+                        package:love_coffee/managers/freshchat_manager.dart
+                        package:love_coffee/managers/connectivity_manager.dart
+                        package:love_coffee/shared_functions/url_launch.dart
+                        package:love_coffee/screens/referral/referral_registration.dart
+                        package:love_coffee/screens/voucher/voucher_checkout.dart
+                        package:love_coffee/screens/checkout_processing/checkout_processing_page.dart
+                        package:love_coffee/extensions/md5_hash.dart
+                        package:love_coffee/models/feedback_models/order_feedback.dart
+                        package:love_coffee/models/payment_models/payment_method.dart
+                        package:love_coffee/screens/product_details/widgets/product_extra_note_info.dart
+                        package:love_coffee/screens/sms_confirmation/sms_confirmation.dart
+                        package:love_coffee/extensions/list_ext.dart
+                        package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_welcome.dart
+                        package:love_coffee/models/merch.dart
+                        package:love_coffee/theme/style.dart
+                        package:love_coffee/screens/login_signup/login_signup.dart
+                        package:love_coffee/screens/gift_card/gift_card_main_redeem.dart
+                        package:love_coffee/screens/mission_reward/redeem_reward_faq_screen.dart
+                        package:love_coffee/models/product_models/product_tag.dart
+                        package:love_coffee/models/help_centre/faq.dart
+                        package:love_coffee/screens/gift_card/gift_card_history_redeemed.dart
+                        package:love_coffee/screens/help_centre/component/live_chat_button.dart*
+                        package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
+                      </code>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Potential Risks -->
+            <div class="border-l-4 border-orange-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3">2. 潜在风险</h5>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-orange-50 p-4 rounded-lg">
+                  <h6 class="font-semibold text-orange-800 mb-2">
+                    API接口风险
+                  </h6>
+                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                    <li>完整API路由结构泄露</li>
+                    <li>API调用逻辑可被逆向分析</li>
+                    <li>可能导致未授权访问</li>
+                  </ul>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                  <h6 class="font-semibold text-orange-800 mb-2">
+                    业务逻辑风险
+                  </h6>
+                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                    <li>支付流程可被分析破解</li>
+                    <li>积分规则可被反向推导</li>
+                    <li>安全校验逻辑暴露</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Impact Analysis -->
+            <div class="border-l-4 border-yellow-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3">3. 影响分析</h5>
+              <div class="bg-yellow-50 p-4 rounded-lg">
+                <p class="text-gray-700 mb-3">
+                  源码结构泄露可能导致以下严重后果：
+                </p>
+                <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>
+                    攻击者可以通过分析源码结构，定位关键功能模块并进行定向攻击
+                  </li>
+                  <li>业务逻辑完全暴露，可能被竞争对手利用或模仿</li>
+                  <li>安全机制可被绕过，导致未授权访问和数据泄露</li>
+                  <li>用户隐私和交易安全面临严重威胁</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testing Methods Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">测试方法与流程</h3>
+
+          <!-- Mobile App Testing Methods -->
+          <div class="space-y-6">
+            <div class="border-l-4 border-blue-500 pl-6">
+              <h4 class="text-xl font-semibold mb-4">移动应用测试方法</h4>
+
+              <!-- APK Decompilation -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  1. APK反编译与文件提取
+                </h5>
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>将APK转换为ZIP文件并解压</li>
+                  <li>提取libapp.so文件</li>
+                </ul>
+              </div>
+
+              <!-- String Extraction -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  2. 字符串提取与目录结构分析
+                </h5>
+                <pre
+                  class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                >
+<code class="language-bash">strings libapp.so | grep -i dart && strings libapp.so | grep -i "package:love_coffee" > output/zus_filtered_strings.txt</code></pre>
+              </div>
+
+              <!-- API Path Search -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  3. 敏感API路径搜索
+                </h5>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <!-- API Commands -->
+                  <div class="space-y-4">
+                    <div>
+                      <h6 class="font-semibold mb-2">v1接口搜索：</h6>
+                      <pre
+                        class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                      >
+<code class="language-bash">strings source/libapp.so | grep "/api/v1/"</code></pre>
+                    </div>
+                    <div>
+                      <h6 class="font-semibold mb-2">v3接口搜索：</h6>
+                      <pre
+                        class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                      >
+<code class="language-bash">strings source/libapp.so | grep "/api/v3/"</code></pre>
+                    </div>
+                  </div>
+
+                  <!-- API Results -->
+                  <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <div class="grid grid-cols-1 gap-4">
+                      <!-- Balance Related APIs -->
+                      <div class="border-l-4 border-blue-500 pl-4">
+                        <h6 class="font-semibold text-blue-700 mb-2">
+                          余额相关接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/history
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/reload
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/update-gc
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/view-redeemed
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/view-sent
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/continue-payment
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- Cart & Checkout APIs -->
+                      <div class="border-l-4 border-green-500 pl-4">
+                        <h6 class="font-semibold text-green-700 mb-2">
+                          购物车与结账接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/cart/add
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/cart/clear
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout/pay
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout/update/payment_method
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/orders/continue_payment
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- User & Feedback APIs -->
+                      <div class="border-l-4 border-purple-500 pl-4">
+                        <h6 class="font-semibold text-purple-700 mb-2">
+                          用户与反馈接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-purple-600 transition-colors">
+                            /api/v1/user/import-contact-v2
+                          </li>
+                          <li class="hover:text-purple-600 transition-colors">
+                            /api/v1/feedback/order_product/store
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- Auth & Country APIs (v3) -->
+                      <div class="border-l-4 border-amber-500 pl-4">
+                        <h6 class="font-semibold text-amber-700 mb-2">
+                          认证与地区接口 (v3)
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/login
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/register
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/phone
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/user/switch_country
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/countries
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Third-party Services -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  4. 第三方服务与硬编码密钥提取
+                </h5>
+                <pre
+                  class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                >
+<code class="language-xml">&lt;meta-data android:name="io.branch.sdk.BranchKey" 
+    android:value="key_live_xxxxxxxxxxxxxxxx"/&gt;</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sensitive Data Summary -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">敏感数据汇总</h3>
+
+          <!-- Sensitive Data Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    类别
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Key名称
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Key (截断显示)
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    潜在风险
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Table rows from the markdown content -->
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google API Keys</td>
+                  <td class="px-6 py-4 whitespace-nowrap">google_api_key</td>
+                  <td class="px-6 py-4 whitespace-nowrap">AIzaSy.....</td>
+                  <td class="px-6 py-4">
+                    API滥用、未经授权的数据访问、资源配额耗尽
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google App ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">google_app_id</td>
+                  <td class="px-6 py-4 whitespace-nowrap">1:60847.....</td>
+                  <td class="px-6 py-4">
+                    第三方应用可能利用该ID进行未经授权的调用
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Crash Reporting</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    google_crash_reporting_api_key
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">AIzaSy.....</td>
+                  <td class="px-6 py-4">可伪造崩溃报告，导致敏感数据泄露</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Facebook App ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">facebook_app_id</td>
+                  <td class="px-6 py-4 whitespace-nowrap">173173.....</td>
+                  <td class="px-6 py-4">可能用于伪造登录、滥用Facebook API</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    Facebook Client Token
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    facebook_client_token
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">c49338.....</td>
+                  <td class="px-6 py-4">会话劫持、滥用API接口</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Firebase Database</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    firebase_database_url
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">https:api.z.....</td>
+                  <td class="px-6 py-4">
+                    若安全规则配置不当，可能导致数据未经授权的读取或写入
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google Storage</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    google_storage_bucket
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">zuscof.....</td>
+                  <td class="px-6 py-4">
+                    配置错误时可能导致敏感文件的上传或下载
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">GCM Sender ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    gcm_defaultSenderId
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">608474.....</td>
+                  <td class="px-6 py-4">
+                    可能被用于未经授权地发送推送通知，导致骚扰或钓鱼攻击
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Branch Key</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    io.branch.sdk.BranchKey
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">key_live_.....</td>
+                  <td class="px-6 py-4">
+                    可被利用来操控归因、制造虚假推荐，进而获得不正当奖励或访问敏感深链数据
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">风险评估与潜在攻击场景</h3>
+
+          <!-- Attack Scenarios -->
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-red-600">潜在攻击场景</h4>
+              <div class="bg-red-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>
+                    <strong>API滥用：</strong> 利用Google API Keys和Crash
+                    Reporting API
+                    Key发起大量未经授权的请求，耗尽服务配额或窃取敏感数据
+                  </li>
+                  <li>
+                    <strong>未经授权的数据访问：</strong> 通过Firebase Database
+                    URL读取或篡改用户订单、个人信息等，甚至导致数据破坏
+                  </li>
+                  <li>
+                    <strong>虚假推荐与归因操控：</strong> 利用Branch
+                    Key操控深链系统，制造虚假推荐，获得不正当奖励
+                  </li>
+                  <li>
+                    <strong>会话劫持与登录伪造：</strong> 利用Facebook Client
+                    Token伪造登录请求或劫持用户会话
+                  </li>
+                  <li>
+                    <strong>推送通知滥用：</strong> 利用GCM Sender
+                    ID发送未经授权的推送通知，诱导钓鱼攻击
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-orange-600">
+                涉及的敏感数据
+              </h4>
+              <div class="bg-orange-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>Google API Keys与Crash Reporting API Key</li>
+                  <li>Firebase Database URL</li>
+                  <li>Branch Key深链配置</li>
+                  <li>Facebook Client Token</li>
+                  <li>GCM Sender ID</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <h3 class="text-2xl font-bold mb-6">建议措施</h3>
+
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-green-600">即时改进措施</h4>
+              <div class="bg-green-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>移除客户端硬编码敏感数据</li>
+                  <li>强化Firebase安全规则</li>
+                  <li>定期更新与轮换密钥</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-blue-600">长期安全策略</h4>
+              <div class="bg-blue-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>建立API监控与日志审计系统</li>
+                  <li>加固深链安全机制</li>
+                  <li>定期审查子域配置</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-16 px-4">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <i class="fas fa-envelope text-blue-600 mr-3"></i>
+          联系方式
+        </h2>
+
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="space-y-6">
+            <!-- 安全研究员信息 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+                安全研究员信息
+              </h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <p class="mb-2"><strong>姓名:</strong> 钟智强</p>
+                  <p class="mb-2">
+                    <strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 |
+                    计算机视觉专家
+                  </p>
+                </div>
+                <div>
+                  <p class="mb-2">
+                    <strong>电子邮件:</strong>
+                    <a
+                      href="mailto:johnmelodymel@qq.com"
+                      class="text-blue-600 hover:underline"
+                      >johnmelodymel@qq.com</a
+                    >
+                  </p>
+                  <p><strong>微信:</strong> ctkqiang</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 响应时间承诺 -->
+            <div class="bg-green-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-clock text-green-600 mr-2"></i>
+                响应时间承诺
+              </h4>
+              <ul class="list-none space-y-2">
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>紧急漏洞问题：24小时内响应</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>一般技术咨询：48小时内回复</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 沟通渠道 -->
+            <div class="bg-blue-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-comments text-blue-600 mr-2"></i>
+                首选沟通渠道
+              </h4>
+              <div class="space-y-2">
+                <p>1. 电子邮件（安全加密通信）</p>
+                <p>2. 微信语音/视频会议</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">本报告符合ISO/IEC 27001:2022标准要求</p>
+        <p class="text-gray-400 text-sm">© 2025 上饶满星科技. 保留所有权利</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-xml.min.js"></script>
+    <script>
+      // [Previous scripts from 20250324-24f24c.html]
+    </script>
+  </body>
+</html>
