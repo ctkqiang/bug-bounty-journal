@@ -9,35 +9,148 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <!-- Consolidated styles -->
+    <style>
+      /* Modal 背景与过渡 */
+      .modal-backdrop {
+        backdrop-filter: blur(4px);
+        background-color: rgba(0, 0, 0, 0.5);
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .modal-open .modal-backdrop {
+        opacity: 1;
+      }
+      /* Input 焦点样式 */
+      .search-input:focus {
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+      }
+      /* 动画效果 */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .modal-content {
+        animation: fadeIn 0.3s ease-out;
+      }
+      /* 导航下划线效果 */
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: linear-gradient(to right, #2563eb, #7c3aed);
+        transition: width 0.3s ease;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+    </style>
+    <script>
+      // 切换 Modal 显示隐藏
+      function toggleModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.classList.toggle("hidden");
+          modal.classList.toggle("modal-open");
+          document.body.classList.toggle("overflow-hidden");
+        }
+      }
+
+      function searchCases() {
+        const searchTerm = document
+          .querySelector("#searchModal input")
+          .value.toLowerCase();
+        const cases = document.querySelectorAll("#recent a");
+
+        cases.forEach((caseElement) => {
+          const textContent = caseElement.textContent.toLowerCase();
+          caseElement.style.display = textContent.includes(searchTerm)
+            ? ""
+            : "none";
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        // 点击背景关闭 Modal
+        document.querySelectorAll(".modal-backdrop").forEach((el) => {
+          el.addEventListener("click", (e) => {
+            if (e.target === el) {
+              const modal = el.parentElement;
+              if (modal) toggleModal(modal.id);
+            }
+          });
+        });
+        // 手机菜单按钮
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+        if (mobileMenuButton && mobileMenu) {
+          mobileMenuButton.addEventListener("click", () =>
+            mobileMenu.classList.toggle("hidden")
+          );
+        }
+      });
+    </script>
   </head>
   <body class="bg-gray-50 font-sans">
-    <!-- Navigation -->
-    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
+    <!-- 顶部导航 -->
+    <nav
+      class="bg-white/95 backdrop-blur-sm shadow fixed w-full z-50 transition-all duration-300"
+    >
       <div class="max-w-7xl mx-auto px-4">
         <div class="flex justify-between items-center py-4">
-          <div class="flex items-center space-x-3">
-            <i class="fas fa-shield-halved text-blue-600 text-xl"></i>
+          <div class="flex items-center space-x-3 cursor-pointer group">
+            <i
+              class="fas fa-shield-halved text-blue-600 text-2xl transform group-hover:scale-110 transition-transform"
+            ></i>
             <span
-              class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent group-hover:from-purple-600 group-hover:to-blue-600 transition-colors"
             >
               安全漏洞案例库
             </span>
           </div>
-          <div class="hidden lg:flex space-x-6">
+          <div class="hidden lg:flex space-x-8">
             <a
               href="#recent"
-              class="nav-link hover:text-blue-600 transition-colors"
+              class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
             >
-              <i class="fas fa-bug mr-2"></i>最新案例
+              <i
+                class="fas fa-bug mr-2 transform group-hover:rotate-12 transition-transform"
+              ></i
+              >最新案例
             </a>
             <a
               href="#archive"
-              class="nav-link hover:text-blue-600 transition-colors"
+              class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
             >
-              <i class="fas fa-archive mr-2"></i>案例归档
+              <i
+                class="fas fa-archive mr-2 transform group-hover:-rotate-12 transition-transform"
+              ></i
+              >案例归档
             </a>
+            <!-- Add PC search button -->
+            <button
+              onclick="toggleModal('searchModal')"
+              class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
+            >
+              <i
+                class="fas fa-search mr-2 transform hover:rotate-12 transition-transform"
+              ></i>
+              搜索
+            </button>
           </div>
-          <!-- Mobile Menu Button -->
+          <!-- 手机菜单按钮 -->
           <button
             id="mobile-menu-button"
             class="lg:hidden text-gray-600 hover:text-blue-600 focus:outline-none"
@@ -46,7 +159,7 @@
             <i class="fas fa-bars text-xl"></i>
           </button>
         </div>
-        <!-- Mobile Menu -->
+        <!-- 手机菜单 -->
         <div id="mobile-menu" class="hidden lg:hidden pb-4">
           <div class="flex flex-col space-y-4">
             <a
@@ -66,118 +179,188 @@
       </div>
     </nav>
 
-    <!-- Main Content -->
+    <!-- 主体内容 -->
     <main class="pt-20 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
-      <!-- Mobile Header -->
-      <div class="lg:hidden mb-6">
+      <!-- 移动端标题区域 -->
+      <div class="lg:hidden mb-8">
         <div class="flex items-center justify-between">
-          <h1 class="text-2xl font-bold text-gray-800">
-            <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
-            安全漏洞库
+          <h1
+            class="text-2xl font-bold text-gray-800 flex items-center transform hover:scale-105 transition-transform duration-200"
+          >
+            <i class="fas fa-shield-alt text-blue-600 mr-3 text-3xl"></i>
+            <span
+              class="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              >安全漏洞库</span
+            >
           </h1>
-          <div class="flex items-center space-x-3">
-            <button class="p-2 hover:bg-gray-100 rounded-full">
-              <i class="fas fa-search text-gray-600"></i>
+          <div class="flex items-center space-x-4">
+            <button
+              onclick="toggleModal('searchModal')"
+              class="p-3 hover:bg-blue-50 rounded-full transition-colors"
+            >
+              <i
+                class="fas fa-search text-gray-600 transform hover:rotate-12 transition-transform duration-200"
+              ></i>
             </button>
-            <button class="p-2 hover:bg-gray-100 rounded-full">
-              <i class="fas fa-filter text-gray-600"></i>
+            <button
+              onclick="toggleModal('filterModal')"
+              class="p-3 hover:bg-blue-50 rounded-full transition-colors"
+            >
+              <i
+                class="fas fa-filter text-gray-600 transform hover:-rotate-12 transition-transform duration-200"
+              ></i>
             </button>
           </div>
         </div>
-        <!-- Mobile Quick Stats -->
-        <div class="grid grid-cols-2 gap-4 mt-6">
-          <div class="bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex items-center text-red-600 mb-2">
-              <i class="fas fa-exclamation-triangle mr-2"></i>
+        <div class="grid grid-cols-2 gap-6 mt-8">
+          <div
+            class="bg-white p-5 rounded-xl shadow hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+          >
+            <div class="flex items-center text-red-600 mb-3">
+              <i class="fas fa-exclamation-triangle text-xl mr-3"></i>
               <span class="font-semibold">高危漏洞</span>
             </div>
-            <span class="text-2xl font-bold">2</span>
+            <span
+              class="text-3xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent"
+              >2</span
+            >
           </div>
-          <div class="bg-white p-4 rounded-lg shadow-sm">
-            <div class="flex items-center text-blue-600 mb-2">
-              <i class="fas fa-shield-alt mr-2"></i>
+          <div
+            class="bg-white p-5 rounded-xl shadow hover:shadow-xl transition-transform duration-300 hover:-translate-y-1"
+          >
+            <div class="flex items-center text-blue-600 mb-3">
+              <i class="fas fa-shield-alt text-xl mr-3"></i>
               <span class="font-semibold">总案例</span>
             </div>
-            <span class="text-2xl font-bold">2</span>
+            <span
+              class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              >2</span
+            >
           </div>
         </div>
       </div>
 
-      <!-- Case Grid -->
+      <!-- 新增桌面端统计卡片 -->
+      <div class="hidden lg:block mb-12" style="margin-top: 30px">
+        <div class="grid grid-cols-2 gap-8">
+          <div
+            class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+          >
+            <div class="flex items-center text-red-600 mb-4">
+              <i class="fas fa-exclamation-triangle text-2xl mr-3"></i>
+              <span class="text-xl font-semibold">高危漏洞</span>
+            </div>
+            <span
+              class="text-4xl font-bold bg-gradient-to-r from-red-600 to-red-400 bg-clip-text text-transparent"
+              >2</span
+            >
+          </div>
+          <div
+            class="bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5"
+          >
+            <div class="flex items-center text-blue-600 mb-4">
+              <i class="fas fa-shield-alt text-2xl mr-3"></i>
+              <span class="text-xl font-semibold">总案例</span>
+            </div>
+            <span
+              class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+              >2</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- 漏洞案例展示区域 -->
       <section id="recent" class="mb-12">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 lg:block hidden">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
           最新安全案例
         </h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <!-- ZUS Coffee Case -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- 案例 1 -->
           <a
             href="case/20250326-enVzY29mZmVl.html"
-            class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            class="group relative block bg-white rounded-xl shadow hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
           >
-            <!-- Add this div for hover gradient effect -->
             <div
               class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             ></div>
             <div class="relative p-6">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-sm text-gray-500">2025-03-26</span>
+              <div
+                class="flex items-center justify-between mb-4 transition-transform duration-300 group-hover:scale-105"
+              >
+                <span class="text-sm text-gray-500 font-medium"
+                  >2025-03-26</span
+                >
                 <span
-                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold shadow group-hover:shadow-md"
                 >
                   <i class="fas fa-triangle-exclamation mr-1"></i>高危
                 </span>
               </div>
-              <h3 class="text-xl font-bold text-gray-800 mb-2">
+              <h3
+                class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors"
+              >
                 <i class="fas fa-shield-virus text-blue-600 mr-2"></i>
-                ZUS Coffee移动应用源码泄露
+                ZUS Coffee 移动应用源码泄露
               </h3>
-              <p class="text-gray-600 mb-4">
-                通过APK反编译分析发现应用源码结构完全暴露，可能导致业务逻辑泄露和安全机制被绕过。
+              <p
+                class="text-gray-600 mb-4 line-clamp-2 group-hover:line-clamp-none transition-all duration-300"
+              >
+                通过 APK
+                反编译分析，发现应用源码结构完全暴露，可能导致业务逻辑泄露和安全机制被绕过。
               </p>
               <div class="flex flex-wrap gap-2">
                 <span
-                  class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
                 >
                   <i class="fas fa-code mr-1"></i>源码泄露
                 </span>
                 <span
                   class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
                 >
-                  <i class="fas fa-mobile-alt mr-1"></i>Flutter应用
+                  <i class="fas fa-mobile-alt mr-1"></i>Flutter 应用
                 </span>
               </div>
             </div>
           </a>
 
-          <!-- MYJPJ Case -->
+          <!-- 案例 2 -->
           <a
             href="case/20250324-24f24c.html"
-            class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
+            class="group relative block bg-white rounded-xl shadow hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
           >
             <div
               class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             ></div>
             <div class="relative p-6">
-              <div class="flex items-center justify-between mb-4">
-                <span class="text-sm text-gray-500">2024-03-24</span>
+              <div
+                class="flex items-center justify-between mb-4 transition-transform duration-300 group-hover:scale-105"
+              >
+                <span class="text-sm text-gray-500 font-medium"
+                  >2024-03-24</span
+                >
                 <span
-                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm"
+                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold shadow hover:shadow-md transition-all duration-300"
                 >
                   <i class="fas fa-triangle-exclamation mr-1"></i>高危
                 </span>
               </div>
-              <h3 class="text-xl font-bold text-gray-800 mb-2">
-                <i class="fas fa-shield-virus text-blue-600 mr-2"></i>
-                MYJPJ移动应用数据泄露
+              <h3
+                class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors duration-300"
+              >
+                <i class="fas fa-shield-virus text-blue-600 mr-2"></i>MYJPJ
+                移动应用数据泄露
               </h3>
-              <p class="text-gray-600 mb-4">
-                涉及个人身份信息及API凭证的未授权访问漏洞...
+              <p
+                class="text-gray-600 mb-4 line-clamp-2 group-hover:line-clamp-none transition-all duration-300"
+              >
+                涉及个人身份信息及 API 凭证的未授权访问漏洞...
               </p>
               <div class="flex flex-wrap gap-2">
                 <span
-                  class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
                 >
-                  <i class="fas fa-user-shield mr-1"></i>PDPA违规
+                  <i class="fas fa-user-shield mr-1"></i>PDPA 违规
                 </span>
                 <span
                   class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
@@ -187,56 +370,96 @@
               </div>
             </div>
           </a>
-
-          <!-- Template for Future Cases -->
-          <div class="hidden">
-            <!-- Duplicate this block for new cases -->
-            <a
-              href="NEW-CASE.html"
-              class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
-            >
-              <!-- Same structure as above case -->
-            </a>
-          </div>
         </div>
       </section>
 
-      <!-- Mobile Bottom Navigation -->
-      <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg lg:hidden z-50">
+      <!-- 底部移动导航 -->
+      <div
+        class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg lg:hidden z-50 transition-transform duration-300"
+      >
         <div class="flex justify-around py-3">
-          <a href="#recent" class="flex flex-col items-center text-blue-600">
-            <i class="fas fa-home text-xl"></i>
-            <span class="text-xs mt-1">首页</span>
+          <a
+            href="#recent"
+            class="flex flex-col items-center text-blue-600 transform hover:scale-110 transition-transform duration-200"
+          >
+            <i class="fas fa-home text-xl mb-1"></i>
+            <span class="text-xs font-medium">首页</span>
           </a>
-          <a href="#cases" class="flex flex-col items-center text-gray-600">
-            <i class="fas fa-folder text-xl"></i>
-            <span class="text-xs mt-1">案例</span>
+          <a
+            href="#cases"
+            class="flex flex-col items-center text-gray-600 hover:text-blue-600 transform hover:scale-110 transition-transform duration-200"
+          >
+            <i class="fas fa-folder text-xl mb-1"></i>
+            <span class="text-xs font-medium">案例</span>
           </a>
-          <a href="#search" class="flex flex-col items-center text-gray-600">
-            <i class="fas fa-search text-xl"></i>
-            <span class="text-xs mt-1">搜索</span>
-          </a>
-          <a href="#more" class="flex flex-col items-center text-gray-600">
-            <i class="fas fa-ellipsis-h text-xl"></i>
-            <span class="text-xs mt-1">更多</span>
-          </a>
+          <button
+            onclick="toggleModal('searchModal')"
+            class="flex flex-col items-center text-gray-600 hover:text-blue-600 transform hover:scale-110 transition-transform duration-200"
+          >
+            <i class="fas fa-search text-xl mb-1"></i>
+            <span class="text-xs font-medium">搜索</span>
+          </button>
+          <button
+            onclick="toggleModal('filterModal')"
+            class="flex flex-col items-center text-gray-600 hover:text-blue-600 transform hover:scale-110 transition-transform duration-200"
+          >
+            <i class="fas fa-filter text-xl mb-1"></i>
+            <span class="text-xs font-medium">筛选</span>
+          </button>
         </div>
       </div>
     </main>
 
-    <!-- Add padding to prevent content from being hidden behind mobile nav -->
-    <div class="h-20 lg:hidden"></div>
-    </main>
+    <!-- 搜索 Modal -->
+    <div
+      id="searchModal"
+      class="fixed inset-0 hidden z-50 flex items-center justify-center"
+    >
+      <div class="modal-backdrop absolute inset-0"></div>
+      <div
+        class="modal-content bg-white rounded-xl shadow-2xl p-8 relative z-10 w-11/12 max-w-md"
+      >
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">搜索案例</h3>
+        <input
+          type="text"
+          class="search-input w-full p-3 border rounded-lg focus:outline-none mb-4"
+          placeholder="请输入关键词..."
+        />
+        <div class="flex gap-4">
+          <button
+            class="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            onclick="searchCases()"
+          >
+            搜索
+          </button>
+          <button
+            class="flex-1 bg-gray-200 text-gray-800 py-2 rounded-lg hover:bg-gray-300 transition-colors"
+            onclick="toggleModal('searchModal')"
+          >
+            关闭
+          </button>
+        </div>
+      </div>
+    </div>
 
-    <!-- Mobile Menu Script -->
-    <script>
-      // Mobile menu functionality (same as detail pages)
-      document
-        .getElementById("mobile-menu-button")
-        ?.addEventListener("click", function () {
-          const menu = document.getElementById("mobile-menu");
-          menu?.classList.toggle("hidden");
-        });
-    </script>
+    <!-- 筛选 Modal -->
+    <div
+      id="filterModal"
+      class="fixed inset-0 hidden z-50 flex items-center justify-center"
+    >
+      <div class="modal-backdrop absolute inset-0"></div>
+      <div
+        class="modal-content bg-white rounded-xl shadow-2xl p-8 relative z-10 w-11/12 max-w-md"
+      >
+        <h3 class="text-2xl font-bold text-gray-800 mb-4">筛选案例</h3>
+        <p class="text-gray-600 mb-4">此处可添加筛选条件...</p>
+        <button
+          class="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          onclick="toggleModal('filterModal')"
+        >
+          关闭
+        </button>
+      </div>
+    </div>
   </body>
 </html>
