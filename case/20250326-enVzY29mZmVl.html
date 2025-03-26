@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <title>ZUS Coffee安全审计报告 - 上饶满星科技</title>
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="ZUS Coffee安全审计报告：详细分析了Web应用与移动应用的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。由上饶满星科技安全研究团队出具的专业漏洞分析报告。"
+    />
+    <meta
+      name="keywords"
+      content="ZUS Coffee,安全审计,漏洞报告,API密钥泄露,移动应用安全,Flutter安全,安全研究"
+    />
+    <meta name="author" content="上饶满星科技安全研究团队" />
+    <meta name="robots" content="index, follow" />
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="ZUS Coffee安全审计报告 - 上饶满星科技" />
+    <meta
+      property="og:description"
+      content="详细分析ZUS Coffee Web与移动应用中的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。专业的漏洞分析和修复建议。"
+    />
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:image"
+      content="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250326-marine.png?raw=true"
+    />
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="ZUS Coffee安全审计报告 - 上饶满星科技"
+    />
+    <meta
+      name="twitter:description"
+      content="详细分析ZUS Coffee Web与移动应用中的安全漏洞，包括API密钥泄露、Firebase配置问题等安全隐患。专业的漏洞分析和修复建议。"
+    />
+    <meta
+      name="twitter:image"
+      content="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250326-marine.png?raw=true"
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      /* [Previous styles from 20250324-24f24c.html] */
+      @media (max-width: 640px) {
+        body {
+          font-size: 14px;
+        }
+        .mobile-collapse {
+          width: 100%;
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        /* [Rest of the mobile styles] */
+      }
+
+      /* Custom translator styles */
+      #custom-translator select {
+        background: #f7fafc;
+        border: 1px solid #cbd5e0;
+        font-size: 14px;
+        transition: all 0.2s ease;
+      }
+
+      #custom-translator select:hover {
+        border-color: #a0aec0;
+      }
+
+      #custom-translator button:hover {
+        background: #3182ce;
+      }
+
+      /* Hide default Google translate styles */
+      .goog-te-banner-frame,
+      .goog-te-menu-frame {
+        display: none !important;
+      }
+
+      .skiptranslate iframe {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav
+      class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300 ease-in-out"
+    >
+      <div class="max-w-7xl mx-auto px-2 sm:px-4">
+        <div class="flex justify-between items-center py-2 sm:py-4">
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            <i
+              class="fas fa-shield-halved text-blue-600 text-lg sm:text-xl animate-pulse"
+            ></i>
+            <span
+              class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none"
+            >
+              安全审计报告 20250326-enVzY29mZmVl
+            </span>
+          </div>
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex space-x-6">
+            <a
+              href="#overview"
+              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
+            >
+              <i class="fas fa-bug mr-2"></i>漏洞概览
+            </a>
+            <a
+              href="#technical"
+              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
+            >
+              <i class="fas fa-microscope mr-2"></i>技术细节
+            </a>
+          </div>
+          <!-- Mobile Menu Button -->
+          <button
+            id="mobile-menu-button"
+            class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <i
+              class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"
+            ></i>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Report Header -->
+      <!-- Section Header Enhancement -->
+      <section class="mb-20">
+        <div class="text-center mb-12">
+          <h2
+            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+          >
+            ZUS Coffee 安全测试报告
+          </h2>
+
+          <div
+            class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500 mb-8"
+          >
+            <h4
+              class="text-lg font-semibold text-blue-800 mb-4 flex items-center"
+            >
+              <i class="fas fa-heart text-blue-600 mr-2"></i>
+              善意声明
+            </h4>
+            <strong>
+              <p class="text-blue-700 leading-relaxed">
+                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+              </p>
+              <p class="text-blue-700 mt-4">
+                衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全保驾护航，为广大用户筑起更坚实的数据保护屏障。
+              </p>
+            </strong>
+          </div>
+
+          <div
+            class="bg-red-100 p-6 rounded-lg border-l-4 border-red-500"
+            style="margin-top: 50px; margin-bottom: 50px"
+          >
+            <h4 class="text-red-800">
+              严重性等级: <span class="font-bold">CRITICAL (CVSS 8.9)</span>
+            </h4>
+          </div>
+
+          <div class="flex justify-center space-x-4 mb-8">
+            <span
+              class="badge bg-blue-100 text-blue-800 px-3 py-1 rounded-full"
+            >
+              <i class="fas fa-calendar-alt mr-2"></i>2025年3月26日
+            </span>
+            <span
+              class="badge bg-purple-100 text-purple-800 px-3 py-1 rounded-full"
+            >
+              <i class="fas fa-code mr-2"></i>Flutter应用
+            </span>
+            <span class="badge bg-red-100 text-red-800 px-3 py-1 rounded-full">
+              <i class="fas fa-triangle-exclamation mr-2"></i>高危漏洞
+            </span>
+          </div>
+        </div>
+
+        <!-- Overview Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">总体概述</h3>
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-blue-600">Web应用安全性</h4>
+              <p class="text-gray-700">
+                经检测，ZUS Coffee
+                Web部分整体防护措施较为完善，WAF、CloudFront、CORS配置及认证机制均运行正常，未发现明显漏洞，开发团队做得非常出色。
+              </p>
+            </div>
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-red-600">移动应用安全性</h4>
+              <p class="text-gray-700">
+                移动应用基于Flutter开发。通过APK反编译、提取libapp.so文件及字符串分析，我们发现了多个敏感API接口和硬编码敏感信息。这些信息一旦被滥用，可能导致API滥用、数据泄露、虚假推荐操控、会话劫持及推送通知滥用等风险。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!--告提交证明 -->
+        <!-- <section class="mb-16">
+          <div class="bg-white p-6 rounded-lg shadow-md">
+            <h3 class="text-xl font-semibold mb-6 flex items-center">
+              <i class="fas fa-paper-plane text-blue-600 mr-2"></i>
+              漏洞报告提交证明
+            </h3>
+
+            <div class="space-y-6">
+
+              <div class="border-l-4 border-green-500 pl-6 py-4">
+                <h4 class="font-semibold mb-4">官方邮件提交记录</h4>
+                <div class="bg-gray-50 p-4 rounded-lg">
+                  <p class="mb-3"><strong>发送时间:</strong> 2025年3月24日</p>
+                  <p class="mb-3"><strong>接收方:</strong> aduan@jpj.gov.my</p>
+                  <p class="mb-3">
+                    <strong>主题:</strong> [安全漏洞报告]
+                    MYJPJ移动应用数据泄露风险通报
+                  </p>
+                </div>
+              </div>
+
+
+              <div class="mt-6">
+                <h4 class="font-semibold mb-4">提交截图证明</h4>
+                <img
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250324-24f24c-email.png?raw=true"
+                  alt="漏洞报告提交邮件截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+
+
+              <div class="bg-blue-50 p-6 rounded-lg mt-6">
+                <h4 class="font-semibold mb-3 text-blue-800">声明</h4>
+                <p class="text-blue-700">
+                  本漏洞报告已通过官方渠道提交至马来西亚陆路交通局(JPJ)。作为一名怀着善意的安全研究员，
+                  我希望通过及时报告这些安全问题来帮助改进系统安全性，保护用户数据安全。这份工作完全出于善意，
+                  绝无任何恶意破坏或利用的企图。希望通过负责任的漏洞披露方式，能够帮助JPJ尽快修复这些安全隐患。
+                  在发现政府系统漏洞时需要格外谨慎和负责任。我完全理解马来西亚同胞们对此类披露可能持有疑虑，但我希望能以最大的诚意说明：发现并报告这个漏洞的唯一目的，是为了防止不法分子抢先发现并加以利用。作为一名关心马来西亚网络安全的研究员，我深感有责任通过正当渠道向JPJ报告这一问题。
+                  我坚信JPJ作为负责任的政府部门，一定会认真对待这个安全隐患并采取必要的补救措施。毕竟在这个数字化时代，保护公民的个人数据安全是政府的重要职责。我真诚地希望通过这次善意的漏洞披露，能为提升政府系统的安全性贡献一份力量，共同维护马来西亚公民的数据安全。
+                </p>
+              </div>
+          </div>
+        </section> -->
+
+        <!-- After the Overview Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-file-code text-red-600 mr-2"></i>
+            Flutter应用源码分析
+          </h3>
+
+          <!-- Analysis Method -->
+          <div class="mb-8">
+            <h4 class="text-xl font-semibold text-blue-600 mb-4">分析方法</h4>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <p class="text-gray-700 mb-4">
+                使用自定义的Frida脚本（extract_functions_apk.js）对APK包中的libapp.so进行动态分析：
+              </p>
+              <pre
+                class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+              ><code class="language-javascript">Java.perform(function() {
+    var libName = "libapp.so";
+    var lib = Module.findBaseAddress(libName);
+
+    if (lib) {
+      console.log("[+] Found " + libName + " at " + lib);
+
+      var exports = Module.enumerateExports(libName);
+      exports.forEach(function(exp) {
+        console.log(
+          "[EXPORT] " + exp.type + " " + exp.name + " at " + exp.address
+        );
+      });
+
+      var symbols = Module.enumerateSymbols(libName);
+      symbols.forEach(function(sym) {
+        console.log("[SYMBOL] " + sym.name + " at " + sym.address);
+      });
+    } else {
+      console.log("[-] Library not found");
+    }
+  });
+
+});</code></pre>
+            </div>
+          </div>
+
+          <!-- Security Implications -->
+          <div class="space-y-6">
+            <h4 class="text-xl font-semibold text-red-600 mb-4">
+              安全隐患分析
+            </h4>
+
+            <!-- Source Code Structure -->
+            <div class="border-l-4 border-red-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3">1. 源码结构暴露</h5>
+              <div class="bg-red-50 p-4 rounded-lg">
+                <p class="text-gray-700">
+                  通过分析得到的文件结构显示，应用的核心功能模块完全暴露：
+                </p>
+                <pre><code>
+package:love_coffee/screens/home_loyalty_term_condition/components/loyalty_card.dartV
+package:love_coffee/providers/product_detail_provider.dart
+package:love_coffee/screens/delete_account/delete_account.dart
+
+                </code></pre>
+              </div>
+            </div>
+
+            <!-- Potential Risks -->
+            <div class="border-l-4 border-orange-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3">2. 潜在风险</h5>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="bg-orange-50 p-4 rounded-lg">
+                  <h6 class="font-semibold text-orange-800 mb-2">
+                    API接口风险
+                  </h6>
+                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                    <li>完整API路由结构泄露</li>
+                    <li>API调用逻辑可被逆向分析</li>
+                    <li>可能导致未授权访问</li>
+                  </ul>
+                </div>
+                <div class="bg-orange-50 p-4 rounded-lg">
+                  <h6 class="font-semibold text-orange-800 mb-2">
+                    业务逻辑风险
+                  </h6>
+                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                    <li>支付流程可被分析破解</li>
+                    <li>积分规则可被反向推导</li>
+                    <li>安全校验逻辑暴露</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Impact Analysis -->
+            <div class="border-l-4 border-yellow-500 pl-6 py-4">
+              <h5 class="font-semibold mb-3">3. 影响分析</h5>
+              <div class="bg-yellow-50 p-4 rounded-lg">
+                <p class="text-gray-700 mb-3">
+                  源码结构泄露可能导致以下严重后果：
+                </p>
+                <ul class="list-disc pl-6 space-y-2 text-gray-600">
+                  <li>
+                    攻击者可以通过分析源码结构，定位关键功能模块并进行定向攻击
+                  </li>
+                  <li>业务逻辑完全暴露，可能被竞争对手利用或模仿</li>
+                  <li>安全机制可被绕过，导致未授权访问和数据泄露</li>
+                  <li>用户隐私和交易安全面临严重威胁</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testing Methods Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">测试方法与流程</h3>
+
+          <!-- Mobile App Testing Methods -->
+          <div class="space-y-6">
+            <div class="border-l-4 border-blue-500 pl-6">
+              <h4 class="text-xl font-semibold mb-4">移动应用测试方法</h4>
+
+              <!-- APK Decompilation -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  1. APK反编译与文件提取
+                </h5>
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>将APK转换为ZIP文件并解压</li>
+                  <li>提取libapp.so文件</li>
+                </ul>
+              </div>
+
+              <!-- String Extraction -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  2. 字符串提取与目录结构分析
+                </h5>
+                <pre
+                  class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                >
+<code class="language-bash">strings libapp.so | grep -i dart && strings libapp.so | grep -i "package:love_coffee" > output/zus_filtered_strings.txt</code></pre>
+              </div>
+
+              <!-- API Path Search -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  3. 敏感API路径搜索
+                </h5>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <!-- API Commands -->
+                  <div class="space-y-4">
+                    <div>
+                      <h6 class="font-semibold mb-2">v1接口搜索：</h6>
+                      <pre
+                        class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                      >
+<code class="language-bash">strings source/libapp.so | grep "/api/v1/"</code></pre>
+                    </div>
+                    <div>
+                      <h6 class="font-semibold mb-2">v3接口搜索：</h6>
+                      <pre
+                        class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                      >
+<code class="language-bash">strings source/libapp.so | grep "/api/v3/"</code></pre>
+                    </div>
+                  </div>
+
+                  <!-- API Results -->
+                  <div class="bg-gray-50 p-6 rounded-lg shadow-sm">
+                    <div class="grid grid-cols-1 gap-4">
+                      <!-- Balance Related APIs -->
+                      <div class="border-l-4 border-blue-500 pl-4">
+                        <h6 class="font-semibold text-blue-700 mb-2">
+                          余额相关接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/history
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/reload
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/update-gc
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/view-redeemed
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/view-sent
+                          </li>
+                          <li class="hover:text-blue-600 transition-colors">
+                            /api/v1/balance/gift-card/continue-payment
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- Cart & Checkout APIs -->
+                      <div class="border-l-4 border-green-500 pl-4">
+                        <h6 class="font-semibold text-green-700 mb-2">
+                          购物车与结账接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/cart/add
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/cart/clear
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout/pay
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/checkout/update/payment_method
+                          </li>
+                          <li class="hover:text-green-600 transition-colors">
+                            /api/v1/orders/continue_payment
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- User & Feedback APIs -->
+                      <div class="border-l-4 border-purple-500 pl-4">
+                        <h6 class="font-semibold text-purple-700 mb-2">
+                          用户与反馈接口
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-purple-600 transition-colors">
+                            /api/v1/user/import-contact-v2
+                          </li>
+                          <li class="hover:text-purple-600 transition-colors">
+                            /api/v1/feedback/order_product/store
+                          </li>
+                        </ul>
+                      </div>
+
+                      <!-- Auth & Country APIs (v3) -->
+                      <div class="border-l-4 border-amber-500 pl-4">
+                        <h6 class="font-semibold text-amber-700 mb-2">
+                          认证与地区接口 (v3)
+                        </h6>
+                        <ul
+                          class="list-disc pl-4 space-y-1 text-sm text-gray-600"
+                        >
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/login
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/register
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/auth/phone
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/user/switch_country
+                          </li>
+                          <li class="hover:text-amber-600 transition-colors">
+                            /api/v3/countries
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Third-party Services -->
+              <div class="mb-6">
+                <h5 class="font-semibold text-blue-600 mb-2">
+                  4. 第三方服务与硬编码密钥提取
+                </h5>
+                <pre
+                  class="bg-gray-800 text-gray-100 p-4 rounded-md overflow-x-auto"
+                >
+<code class="language-xml">&lt;meta-data android:name="io.branch.sdk.BranchKey" 
+    android:value="key_live_xxxxxxxxxxxxxxxx"/&gt;</code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sensitive Data Summary -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">敏感数据汇总</h3>
+
+          <!-- Sensitive Data Table -->
+          <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    类别
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Key名称
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Key (截断显示)
+                  </th>
+                  <th
+                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    潜在风险
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <!-- Table rows from the markdown content -->
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google API Keys</td>
+                  <td class="px-6 py-4 whitespace-nowrap">google_api_key</td>
+                  <td class="px-6 py-4 whitespace-nowrap">AIzaSy.....</td>
+                  <td class="px-6 py-4">
+                    API滥用、未经授权的数据访问、资源配额耗尽
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google App ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">google_app_id</td>
+                  <td class="px-6 py-4 whitespace-nowrap">1:60847.....</td>
+                  <td class="px-6 py-4">
+                    第三方应用可能利用该ID进行未经授权的调用
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Crash Reporting</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    google_crash_reporting_api_key
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">AIzaSy.....</td>
+                  <td class="px-6 py-4">可伪造崩溃报告，导致敏感数据泄露</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Facebook App ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">facebook_app_id</td>
+                  <td class="px-6 py-4 whitespace-nowrap">173173.....</td>
+                  <td class="px-6 py-4">可能用于伪造登录、滥用Facebook API</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    Facebook Client Token
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    facebook_client_token
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">c49338.....</td>
+                  <td class="px-6 py-4">会话劫持、滥用API接口</td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Firebase Database</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    firebase_database_url
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">https:api.z.....</td>
+                  <td class="px-6 py-4">
+                    若安全规则配置不当，可能导致数据未经授权的读取或写入
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Google Storage</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    google_storage_bucket
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">zuscof.....</td>
+                  <td class="px-6 py-4">
+                    配置错误时可能导致敏感文件的上传或下载
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">GCM Sender ID</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    gcm_defaultSenderId
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">608474.....</td>
+                  <td class="px-6 py-4">
+                    可能被用于未经授权地发送推送通知，导致骚扰或钓鱼攻击
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Branch Key</td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    io.branch.sdk.BranchKey
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">key_live_.....</td>
+                  <td class="px-6 py-4">
+                    可被利用来操控归因、制造虚假推荐，进而获得不正当奖励或访问敏感深链数据
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Risk Assessment -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">风险评估与潜在攻击场景</h3>
+
+          <!-- Attack Scenarios -->
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-red-600">潜在攻击场景</h4>
+              <div class="bg-red-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>
+                    <strong>API滥用：</strong> 利用Google API Keys和Crash
+                    Reporting API
+                    Key发起大量未经授权的请求，耗尽服务配额或窃取敏感数据
+                  </li>
+                  <li>
+                    <strong>未经授权的数据访问：</strong> 通过Firebase Database
+                    URL读取或篡改用户订单、个人信息等，甚至导致数据破坏
+                  </li>
+                  <li>
+                    <strong>虚假推荐与归因操控：</strong> 利用Branch
+                    Key操控深链系统，制造虚假推荐，获得不正当奖励
+                  </li>
+                  <li>
+                    <strong>会话劫持与登录伪造：</strong> 利用Facebook Client
+                    Token伪造登录请求或劫持用户会话
+                  </li>
+                  <li>
+                    <strong>推送通知滥用：</strong> 利用GCM Sender
+                    ID发送未经授权的推送通知，诱导钓鱼攻击
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-orange-600">
+                涉及的敏感数据
+              </h4>
+              <div class="bg-orange-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>Google API Keys与Crash Reporting API Key</li>
+                  <li>Firebase Database URL</li>
+                  <li>Branch Key深链配置</li>
+                  <li>Facebook Client Token</li>
+                  <li>GCM Sender ID</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendations -->
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <h3 class="text-2xl font-bold mb-6">建议措施</h3>
+
+          <div class="grid md:grid-cols-2 gap-8">
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-green-600">即时改进措施</h4>
+              <div class="bg-green-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>移除客户端硬编码敏感数据</li>
+                  <li>强化Firebase安全规则</li>
+                  <li>定期更新与轮换密钥</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <h4 class="text-xl font-semibold text-blue-600">长期安全策略</h4>
+              <div class="bg-blue-50 p-4 rounded-md">
+                <ul class="list-disc pl-6 space-y-2">
+                  <li>建立API监控与日志审计系统</li>
+                  <li>加固深链安全机制</li>
+                  <li>定期审查子域配置</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="mb-16 px-4">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <i class="fas fa-envelope text-blue-600 mr-3"></i>
+          联系方式
+        </h2>
+
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="space-y-6">
+            <!-- 安全研究员信息 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+                安全研究员信息
+              </h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <p class="mb-2"><strong>姓名:</strong> 钟智强</p>
+                  <p class="mb-2">
+                    <strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 |
+                    计算机视觉专家
+                  </p>
+                </div>
+                <div>
+                  <p class="mb-2">
+                    <strong>电子邮件:</strong>
+                    <a
+                      href="mailto:johnmelodymel@qq.com"
+                      class="text-blue-600 hover:underline"
+                      >johnmelodymel@qq.com</a
+                    >
+                  </p>
+                  <p><strong>微信:</strong> ctkqiang</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 响应时间承诺 -->
+            <div class="bg-green-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-clock text-green-600 mr-2"></i>
+                响应时间承诺
+              </h4>
+              <ul class="list-none space-y-2">
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>紧急漏洞问题：24小时内响应</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>一般技术咨询：48小时内回复</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 沟通渠道 -->
+            <div class="bg-blue-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-comments text-blue-600 mr-2"></i>
+                首选沟通渠道
+              </h4>
+              <div class="space-y-2">
+                <p>1. 电子邮件（安全加密通信）</p>
+                <p>2. 微信语音/视频会议</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">本报告符合ISO/IEC 27001:2022标准要求</p>
+        <p class="text-gray-400 text-sm">© 2025 上饶满星科技. 保留所有权利</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-xml.min.js"></script>
+    <script>
+      // [Previous scripts from 20250324-24f24c.html]
+    </script>
+  </body>
+</html>
