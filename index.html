@@ -67,19 +67,57 @@
     </nav>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+    <main class="pt-20 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Mobile Header -->
+      <div class="lg:hidden mb-6">
+        <div class="flex items-center justify-between">
+          <h1 class="text-2xl font-bold text-gray-800">
+            <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
+            安全漏洞库
+          </h1>
+          <div class="flex items-center space-x-3">
+            <button class="p-2 hover:bg-gray-100 rounded-full">
+              <i class="fas fa-search text-gray-600"></i>
+            </button>
+            <button class="p-2 hover:bg-gray-100 rounded-full">
+              <i class="fas fa-filter text-gray-600"></i>
+            </button>
+          </div>
+        </div>
+        <!-- Mobile Quick Stats -->
+        <div class="grid grid-cols-2 gap-4 mt-6">
+          <div class="bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center text-red-600 mb-2">
+              <i class="fas fa-exclamation-triangle mr-2"></i>
+              <span class="font-semibold">高危漏洞</span>
+            </div>
+            <span class="text-2xl font-bold">2</span>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center text-blue-600 mb-2">
+              <i class="fas fa-shield-alt mr-2"></i>
+              <span class="font-semibold">总案例</span>
+            </div>
+            <span class="text-2xl font-bold">2</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Case Grid -->
-      <!-- Main Content -->
-      <section id="recent" class="mb-16">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 md:mb-8">
+      <section id="recent" class="mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 lg:block hidden">
           最新安全案例
         </h2>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <!-- ZUS Coffee Case -->
           <a
             href="case/20250326-enVzY29mZmVl.html"
             class="group relative block bg-white rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300"
           >
+            <!-- Add this div for hover gradient effect -->
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+            ></div>
             <div class="relative p-6">
               <div class="flex items-center justify-between mb-4">
                 <span class="text-sm text-gray-500">2025-03-26</span>
@@ -162,6 +200,32 @@
           </div>
         </div>
       </section>
+
+      <!-- Mobile Bottom Navigation -->
+      <div class="fixed bottom-0 left-0 right-0 bg-white border-t shadow-lg lg:hidden z-50">
+        <div class="flex justify-around py-3">
+          <a href="#recent" class="flex flex-col items-center text-blue-600">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">首页</span>
+          </a>
+          <a href="#cases" class="flex flex-col items-center text-gray-600">
+            <i class="fas fa-folder text-xl"></i>
+            <span class="text-xs mt-1">案例</span>
+          </a>
+          <a href="#search" class="flex flex-col items-center text-gray-600">
+            <i class="fas fa-search text-xl"></i>
+            <span class="text-xs mt-1">搜索</span>
+          </a>
+          <a href="#more" class="flex flex-col items-center text-gray-600">
+            <i class="fas fa-ellipsis-h text-xl"></i>
+            <span class="text-xs mt-1">更多</span>
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Add padding to prevent content from being hidden behind mobile nav -->
+    <div class="h-20 lg:hidden"></div>
     </main>
 
     <!-- Mobile Menu Script -->

@@ -57,14 +57,72 @@
       @media (max-width: 640px) {
         body {
           font-size: 14px;
+          line-height: 1.6;
+          padding-top: 4rem;
         }
         .mobile-collapse {
           width: 100%;
           display: block;
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
+          margin: 0.5rem -0.5rem;
+          padding: 0 0.5rem;
         }
-        /* [Rest of the mobile styles] */
+        .mobile-text-lg {
+          font-size: 1.125rem;
+        }
+        table {
+          font-size: 0.875rem;
+          width: 100%;
+          min-width: 640px;
+        }
+        table th, table td {
+          padding: 0.75rem 0.5rem;
+          white-space: nowrap;
+        }
+        pre {
+          font-size: 0.813rem;
+          padding: 0.75rem;
+          margin: 0.75rem 0;
+          border-radius: 0.375rem;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+          background-color: #1a1a1a;
+        }
+        code {
+          font-size: 0.813rem;
+          word-break: break-word;
+          white-space: pre-wrap;
+        }
+        .px-6 {
+          padding-left: 0.75rem;
+          padding-right: 0.75rem;
+        }
+        .py-4 {
+          padding-top: 0.5rem;
+          padding-bottom: 0.5rem;
+        }
+        .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+          margin-top: 1rem;
+        }
+        .grid {
+          gap: 1rem;
+        }
+        .rounded-lg {
+          border-radius: 0.5rem;
+        }
+        .shadow-md {
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .bg-gray-800 {
+          padding: 0.75rem;
+          border-radius: 0.375rem;
+        }
+        .text-green-400 code {
+          line-height: 1.4;
+          display: block;
+          margin: 0.25rem 0;
+        }
       }
 
       /* Custom translator styles */
@@ -93,36 +151,59 @@
         display: none !important;
       }
     </style>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const closeMobileMenu = document.getElementById('close-mobile-menu');
+
+        function toggleMobileMenu() {
+          if (mobileMenu.classList.contains('hidden')) {
+            mobileMenu.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          } else {
+            mobileMenu.classList.add('hidden');
+            document.body.style.overflow = '';
+          }
+        }
+
+        mobileMenuButton.addEventListener('click', toggleMobileMenu);
+        if (closeMobileMenu) {
+          closeMobileMenu.addEventListener('click', toggleMobileMenu);
+        }
+
+        // Close menu when clicking outside
+        mobileMenu.addEventListener('click', function(e) {
+          if (e.target === mobileMenu) {
+            toggleMobileMenu();
+          }
+        });
+
+        // Close menu when clicking menu items
+        const menuLinks = mobileMenu.querySelectorAll('a');
+        menuLinks.forEach(link => {
+          link.addEventListener('click', toggleMobileMenu);
+        });
+      });
+    </script>
+    </script>
   </head>
-  <body class="bg-gray-50 font-sans">
+  <body class="bg-gray-50">
     <!-- Navigation -->
-    <nav
-      class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300 ease-in-out"
-    >
-      <div class="max-w-7xl mx-auto px-2 sm:px-4">
-        <div class="flex justify-between items-center py-2 sm:py-4">
-          <div class="flex items-center space-x-2 sm:space-x-3">
-            <i
-              class="fas fa-shield-halved text-blue-600 text-lg sm:text-xl animate-pulse"
-            ></i>
-            <span
-              class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none"
-            >
-              安全审计报告 20250326-enVzY29mZmVl
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-50 shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center">
+            <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none">
+              ZUS Coffee安全审计报告
             </span>
           </div>
           <!-- Desktop Navigation -->
           <div class="hidden md:flex space-x-6">
-            <a
-              href="#overview"
-              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
-            >
+            <a href="#overview" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
               <i class="fas fa-bug mr-2"></i>漏洞概览
             </a>
-            <a
-              href="#technical"
-              class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform"
-            >
+            <a href="#technical" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
               <i class="fas fa-microscope mr-2"></i>技术细节
             </a>
           </div>
@@ -131,22 +212,40 @@
             id="mobile-menu-button"
             class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors"
           >
-            <i
-              class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"
-            ></i>
+            <i class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"></i>
           </button>
         </div>
       </div>
     </nav>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-50">
+      <div class="bg-white w-full max-w-sm h-full shadow-xl flex flex-col">
+        <div class="p-4 border-b">
+          <button id="close-mobile-menu" class="p-2 hover:bg-gray-100 rounded-lg transition-colors float-right">
+            <i class="fas fa-times text-gray-600"></i>
+          </button>
+          <h3 class="text-lg font-semibold text-gray-900">导航菜单</h3>
+        </div>
+        <nav class="flex-1 px-4 py-6 space-y-4">
+          <a href="#overview" class="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            <i class="fas fa-bug mr-2"></i>漏洞概览
+          </a>
+          <a href="#technical" class="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            <i class="fas fa-microscope mr-2"></i>技术细节
+          </a>
+        </nav>
+      </div>
+    </div>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+
+    <main class="pt-20 sm:pt-24 pb-12 sm:pb-16 px-3 sm:px-4 md:px-8 max-w-7xl mx-auto">
       <!-- Report Header -->
       <!-- Section Header Enhancement -->
-      <section class="mb-20">
-        <div class="text-center mb-12">
+      <section class="mb-12 sm:mb-20">
+        <div class="text-center mb-8 sm:mb-12">
           <h2
-            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+            class="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
           >
             ZUS Coffee 安全测试报告
           </h2>
@@ -321,406 +420,379 @@
               安全隐患分析
             </h4>
 
-            <!-- Source Code Structure -->
-            <div class="border-l-4 border-red-500 pl-6 py-4">
-              <h5 class="font-semibold mb-3 flex items-center">
-                <i class="fas fa-folder-open text-red-500 mr-2"></i>
-                1. 源码结构暴露
-              </h5>
-              <div class="bg-red-50 p-4 rounded-lg">
-                <p class="text-gray-700 mb-4 flex items-center">
-                  <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
-                  通过分析得到的文件结构显示，应用的核心功能模块完全暴露：
-                </p>
-                <div class="bg-gray-800 rounded-lg p-4 font-mono text-sm">
-                  <div class="space-y-2">
-                    <div class="flex items-center text-green-400">
-                      <i class="fas fa-file-code mr-2"></i>
-                      <code>
-                        package:love_coffee/screens/home_loyalty_term_condition/components/loyalty_card.dartV
-                        package:love_coffee/providers/product_detail_provider.dart
-                        package:love_coffee/screens/delete_account/delete_account.dart
-                        package:love_coffee/screens/home_menu_main_v3/menu_page.dart
-                        package:love_coffee/models/help_centre/help_search.dart
-                        package:love_coffee/components/payment_details_field.dart
-                        package:love_coffee/models/google_models/google_autocomplete.dart
-                        package:love_coffee/screens/payment/payment_method_page.dart
-                        package:love_coffee/components/message_border.dart
-                        package:love_coffee/services/SharedPreference_tutorial.dart
-                        package:love_coffee/shared_functions/badge_display.dart
-                        package:love_coffee/services/SharedPreference_UUID.dart
-                        package:love_coffee/screens/voucher/referee_perk_details.dart
-                        package:love_coffee/extensions/ordinal_number.dart
-                        package:love_coffee/screens/login_signup/components/phone_number_field.dart
-                        package:love_coffee/providers/country_provider.dart
-                        package:love_coffee/screens/help_centre/component/shimmer_loading.dart
-                        package:love_coffee/models/balance_models/balance_type.dart
-                        package:love_coffee/models/mission_models/mission.dart
-                        package:love_coffee/models/tumbler_models/tumbler_catalogue.dart
-                        package:love_coffee/models/voucher_models/voucher.dart
-                        package:love_coffee/components/conditional_builder.dart
-                        package:love_coffee/components/padded_pdf_table_row.dart
-                        package:love_coffee/components/custom_badge.dart
-                        package:love_coffee/components/countdown_timer_builder.dart
-                        package:love_coffee/screens/home_order_details/components/payment_method_section.dart
-                        package:love_coffee/shared_functions/share_dialog_logout.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_start.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_main.dart
-                        package:love_coffee/global_variable/Global_variable.dart
-                        package:love_coffee/models/product_models/product_category.dart
-                        package:love_coffee/screens/help_centre/faq_category_page.dart
-                        package:love_coffee/providers/help_centre_provider.dart
-                        package:love_coffee/providers/home_provider.dart
-                        package:love_coffee/screens/gift_card/gift_card_history_sent.dart
-                        package:love_coffee/api/api_caller.dart
-                        package:love_coffee/services/SharedPreference_rateOrderId.dart
-                        package:love_coffee/screens/voucher/widgets/loyalty_voucher_item.dart
-                        package:love_coffee/screens/delivery/screens/google_map_screen.dart
-                        package:love_coffee/providers/login_provider.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_reload.dart
-                        package:love_coffee/shared_functions/confirmation_dialogs.dart
-                        package:love_coffee/models/user_models/user_registration.dart
-                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_search_bar.dart
-                        package:love_coffee/managers/yellow_ai_manager.dart,
-                        package:love_coffee/models/referral_models/referral_info.dart
-                        package:love_coffee/components/custom_button.dart
-                        package:love_coffee/components/shimmer_widget.dart
-                        package:love_coffee/models/product_models/product_alternative.dart
-                        package:love_coffee/screens/home_page_main/home_page_main.dart
-                        package:love_coffee/services/SharedPreference_pickup.dart
-                        package:love_coffee/models/loyalty_modals/loyalty_zus_point_history.dart
-                        package:love_coffee/screens/home_menu_main_v3/components/product_search_delegate.dart
-                        package:love_coffee/providers/balance_provider.dart
-                        package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_fourth_page.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_reload_gift_card.dart
-                        package:love_coffee/models/store_models/store.dart
-                        package:love_coffee/screens/mission_reward/redeem_reward_details.dart
-                        package:love_coffee/components/payment_method_field.dart
-                        package:love_coffee/screens/voucher/voucher_details.dart
-                        package:love_coffee/models/get_HereMaps_result.dart
-                        package:love_coffee/screens/checkout_processing/component/out_of_stock_nested_menu.dart
-                        package:love_coffee/screens/sms_confirmation/component/otp_field.dart
-                        package:love_coffee/screens/home_page_main/components/home_action_button.dart
-                        package:love_coffee/shared_functions/navigation_helper.dart
-                        package:love_coffee/screens/product_details/widgets/prdt_hot_ice_selection.dart
-                        package:love_coffee/shared_functions/order_method_dialog.dart
-                        package:love_coffee/shared_functions/payment_function.dart
-                        package:love_coffee/services/SharedPreference_buy1free1banner.dart
-                        package:love_coffee/components/custom_bottom_widget.dart
-                        package:love_coffee/shared_functions/date_range_picker.dart
-                        package:love_coffee/providers/zus_wrapped_provider.dart
-                        package:love_coffee/components/transparent_route.dart
-                        package:love_coffee/screens/user_profile_edit/profile_register_page.dart
-                        package:love_coffee/screens/qr_code/qr_code_scan.dart
-                        package:love_coffee/screens/home_loyalty_term_condition/loyalty_page.dart
-                        package:love_coffee/screens/pickup/pickup_page.dart
-                        package:love_coffee/providers/outlet_provider.dart
-                        package:love_coffee/models/user_models/user_balance.dart
-                        package:love_coffee/screens/user_profile/user_profile_main.dart
-                        package:love_coffee/models/loyalty_modals/loyalty_info.dart
-                        package:love_coffee/models/get_api_token.dart
-                        package:love_coffee/models/mini_game.dart4
-                        package:love_coffee/screens/gift_card/gift_card_history.dart
-                        package:love_coffee/screens/mini_game/screens/mini_game_info.dart
-                        package:love_coffee/models/referral_models/referee_perk.dart
-                        package:love_coffee/managers/dynamic_link_manager.dart
-                        package:love_coffee/providers/auth_provider.dart
-                        package:love_coffee/shared_functions/custom_appbar.dart
-                        package:love_coffee/models/store_models/store_condition.dart
-                        package:love_coffee/screens/full_banner/full_banner_page.dart
-                        package:love_coffee/screens/tutorial_screen/tutorial_main.dart
-                        package:love_coffee/screens/product_details/widgets/product_ingredient_info.dart
-                        package:love_coffee/models/order.dart
-                        package:love_coffee/models/product_models/nutrition_facts.dart
-                        package:love_coffee/screens/product_details/product_details.dart
-                        package:love_coffee/services/SharedPreference_delivery_store.dart
-                        package:love_coffee/screens/home_zus_points_transaction_history/zus_points_transaction_history_page.dart
-                        package:love_coffee/screens/gift_card/gift_card_main_send.dart
-                        package:love_coffee/models/root_product.dart
-                        package:love_coffee/managers/molpay_manager.dart
-                        package:love_coffee/services/firebase_analytics.dart
-                        package:love_coffee/screens/checkout_processing/component/order_summary.dart
-                        package:love_coffee/screens/pickup/component/pickup_shimmer_loading.dart
-                        package:love_coffee/screens/voucher/partnership_voucher_details.dart
-                        package:love_coffee/screens/product_details/widgets/product_upsells.dart
-                        package:love_coffee/screens/order_feedback/order_feedback.dart
-                        package:love_coffee/providers/banner_provider.dart
-                        package:love_coffee/components/redeem_gift_card_overview.dart
-                        package:love_coffee/screens/user_buy1free1_tutorial/buy_one_free_one_tutorial_page.dart
-                        package:love_coffee/extensions/quick_action_shortcut.dart
-                        package:love_coffee/models/balance_models/balance_redeem.dart
-                        package:love_coffee/providers/bottom_navigation_provider.dart
-                        package:love_coffee/screens/help_centre/component/search_bar.dart
-                        package:love_coffee/models/country_models/country_list_option.dart
-                        package:love_coffee/screens/mini_game/widgets/flipper.dart
-                        package:love_coffee/services/SharedPreference_store.dart
-                        package:love_coffee/shared_functions/shake_animation.dart
-                        package:love_coffee/services/post_api_service.dart
-                        package:love_coffee/providers/quick_action_provider.dart
-                        package:love_coffee/screens/web_view/web_view_banner.dart
-                        package:love_coffee/managers/one_signal_manager.dart
-                        package:love_coffee/models/balance_models/balance_invoice.dart
-                        package:love_coffee/services/SharedPreference_favoriteStore.dart
-                        package:love_coffee/screens/voucher/widgets/referee_perk_item.dart
-                        package:love_coffee/screens/delivery/components/delivery_search_bar.dart
-                        package:love_coffee/shared_functions/bottom_sheet.dart
-                        package:love_coffee/components/store_pinned_message_widget.dart
-                        package:love_coffee/screens/home_page_main/components/merchandise_shimmer.dart
-                        package:love_coffee/screens/country_detection/country_detection_page.dart
-                        package:love_coffee/screens/voucher/widgets/partnership_voucher_item.dart
-                        package:love_coffee/providers/reward_provider.dart
-                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_dialog.dart
-                        package:love_coffee/screens/mini_game/screens/mini_game_main.dart
-                        package:love_coffee/models/voucher_models/partnership_voucher.dart
-                        package:love_coffee/models/molpay_models/molpay_result.dart
-                        package:love_coffee/components/benefit_notice.dart
-                        package:love_coffee/providers/day_night_provider.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_transaction_history.dart
-                        package:love_coffee/models/user_models/user_loyalty.dart
-                        package:love_coffee/screens/referral/referral_invite_history.dart
-                        package:love_coffee/models/product_models/product_addon.dart
-                        package:love_coffee/models/get_checkout_pay.dart
-                        package:love_coffee/screens/pickup/pickup_state_outlets.dart
-                        package:love_coffee/models/gift_card_models/gift_card_page.dart
-                        package:love_coffee/screens/order/generate_order_receipt.dart
-                        package:love_coffee/screens/mission_reward/mission_reward_main.dart
-                        package:love_coffee/screens/pickup/pickup_nearby_outlets_hms.dart
-                        package:love_coffee/models/checkout_models/checkout.dart
-                        package:love_coffee/screens/mission_reward/mission_details.dart
-                        package:love_coffee/extensions/duration_format.dart
-                        package:love_coffee/screens/product_details/widgets/product_nutrition_info.dart
-                        package:love_coffee/screens/referral/referral_qr.dart
-                        package:love_coffee/screens/user_profile_edit/component/profile_field.dart
-                        package:love_coffee/models/molpay_models/molpay_info.dart
-                        package:love_coffee/screens/mini_game/screens/mini_game_history.dart
-                        package:love_coffee/models/referral_models/referral_reward_table_row.dart
-                        package:love_coffee/providers/referral_provider.dart
-                        package:love_coffee/screens/home_page_main/components/home_floating_button.dart
-                        package:love_coffee/services/Get_api_service.dart
-                        package:love_coffee/screens/help_centre/faq_answer_page.dart
-                        package:love_coffee/models/tumbler_models/tumbler_info.dart"
-                        package:love_coffee/services/SharedPreference_DeliverType.dart
-                        package:love_coffee/services/SharedPreference_Auth.dart
-                        package:love_coffee/models/balance_models/balance_html.dart
-                        package:love_coffee/screens/sms_confirmation/component/resend_code_option.dart
-                        package:love_coffee/models/google_models/google_place_search.dart
-                        package:love_coffee/screens/voucher/widgets/voucher_item.dart
-                        package:love_coffee/models/conversation.dart
-                        package:love_coffee/screens/delivery/screens/delivery_main.dart
-                        package:love_coffee/models/system_init.dart
-                        package:love_coffee/screens/mission_reward/reward_coming_soon.dart
-                        package:love_coffee/constants/constants.dart
-                        package:love_coffee/screens/delivery/components/bottom_address_display.dart
-                        package:love_coffee/api/api_response.dart
-                        package:love_coffee/screens/help_centre/component/search_result_container.dart
-                        package:love_coffee/screens/home_navigation/home_navigation.dart
-                        package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_tile.dart
-                        package:love_coffee/models/payment_details.dart
-                        package:love_coffee/screens/mission_reward/redeem_reward_main.dart
-                        package:love_coffee/screens/login_signup/components/received_via_button.dart
-                        package:love_coffee/models/store_models/store_pinned_message.dart
-                        package:love_coffee/providers/user_provider.dart
-                        package:love_coffee/screens/splash_screen/splash_screen.dart
-                        package:love_coffee/components/map_sheet.dart
-                        package:love_coffee/components/custom_search_delegate.dart
-                        package:love_coffee/models/user_models/user_tumbler.dart
-                        package:love_coffee/screens/product_details/widgets/product_basic_info.dart
-                        package:love_coffee/providers/schedule_provider.dart
-                        package:love_coffee/screens/home_menu_checkout/menu_checkout_page.dart
-                        package:love_coffee/models/live_chat.dart
-                        package:love_coffee/models/balance_models/balance_campaign.dart
-                        package:love_coffee/screens/mission_reward/redeem_partnership_details.dart
-                        package:love_coffee/screens/tumbler/tumbler_main.dart
-                        package:love_coffee/models/popups.dart
-                        package:love_coffee/shared_functions/arrow_animation.dart
-                        package:love_coffee/screens/select_country%20/select_country.dart
-                        package:love_coffee/models/checkout_models/cart_item.dart
-                        package:love_coffee/components/custom_drop_down.dart
-                        package:love_coffee/models/delivery_models/delivery_rider.dart
-                        package:love_coffee/screens/referral/referral_journey.dart
-                        package:love_coffee/models/get_out_of_stock_product.dart
-                        package:love_coffee/screens/settings/components/setting_tile.dart
-                        package:love_coffee/providers/contact_provider.dart
-                        package:love_coffee/helper/convert_type_helper.dart
-                        package:love_coffee/models/loyalty_notify_message.dart
-                        package:love_coffee/models/delivery_models/delivery_address.dart
-                        package:love_coffee/models/gift_card_models/gift_card_create.dart
-                        package:love_coffee/providers/event_provider.dart
-                        package:love_coffee/screens/login_signup/components/auth_agreement_section.dart
-                        package:love_coffee/shared_functions/route_animations.dart
-                        package:love_coffee/models/product_models/product.dart
-                        package:love_coffee/screens/pickup/component/outlet_item.dart
-                        package:love_coffee/models/user_models/user.dart
-                        package:love_coffee/services/Post_api_service.dart
-                        package:love_coffee/screens/product_details/widgets/product_bundles.dart
-                        package:love_coffee/models/product_models/product_ingredient.dart
-                        package:love_coffee/screens/gift_card/widgets/redeemed_gift_card.dart
-                        package:love_coffee/enums/day_night.dart
-                        package:love_coffee/providers/product_provider.dart
-                        package:love_coffee/screens/help_centre/help_centre_screen.dart
-                        package:love_coffee/models/balance_models/balance_log.dart
-                        package:love_coffee/providers/gift_card_provider.dart
-                        package:love_coffee/screens/order/order_receipt_preview.dart
-                        package:love_coffee/screens/home_loyalty_faq/loyalty_faq_page.dart
-                        package:love_coffee/extensions/stable_sort_list.dart
-                        package:love_coffee/providers/feedback_provider.dart
-                        package:love_coffee/screens/home_page_main/components/home_order_feedback.dart
-                        package:love_coffee/screens/mission_reward/reward_main.dart
-                        package:love_coffee/screens/home_order_main/home_order_main.dart
-                        package:love_coffee/models/referral_models/referee_onboard_info.dart
-                        package:love_coffee/shared_functions/base_model.dart
-                        package:love_coffee/models/product_models/order_product.dart
-                        package:love_coffee/managers/cdp_manager.dart
-                        package:love_coffee/shared_functions/custom_toast.dart
-                        package:love_coffee/main.dart
-                        package:love_coffee/screens/home_order_main/components/filter.dart
-                        package:love_coffee/components/bouncing_widget.dart
-                        package:love_coffee/screens/gift_card/gift_card_redeem_tab.dart
-                        package:love_coffee/providers/checkout_provider.dart
-                        package:love_coffee/models/referral_models/referee.dart
-                        package:love_coffee/screens/settings/settings.dart
-                        package:love_coffee/services/location_service.dart
-                        package:love_coffee/screens/home_general_feedback/general_feedback_page.dart
-                        package:love_coffee/screens/home_page_main/components/home_banner.dart
-                        package:love_coffee/models/country_models/get_countries.dart
-                        package:love_coffee/models/user_models/user_zus_points.dart
-                        package:love_coffee/extensions/string_ext.dart
-                        package:love_coffee/models/gift_card_models/gift_card_init.dart
-                        package:love_coffee/models/balance_models/balance_details.dart
-                        package:love_coffee/screens/user_profile_edit/component/birthday_bottom_sheet.dart
-                        package:love_coffee/models/gift_card_models/gift_card_background.dart
-                        package:love_coffee/models/checkout_processing.dart
-                        package:love_coffee/providers/splash_provider.dart
-                        package:love_coffee/screens/product_details/widgets/prdt_details_bottom_display.dart
-                        package:love_coffee/api/api_response.g.dart
-                        package:love_coffee/shared_functions/loading_dialog.dart
-                        package:love_coffee/components/show_clear_cart_dialog.dart
-                        package:love_coffee/components/html_page.dart
-                        package:love_coffee/screens/product_details/widgets/prdt_preferrence_selection.dart
-                        package:love_coffee/services/SharedPreference_store_dropdown_menu.dart
-                        package:love_coffee/screens/home_order_details/home_order_details_page.dart
-                        package:love_coffee/providers/global_provider.dart
-                        package:love_coffee/screens/product_details/widgets/product_addons.dart
-                        package:love_coffee/models/app_banner.dart
-                        package:love_coffee/services/sp_service.dart
-                        package:love_coffee/screens/mini_game/models/lucky_draw_model.dart
-                        package:love_coffee/models/balance_models/balance_reload_ref.dart
-                        package:love_coffee/services/SharedPreference_service.dart
-                        package:love_coffee/screens/referral/referral_main.dart
-                        package:love_coffee/screens/gift_card/gift_card_sent_details.dart
-                        package:love_coffee/screens/home_order_main/components/order_list_shimmer.dart
-                        package:love_coffee/models/outlet_state.dart
-                        package:love_coffee/configs/size_config.dart
-                        package:love_coffee/screens/gift_card/gift_card_purchase.dart
-                        package:love_coffee/models/get_generalFeedbacktag.dart
-                        package:love_coffee/screens/home_menu_checkout/components/schedule_time_dropdown.dart
-                        package:love_coffee/providers/pickup_provider.dart
-                        package:love_coffee/models/referral_models/referral_invite_history.dart
-                        package:love_coffee/screens/mission_reward/mission_main.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_transaction_details.dart
-                        package:love_coffee/screens/product_details/widgets/product_reviews.dart
-                        package:love_coffee/utils/signup_util.dart
-                        package:love_coffee/screens/pickup/pickup_nearby_outlets.dart
-                        package:love_coffee/screens/gift_card/gift_card_main.dart
-                        package:love_coffee/providers/order_provider.dart
-                        package:love_coffee/models/payment_models/payment_channel.dart
-                        package:love_coffee/shared_functions/customer_support_dialog.dart
-                        package:love_coffee/models/product_models/product_review.dart
-                        package:love_coffee/screens/home_order_main/components/order_item.dart
-                        package:love_coffee/managers/live_chat_manager.dart
-                        package:love_coffee/screens/setup_bio/setup_biometric_screen.dart
-                        package:love_coffee/screens/home_page_main/components/home_shimmer_loading.dart
-                        package:love_coffee/providers/delivery_provider.dart
-                        package:love_coffee/models/gift_card_models/gift_card.dart
-                        package:love_coffee/shared_functions/scheduling_time_func.dart
-                        package:love_coffee/services/SharedPreference_Delivery.dart
-                        package:love_coffee/screens/voucher/voucher_main.dart
-                        package:love_coffee/services/SharedPreference_faq.dart
-                        package:love_coffee/models/gift_card_models/gift_card_campaign.dart
-                        package:love_coffee/components/custom_alert_dialog.dart
-                        package:love_coffee/screens/home_menu_checkout/components/menu_checkout_item_shimmer.dart
-                        package:love_coffee/models/product_models/product_pool.dart
-                        package:love_coffee/screens/gift_card/gift_card_tnc.dart
-                        package:love_coffee/screens/home_order_main/components/no_order.dart
-                        package:love_coffee/screens/gift_card/gift_card_redeemed_details.dart
-                        package:love_coffee/screens/zus_balance/zus_balance_term.dart
-                        package:love_coffee/components/custom_error_message.dart
-                        package:love_coffee/screens/pickup/component/pickup_location_button.dart
-                        package:love_coffee/screens/delivery/screens/delivery_set_address.dart
-                        package:love_coffee/managers/freshchat_manager.dart
-                        package:love_coffee/managers/connectivity_manager.dart
-                        package:love_coffee/shared_functions/url_launch.dart
-                        package:love_coffee/screens/referral/referral_registration.dart
-                        package:love_coffee/screens/voucher/voucher_checkout.dart
-                        package:love_coffee/screens/checkout_processing/checkout_processing_page.dart
-                        package:love_coffee/extensions/md5_hash.dart
-                        package:love_coffee/models/feedback_models/order_feedback.dart
-                        package:love_coffee/models/payment_models/payment_method.dart
-                        package:love_coffee/screens/product_details/widgets/product_extra_note_info.dart
-                        package:love_coffee/screens/sms_confirmation/sms_confirmation.dart
-                        package:love_coffee/extensions/list_ext.dart
-                        package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_welcome.dart
-                        package:love_coffee/models/merch.dart
-                        package:love_coffee/theme/style.dart
-                        package:love_coffee/screens/login_signup/login_signup.dart
-                        package:love_coffee/screens/gift_card/gift_card_main_redeem.dart
-                        package:love_coffee/screens/mission_reward/redeem_reward_faq_screen.dart
-                        package:love_coffee/models/product_models/product_tag.dart
-                        package:love_coffee/models/help_centre/faq.dart
-                        package:love_coffee/screens/gift_card/gift_card_history_redeemed.dart
-                        package:love_coffee/screens/help_centre/component/live_chat_button.dart*
-                        package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
-                      </code>
+            <!-- Code Display Container -->
+                    <div class="relative">
+                      <!-- Code Header -->
+                      <div class="bg-gray-800 rounded-t-lg px-4 py-2 flex justify-between items-center">
+                        <div class="flex items-center">
+                          <i class="fas fa-file-code text-green-400 mr-2"></i>
+                          <span class="text-gray-300 text-sm">Source Files</span>
+                        </div>
+                        <div class="flex space-x-2">
+                          <button class="text-gray-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <!-- Scrollable Code Content -->
+                      <div class="bg-gray-800 rounded-b-lg p-4 overflow-x-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                        <pre class="text-green-400 font-mono text-sm leading-relaxed whitespace-pre">
+<code>package:love_coffee/screens/home_loyalty_term_condition/components/loyalty_card.dart
+package:love_coffee/providers/product_detail_provider.dart
+package:love_coffee/screens/delete_account/delete_account.dart
+package:love_coffee/screens/home_menu_main_v3/menu_page.dart
+package:love_coffee/models/help_centre/help_search.dart
+package:love_coffee/components/payment_details_field.dart
+package:love_coffee/models/google_models/google_autocomplete.dart
+package:love_coffee/screens/payment/payment_method_page.dart
+package:love_coffee/components/message_border.dart
+package:love_coffee/services/SharedPreference_tutorial.dart
+package:love_coffee/shared_functions/badge_display.dart
+package:love_coffee/services/SharedPreference_UUID.dart
+package:love_coffee/screens/voucher/referee_perk_details.dart
+package:love_coffee/extensions/ordinal_number.dart
+package:love_coffee/screens/login_signup/components/phone_number_field.dart
+package:love_coffee/providers/country_provider.dart
+package:love_coffee/screens/help_centre/component/shimmer_loading.dart
+package:love_coffee/models/balance_models/balance_type.dart
+package:love_coffee/models/mission_models/mission.dart
+package:love_coffee/models/tumbler_models/tumbler_catalogue.dart
+package:love_coffee/models/voucher_models/voucher.dart
+package:love_coffee/components/conditional_builder.dart
+package:love_coffee/components/padded_pdf_table_row.dart
+package:love_coffee/components/custom_badge.dart
+package:love_coffee/components/countdown_timer_builder.dart
+package:love_coffee/screens/home_order_details/components/payment_method_section.dart
+package:love_coffee/shared_functions/share_dialog_logout.dart
+package:love_coffee/screens/zus_balance/zus_balance_start.dart
+package:love_coffee/screens/zus_balance/zus_balance_main.dart
+package:love_coffee/global_variable/Global_variable.dart
+package:love_coffee/models/product_models/product_category.dart
+package:love_coffee/screens/help_centre/faq_category_page.dart
+package:love_coffee/providers/help_centre_provider.dart
+package:love_coffee/providers/home_provider.dart
+package:love_coffee/screens/gift_card/gift_card_history_sent.dart
+package:love_coffee/api/api_caller.dart
+package:love_coffee/services/SharedPreference_rateOrderId.dart
+package:love_coffee/screens/voucher/widgets/loyalty_voucher_item.dart
+package:love_coffee/screens/delivery/screens/google_map_screen.dart
+package:love_coffee/providers/login_provider.dart
+package:love_coffee/screens/zus_balance/zus_balance_reload.dart
+package:love_coffee/shared_functions/confirmation_dialogs.dart
+package:love_coffee/models/user_models/user_registration.dart
+package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_search_bar.dart
+package:love_coffee/managers/yellow_ai_manager.dart,
+package:love_coffee/models/referral_models/referral_info.dart
+package:love_coffee/components/custom_button.dart
+package:love_coffee/components/shimmer_widget.dart
+package:love_coffee/models/product_models/product_alternative.dart
+package:love_coffee/screens/home_page_main/home_page_main.dart
+package:love_coffee/services/SharedPreference_pickup.dart
+package:love_coffee/models/loyalty_modals/loyalty_zus_point_history.dart
+package:love_coffee/screens/home_menu_main_v3/components/product_search_delegate.dart
+package:love_coffee/providers/balance_provider.dart
+package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_fourth_page.dart
+package:love_coffee/screens/zus_balance/zus_balance_reload_gift_card.dart
+package:love_coffee/models/store_models/store.dart
+package:love_coffee/screens/mission_reward/redeem_reward_details.dart
+package:love_coffee/components/payment_method_field.dart
+package:love_coffee/screens/voucher/voucher_details.dart
+package:love_coffee/models/get_HereMaps_result.dart
+package:love_coffee/screens/checkout_processing/component/out_of_stock_nested_menu.dart
+package:love_coffee/screens/sms_confirmation/component/otp_field.dart
+package:love_coffee/screens/home_page_main/components/home_action_button.dart
+package:love_coffee/shared_functions/navigation_helper.dart
+package:love_coffee/screens/product_details/widgets/prdt_hot_ice_selection.dart
+package:love_coffee/shared_functions/order_method_dialog.dart
+package:love_coffee/shared_functions/payment_function.dart
+package:love_coffee/services/SharedPreference_buy1free1banner.dart
+package:love_coffee/components/custom_bottom_widget.dart
+package:love_coffee/shared_functions/date_range_picker.dart
+package:love_coffee/providers/zus_wrapped_provider.dart
+package:love_coffee/components/transparent_route.dart
+package:love_coffee/screens/user_profile_edit/profile_register_page.dart
+package:love_coffee/screens/qr_code/qr_code_scan.dart
+package:love_coffee/screens/home_loyalty_term_condition/loyalty_page.dart
+package:love_coffee/screens/pickup/pickup_page.dart
+package:love_coffee/providers/outlet_provider.dart
+package:love_coffee/models/user_models/user_balance.dart
+package:love_coffee/screens/user_profile/user_profile_main.dart
+package:love_coffee/models/loyalty_modals/loyalty_info.dart
+package:love_coffee/models/get_api_token.dart
+package:love_coffee/models/mini_game.dart4
+package:love_coffee/screens/gift_card/gift_card_history.dart
+package:love_coffee/screens/mini_game/screens/mini_game_info.dart
+package:love_coffee/models/referral_models/referee_perk.dart
+package:love_coffee/managers/dynamic_link_manager.dart
+package:love_coffee/providers/auth_provider.dart
+package:love_coffee/shared_functions/custom_appbar.dart
+package:love_coffee/models/store_models/store_condition.dart
+package:love_coffee/screens/full_banner/full_banner_page.dart
+package:love_coffee/screens/tutorial_screen/tutorial_main.dart
+package:love_coffee/screens/product_details/widgets/product_ingredient_info.dart
+package:love_coffee/models/order.dart
+package:love_coffee/models/product_models/nutrition_facts.dart
+package:love_coffee/screens/product_details/product_details.dart
+package:love_coffee/services/SharedPreference_delivery_store.dart
+package:love_coffee/screens/home_zus_points_transaction_history/zus_points_transaction_history_page.dart
+package:love_coffee/screens/gift_card/gift_card_main_send.dart
+package:love_coffee/models/root_product.dart
+package:love_coffee/managers/molpay_manager.dart
+package:love_coffee/services/firebase_analytics.dart
+package:love_coffee/screens/checkout_processing/component/order_summary.dart
+package:love_coffee/screens/pickup/component/pickup_shimmer_loading.dart
+package:love_coffee/screens/voucher/partnership_voucher_details.dart
+package:love_coffee/screens/product_details/widgets/product_upsells.dart
+package:love_coffee/screens/order_feedback/order_feedback.dart
+package:love_coffee/providers/banner_provider.dart
+package:love_coffee/components/redeem_gift_card_overview.dart
+package:love_coffee/screens/user_buy1free1_tutorial/buy_one_free_one_tutorial_page.dart
+package:love_coffee/extensions/quick_action_shortcut.dart
+package:love_coffee/models/balance_models/balance_redeem.dart
+package:love_coffee/providers/bottom_navigation_provider.dart
+package:love_coffee/screens/help_centre/component/search_bar.dart
+package:love_coffee/models/country_models/country_list_option.dart
+package:love_coffee/screens/mini_game/widgets/flipper.dart
+package:love_coffee/services/SharedPreference_store.dart
+package:love_coffee/shared_functions/shake_animation.dart
+package:love_coffee/services/post_api_service.dart
+package:love_coffee/providers/quick_action_provider.dart
+package:love_coffee/screens/web_view/web_view_banner.dart
+package:love_coffee/managers/one_signal_manager.dart
+package:love_coffee/models/balance_models/balance_invoice.dart
+package:love_coffee/services/SharedPreference_favoriteStore.dart
+package:love_coffee/screens/voucher/widgets/referee_perk_item.dart
+package:love_coffee/screens/delivery/components/delivery_search_bar.dart
+package:love_coffee/shared_functions/bottom_sheet.dart
+package:love_coffee/components/store_pinned_message_widget.dart
+package:love_coffee/screens/home_page_main/components/merchandise_shimmer.dart
+package:love_coffee/screens/country_detection/country_detection_page.dart
+package:love_coffee/screens/voucher/widgets/partnership_voucher_item.dart
+package:love_coffee/providers/reward_provider.dart
+package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_dialog.dart
+package:love_coffee/screens/mini_game/screens/mini_game_main.dart
+package:love_coffee/models/voucher_models/partnership_voucher.dart
+package:love_coffee/models/molpay_models/molpay_result.dart
+package:love_coffee/components/benefit_notice.dart
+package:love_coffee/providers/day_night_provider.dart
+package:love_coffee/screens/zus_balance/zus_balance_transaction_history.dart
+package:love_coffee/models/user_models/user_loyalty.dart
+package:love_coffee/screens/referral/referral_invite_history.dart
+package:love_coffee/models/product_models/product_addon.dart
+package:love_coffee/models/get_checkout_pay.dart
+package:love_coffee/screens/pickup/pickup_state_outlets.dart
+package:love_coffee/models/gift_card_models/gift_card_page.dart
+package:love_coffee/screens/order/generate_order_receipt.dart
+package:love_coffee/screens/mission_reward/mission_reward_main.dart
+package:love_coffee/screens/pickup/pickup_nearby_outlets_hms.dart
+package:love_coffee/models/checkout_models/checkout.dart
+package:love_coffee/screens/mission_reward/mission_details.dart
+package:love_coffee/extensions/duration_format.dart
+package:love_coffee/screens/product_details/widgets/product_nutrition_info.dart
+package:love_coffee/screens/referral/referral_qr.dart
+package:love_coffee/screens/user_profile_edit/component/profile_field.dart
+package:love_coffee/models/molpay_models/molpay_info.dart
+package:love_coffee/screens/mini_game/screens/mini_game_history.dart
+package:love_coffee/models/referral_models/referral_reward_table_row.dart
+package:love_coffee/providers/referral_provider.dart
+package:love_coffee/screens/home_page_main/components/home_floating_button.dart
+package:love_coffee/services/Get_api_service.dart
+package:love_coffee/screens/help_centre/faq_answer_page.dart
+package:love_coffee/models/tumbler_models/tumbler_info.dart"
+package:love_coffee/services/SharedPreference_DeliverType.dart
+package:love_coffee/services/SharedPreference_Auth.dart
+package:love_coffee/models/balance_models/balance_html.dart
+package:love_coffee/screens/sms_confirmation/component/resend_code_option.dart
+package:love_coffee/models/google_models/google_place_search.dart
+package:love_coffee/screens/voucher/widgets/voucher_item.dart
+package:love_coffee/models/conversation.dart
+package:love_coffee/screens/delivery/screens/delivery_main.dart
+package:love_coffee/models/system_init.dart
+package:love_coffee/screens/mission_reward/reward_coming_soon.dart
+package:love_coffee/constants/constants.dart
+package:love_coffee/screens/delivery/components/bottom_address_display.dart
+package:love_coffee/api/api_response.dart
+package:love_coffee/screens/help_centre/component/search_result_container.dart
+package:love_coffee/screens/home_navigation/home_navigation.dart
+package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_tile.dart
+package:love_coffee/models/payment_details.dart
+package:love_coffee/screens/mission_reward/redeem_reward_main.dart
+package:love_coffee/screens/login_signup/components/received_via_button.dart
+package:love_coffee/models/store_models/store_pinned_message.dart
+package:love_coffee/providers/user_provider.dart
+package:love_coffee/screens/splash_screen/splash_screen.dart
+package:love_coffee/components/map_sheet.dart
+package:love_coffee/components/custom_search_delegate.dart
+package:love_coffee/models/user_models/user_tumbler.dart
+package:love_coffee/screens/product_details/widgets/product_basic_info.dart
+package:love_coffee/providers/schedule_provider.dart
+package:love_coffee/screens/home_menu_checkout/menu_checkout_page.dart
+package:love_coffee/models/live_chat.dart
+package:love_coffee/models/balance_models/balance_campaign.dart
+package:love_coffee/screens/mission_reward/redeem_partnership_details.dart
+package:love_coffee/screens/tumbler/tumbler_main.dart
+package:love_coffee/models/popups.dart
+package:love_coffee/shared_functions/arrow_animation.dart
+package:love_coffee/screens/select_country%20/select_country.dart
+package:love_coffee/models/checkout_models/cart_item.dart
+package:love_coffee/components/custom_drop_down.dart
+package:love_coffee/models/delivery_models/delivery_rider.dart
+package:love_coffee/screens/referral/referral_journey.dart
+package:love_coffee/models/get_out_of_stock_product.dart
+package:love_coffee/screens/settings/components/setting_tile.dart
+package:love_coffee/providers/contact_provider.dart
+package:love_coffee/helper/convert_type_helper.dart
+package:love_coffee/models/loyalty_notify_message.dart
+package:love_coffee/models/delivery_models/delivery_address.dart
+package:love_coffee/models/gift_card_models/gift_card_create.dart
+package:love_coffee/providers/event_provider.dart
+package:love_coffee/screens/login_signup/components/auth_agreement_section.dart
+package:love_coffee/shared_functions/route_animations.dart
+package:love_coffee/models/product_models/product.dart
+package:love_coffee/screens/pickup/component/outlet_item.dart
+package:love_coffee/models/user_models/user.dart
+package:love_coffee/services/Post_api_service.dart
+package:love_coffee/screens/product_details/widgets/product_bundles.dart
+package:love_coffee/models/product_models/product_ingredient.dart
+package:love_coffee/screens/gift_card/widgets/redeemed_gift_card.dart
+package:love_coffee/enums/day_night.dart
+package:love_coffee/providers/product_provider.dart
+package:love_coffee/screens/help_centre/help_centre_screen.dart
+package:love_coffee/models/balance_models/balance_log.dart
+package:love_coffee/providers/gift_card_provider.dart
+package:love_coffee/screens/order/order_receipt_preview.dart
+package:love_coffee/screens/home_loyalty_faq/loyalty_faq_page.dart
+package:love_coffee/extensions/stable_sort_list.dart
+package:love_coffee/providers/feedback_provider.dart
+package:love_coffee/screens/home_page_main/components/home_order_feedback.dart
+package:love_coffee/screens/mission_reward/reward_main.dart
+package:love_coffee/screens/home_order_main/home_order_main.dart
+package:love_coffee/models/referral_models/referee_onboard_info.dart
+package:love_coffee/shared_functions/base_model.dart
+package:love_coffee/models/product_models/order_product.dart
+package:love_coffee/managers/cdp_manager.dart
+package:love_coffee/shared_functions/custom_toast.dart
+package:love_coffee/main.dart
+package:love_coffee/screens/home_order_main/components/filter.dart
+package:love_coffee/components/bouncing_widget.dart
+package:love_coffee/screens/gift_card/gift_card_redeem_tab.dart
+package:love_coffee/providers/checkout_provider.dart
+package:love_coffee/models/referral_models/referee.dart
+package:love_coffee/screens/settings/settings.dart
+package:love_coffee/services/location_service.dart
+package:love_coffee/screens/home_general_feedback/general_feedback_page.dart
+package:love_coffee/screens/home_page_main/components/home_banner.dart
+package:love_coffee/models/country_models/get_countries.dart
+package:love_coffee/models/user_models/user_zus_points.dart
+package:love_coffee/extensions/string_ext.dart
+package:love_coffee/models/gift_card_models/gift_card_init.dart
+package:love_coffee/models/balance_models/balance_details.dart
+package:love_coffee/screens/user_profile_edit/component/birthday_bottom_sheet.dart
+package:love_coffee/models/gift_card_models/gift_card_background.dart
+package:love_coffee/models/checkout_processing.dart
+package:love_coffee/providers/splash_provider.dart
+package:love_coffee/screens/product_details/widgets/prdt_details_bottom_display.dart
+package:love_coffee/api/api_response.g.dart
+package:love_coffee/shared_functions/loading_dialog.dart
+package:love_coffee/components/show_clear_cart_dialog.dart
+package:love_coffee/components/html_page.dart
+package:love_coffee/screens/product_details/widgets/prdt_preferrence_selection.dart
+package:love_coffee/services/SharedPreference_store_dropdown_menu.dart
+package:love_coffee/screens/home_order_details/home_order_details_page.dart
+package:love_coffee/providers/global_provider.dart
+package:love_coffee/screens/product_details/widgets/product_addons.dart
+package:love_coffee/models/app_banner.dart
+package:love_coffee/services/sp_service.dart
+package:love_coffee/screens/mini_game/models/lucky_draw_model.dart
+package:love_coffee/models/balance_models/balance_reload_ref.dart
+package:love_coffee/services/SharedPreference_service.dart
+package:love_coffee/screens/referral/referral_main.dart
+package:love_coffee/screens/gift_card/gift_card_sent_details.dart
+package:love_coffee/screens/home_order_main/components/order_list_shimmer.dart
+package:love_coffee/models/outlet_state.dart
+package:love_coffee/configs/size_config.dart
+package:love_coffee/screens/gift_card/gift_card_purchase.dart
+package:love_coffee/models/get_generalFeedbacktag.dart
+package:love_coffee/screens/home_menu_checkout/components/schedule_time_dropdown.dart
+package:love_coffee/providers/pickup_provider.dart
+package:love_coffee/models/referral_models/referral_invite_history.dart
+package:love_coffee/screens/mission_reward/mission_main.dart
+package:love_coffee/screens/zus_balance/zus_balance_transaction_details.dart
+package:love_coffee/screens/product_details/widgets/product_reviews.dart
+package:love_coffee/utils/signup_util.dart
+package:love_coffee/screens/pickup/pickup_nearby_outlets.dart
+package:love_coffee/screens/gift_card/gift_card_main.dart
+package:love_coffee/providers/order_provider.dart
+package:love_coffee/models/payment_models/payment_channel.dart
+package:love_coffee/shared_functions/customer_support_dialog.dart
+package:love_coffee/models/product_models/product_review.dart
+package:love_coffee/screens/home_order_main/components/order_item.dart
+package:love_coffee/managers/live_chat_manager.dart
+package:love_coffee/screens/setup_bio/setup_biometric_screen.dart
+package:love_coffee/screens/home_page_main/components/home_shimmer_loading.dart
+package:love_coffee/providers/delivery_provider.dart
+package:love_coffee/models/gift_card_models/gift_card.dart
+package:love_coffee/shared_functions/scheduling_time_func.dart
+package:love_coffee/services/SharedPreference_Delivery.dart
+package:love_coffee/screens/voucher/voucher_main.dart
+package:love_coffee/services/SharedPreference_faq.dart
+package:love_coffee/models/gift_card_models/gift_card_campaign.dart
+package:love_coffee/components/custom_alert_dialog.dart
+package:love_coffee/screens/home_menu_checkout/components/menu_checkout_item_shimmer.dart
+package:love_coffee/models/product_models/product_pool.dart
+package:love_coffee/screens/gift_card/gift_card_tnc.dart
+package:love_coffee/screens/home_order_main/components/no_order.dart
+package:love_coffee/screens/gift_card/gift_card_redeemed_details.dart
+package:love_coffee/screens/zus_balance/zus_balance_term.dart
+package:love_coffee/components/custom_error_message.dart
+package:love_coffee/screens/pickup/component/pickup_location_button.dart
+package:love_coffee/screens/delivery/screens/delivery_set_address.dart
+package:love_coffee/managers/freshchat_manager.dart
+package:love_coffee/managers/connectivity_manager.dart
+package:love_coffee/shared_functions/url_launch.dart
+package:love_coffee/screens/referral/referral_registration.dart
+package:love_coffee/screens/voucher/voucher_checkout.dart
+package:love_coffee/screens/checkout_processing/checkout_processing_page.dart
+package:love_coffee/extensions/md5_hash.dart
+package:love_coffee/models/feedback_models/order_feedback.dart
+package:love_coffee/models/payment_models/payment_method.dart
+package:love_coffee/screens/product_details/widgets/product_extra_note_info.dart
+package:love_coffee/screens/sms_confirmation/sms_confirmation.dart
+package:love_coffee/extensions/list_ext.dart
+package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_welcome.dart
+package:love_coffee/models/merch.dart
+package:love_coffee/theme/style.dart
+package:love_coffee/screens/login_signup/login_signup.dart
+package:love_coffee/screens/gift_card/gift_card_main_redeem.dart
+package:love_coffee/screens/mission_reward/redeem_reward_faq_screen.dart
+package:love_coffee/models/product_models/product_tag.dart
+package:love_coffee/models/help_centre/faq.dart
+package:love_coffee/screens/gift_card/gift_card_history_redeemed.dart
+package:love_coffee/screens/help_centre/component/live_chat_button.dart*
+package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
+</code></pre>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <!-- Potential Risks -->
-            <div class="border-l-4 border-orange-500 pl-6 py-4">
-              <h5 class="font-semibold mb-3">2. 潜在风险</h5>
-              <div class="grid md:grid-cols-2 gap-6">
-                <div class="bg-orange-50 p-4 rounded-lg">
-                  <h6 class="font-semibold text-orange-800 mb-2">
-                    API接口风险
-                  </h6>
-                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
-                    <li>完整API路由结构泄露</li>
-                    <li>API调用逻辑可被逆向分析</li>
-                    <li>可能导致未授权访问</li>
-                  </ul>
-                </div>
-                <div class="bg-orange-50 p-4 rounded-lg">
-                  <h6 class="font-semibold text-orange-800 mb-2">
-                    业务逻辑风险
-                  </h6>
-                  <ul class="list-disc pl-6 space-y-2 text-gray-600">
-                    <li>支付流程可被分析破解</li>
-                    <li>积分规则可被反向推导</li>
-                    <li>安全校验逻辑暴露</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <!-- Impact Analysis -->
-            <div class="border-l-4 border-yellow-500 pl-6 py-4">
-              <h5 class="font-semibold mb-3">3. 影响分析</h5>
-              <div class="bg-yellow-50 p-4 rounded-lg">
-                <p class="text-gray-700 mb-3">
-                  源码结构泄露可能导致以下严重后果：
-                </p>
-                <ul class="list-disc pl-6 space-y-2 text-gray-600">
-                  <li>
-                    攻击者可以通过分析源码结构，定位关键功能模块并进行定向攻击
-                  </li>
-                  <li>业务逻辑完全暴露，可能被竞争对手利用或模仿</li>
-                  <li>安全机制可被绕过，导致未授权访问和数据泄露</li>
-                  <li>用户隐私和交易安全面临严重威胁</li>
-                </ul>
-              </div>
-            </div>
+                    <!-- Add Copy Function -->
+                    <script>
+                      function copyCode(button) {
+                        const codeBlock = button.closest('.relative').querySelector('code');
+                        const textArea = document.createElement('textarea');
+                        textArea.value = codeBlock.textContent;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+                        
+                        // Show feedback
+                        button.innerHTML = '<i class="fas fa-check"></i>';
+                        setTimeout(() => {
+                          button.innerHTML = '<i class="fas fa-copy"></i>';
+                        }, 2000);
+                      }
+                    </script>
           </div>
         </div>
 
