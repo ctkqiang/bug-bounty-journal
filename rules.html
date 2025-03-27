@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>中华人民共和国数据安全法</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    <style>
+      body {
+        font-family: "Noto Sans SC", sans-serif;
+      }
+      .section-card {
+        transition: all 0.3s ease;
+      }
+      .section-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      }
+      .nav-link {
+        position: relative;
+      }
+      .nav-link::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #2563eb;
+        transition: width 0.3s ease;
+      }
+      .nav-link:hover::after {
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Hero Section -->
+    <div
+      class="relative bg-gradient-to-br from-blue-700 to-blue-900 text-white overflow-hidden"
+    >
+      <div class="absolute inset-0 bg-grid opacity-10"></div>
+      <div class="container mx-auto px-4 py-16">
+        <div class="max-w-4xl mx-auto text-center">
+          <div class="inline-block p-2 bg-blue-600 rounded-lg mb-6">
+            <i class="fas fa-shield-alt text-3xl"></i>
+          </div>
+          <h1 class="text-5xl font-bold mb-4">中华人民共和国数据安全法</h1>
+          <p class="text-xl opacity-90">保护数据安全，维护国家主权</p>
+        </div>
+      </div>
+      <div
+        class="absolute bottom-0 w-full h-16 bg-gradient-to-t from-gray-50"
+      ></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-50">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex-1 flex justify-center">
+            <div class="flex space-x-8">
+              <a
+                href="#总则"
+                class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2"
+                >总则</a
+              >
+              <a
+                href="#数据安全与发展"
+                class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2"
+                >数据安全与发展</a
+              >
+              <a
+                href="#数据安全制度"
+                class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2"
+                >数据安全制度</a
+              >
+              <a
+                href="#法律责任"
+                class="nav-link text-gray-700 hover:text-blue-600 px-3 py-2"
+                >法律责任</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+      <div class="max-w-4xl mx-auto">
+        <div class="space-y-12">
+          <section id="总则" class="section-card bg-white rounded-2xl p-8">
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-book text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">第一章 总则</h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                制定本法是为了规范数据处理活动，保障数据安全，促进数据开发利用，保护个人、组织的合法权益，维护国家主权、安全和发展利益。
+              </p>
+            </div>
+          </section>
+
+          <!-- Previous section -->
+
+          <section
+            id="数据安全与发展"
+            class="section-card bg-white rounded-2xl p-8"
+          >
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-chart-line text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">
+                第二章 数据安全与发展
+              </h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                国家统筹发展和安全，实施大数据战略，推进数据基础设施建设。支持数据提升公共服务智能化水平，研究数据技术，培育相关产业体系。
+              </p>
+            </div>
+          </section>
+
+          <section
+            id="数据安全制度"
+            class="section-card bg-white rounded-2xl p-8"
+          >
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-shield-alt text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">
+                第三章 数据安全制度
+              </h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                建立数据分类分级保护制度，对重要数据和国家核心数据加强管理。构建风险评估、应急处置、审查等一系列数据安全机制。
+              </p>
+            </div>
+          </section>
+
+          <section
+            id="数据安全保护义务"
+            class="section-card bg-white rounded-2xl p-8"
+          >
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-user-shield text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">
+                第四章 数据安全保护义务
+              </h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                数据处理者需建立安全管理制度，加强风险监测，报告风险评估情况。数据收集要合法正当，数据交易中介服务机构应履行审核义务。
+              </p>
+            </div>
+          </section>
+
+          <section
+            id="政务数据安全与开放"
+            class="section-card bg-white rounded-2xl p-8"
+          >
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-government text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">
+                第五章 政务数据安全与开放
+              </h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                国家推进电子政务建设，国家机关应依法收集、使用、存储和公开政务数据。构建政务数据开放平台，推动数据开放利用。
+              </p>
+            </div>
+          </section>
+
+          <section id="法律责任" class="section-card bg-white rounded-2xl p-8">
+            <div class="flex items-center mb-6">
+              <div
+                class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4"
+              >
+                <i class="fas fa-gavel text-blue-600"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-900">第六章 法律责任</h2>
+            </div>
+            <div class="prose max-w-none text-gray-600">
+              <p class="leading-relaxed">
+                对不履行数据安全保护义务的组织和个人，以及违反相关规定的行为，设定了不同程度的罚款、责令整改、吊销执照等处罚措施，构成犯罪的依法追究刑事责任。
+              </p>
+            </div>
+          </section>
+
+          <!-- End of sections -->
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white mt-16">
+      <div class="container mx-auto px-4 py-12">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div>
+            <h3 class="text-lg font-semibold mb-4">相关法规</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >网络安全法</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >个人信息保护法</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">快速链接</h3>
+            <ul class="space-y-2">
+              <li>
+                <a
+                  href="#总则"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >总则</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#法律责任"
+                  class="text-gray-400 hover:text-white transition-colors"
+                  >法律责任</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold mb-4">联系方式</h3>
+            <p class="text-gray-400">电话：(+86) 10-12345678</p>
+            <p class="text-gray-400">邮箱：contact@law.gov.cn</p>
+          </div>
+        </div>
+        <div
+          class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400"
+        >
+          <p>&copy; 2023 中华人民共和国数据安全法. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Smooth scrolling
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          document.querySelector(this.getAttribute("href")).scrollIntoView({
+            behavior: "smooth"
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
