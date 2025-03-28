@@ -1,0 +1,97 @@
+nmap -p 80,443,8080,8443,22,21,3306  shangraoxinzhou.zqiye.com 
+
+Starting Nmap 7.95 ( https://nmap.org ) at 2025-03-29 02:38 +08
+Nmap scan report for shangraoxinzhou.zqiye.com (139.196.49.42)
+Host is up (0.12s latency).
+
+PORT     STATE    SERVICE
+21/tcp   open     ftp
+22/tcp   open     ssh
+80/tcp   open     http
+443/tcp  open     https
+3306/tcp open     mysql
+8080/tcp filtered http-proxy
+8443/tcp filtered https-alt
+
+Nmap done: 1 IP address (1 host up) scanned in 3.85 seconds
+
+
+whatweb shangraoxinzhou.zqiye.com -v
+WhatWeb report for http://shangraoxinzhou.zqiye.com
+Status    : 200 OK
+Title     : 上饶信州网站建设_上饶信州网络公司_上饶信州网站制作公司_做网站微信小程序APP公司_上饶信州众企业网站建设平台
+IP        : 139.196.49.42
+Country   : CHINA, CN
+
+Summary   : Cookies[PHPSESSID], Email[54753433@qq.com,907010669@qq.com], HTML5, HTTPServer[Tengine], Script[text/javascript,text/jscript], Strict-Transport-Security[max-age=31536000], Tengine-Web-Server, X-UA-Compatible[IE=Edge]
+
+Detected Plugins:
+[ Cookies ]
+        Display the names of cookies in the HTTP headers. The 
+        values are not returned to save on space. 
+
+        String       : PHPSESSID
+
+[ Email ]
+        Extract email addresses. Find valid email address and 
+        syntactically invalid email addresses from mailto: link 
+        tags. We match syntactically invalid links containing 
+        mailto: to catch anti-spam email addresses, eg. bob at 
+        gmail.com. This uses the simplified email regular 
+        expression from 
+        http://www.regular-expressions.info/email.html for valid 
+        email address matching. 
+
+        String       : 54753433@qq.com,907010669@qq.com
+
+[ HTML5 ]
+        HTML version 5, detected by the doctype declaration 
+
+
+[ HTTPServer ]
+        HTTP server header string. This plugin also attempts to 
+        identify the operating system from the server header. 
+
+        String       : Tengine (from server string)
+
+[ Script ]
+        This plugin detects instances of script HTML elements and 
+        returns the script language/type. 
+
+        String       : text/javascript,text/jscript
+
+[ Strict-Transport-Security ]
+        Strict-Transport-Security is an HTTP header that restricts 
+        a web browser from accessing a website without the security 
+        of the HTTPS protocol. 
+
+        String       : max-age=31536000
+
+[ Tengine-Web-Server ]
+        Tengine is a web server originated by Taobao, the largest 
+        e-commerce website in Asia. It is based on the popular 
+        Nginx HTTP server. 
+
+        Website     : http://tengine.taobao.org/
+
+[ X-UA-Compatible ]
+        This plugin retrieves the X-UA-Compatible value from the 
+        HTTP header and meta http-equiv tag. - More Info: 
+        http://msdn.microsoft.com/en-us/library/cc817574.aspx 
+
+        String       : IE=Edge
+
+HTTP Headers:
+        HTTP/1.1 200 OK
+        Server: Tengine
+        Date: Fri, 28 Mar 2025 18:44:01 GMT
+        Content-Type: text/html; charset=utf-8
+        Content-Length: 14366
+        Connection: close
+        Set-Cookie: PHPSESSID=8sschfhgte61mebhhv001obj03; expires=Sat, 29-Mar-2025 18:44:01 GMT; Max-Age=86400; path=/
+        Expires: Thu, 19 Nov 1981 08:52:00 GMT
+        Cache-Control: no-store, no-cache, must-revalidate
+        Pragma: no-cache
+        Content-Encoding: gzip
+        Vary: Accept-Encoding
+        Strict-Transport-Security: max-age=31536000
