@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <title>PlugShare API 安全漏洞报告 - 上饶满星科技</title>
+
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="PlugShare API安全漏洞报告：详细分析了应用程序中的API密钥泄露漏洞，包括AWS Cognito凭证、Stripe支付密钥等敏感信息泄露。由上饶满星科技安全研究团队出具的专业漏洞分析报告。"
+    />
+    <meta
+      name="keywords"
+      content="PlugShare,API安全,漏洞报告,数据泄露,AWS安全,Stripe安全,安全研究"
+    />
+    <meta name="author" content="上饶满星科技安全研究团队" />
+    <meta name="robots" content="index, follow" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Enhanced styling -->
+    <style>
+      :root {
+        --primary-gradient: linear-gradient(135deg, #2563eb, #7c3aed);
+        --glass-bg: rgba(255, 255, 255, 0.9);
+      }
+      
+      body {
+        font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+      }
+      
+      .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      }
+      
+      .gradient-border {
+        position: relative;
+        border-radius: 0.75rem;
+        background: linear-gradient(var(--glass-bg), var(--glass-bg)) padding-box,
+                    var(--primary-gradient) border-box;
+        border: 2px solid transparent;
+      }
+      
+      .hover-lift {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .code-block {
+        background: #1a1a1a;
+        border-radius: 8px;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+      
+      @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+      }
+      
+      .float-animation {
+        animation: float 6s ease-in-out infinite;
+      }
+    </style>
+  </head>
+
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
+      <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between items-center h-16">
+          <div class="flex items-center space-x-2">
+            <i class="fas fa-shield-alt text-blue-600 text-xl"></i>
+            <span
+              class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+            >
+              安全漏洞报告 PS-SEC-20250328
+            </span>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 max-w-7xl mx-auto">
+      <!-- Header Section -->
+      <div class="text-center mb-12">
+        <h1
+          class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+        >
+          PlugShare API 关键数据泄露安全评估报告
+        </h1>
+        <div class="flex justify-center space-x-4 mb-8">
+          <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full">
+            <i class="fas fa-calendar-alt mr-2"></i>2025年3月28日
+          </span>
+          <span class="px-4 py-2 bg-red-100 text-red-800 rounded-full">
+            <i class="fas fa-exclamation-triangle mr-2"></i>CVSS 9.1
+          </span>
+        </div>
+        <div
+          class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-8 border border-blue-100 shadow-sm mb-8"
+        >
+          <div class="flex items-center mb-6">
+            <i class="fas fa-shield-alt text-blue-600 text-2xl mr-3"></i>
+            <h2 class="text-xl font-bold text-blue-800">安全研究声明</h2>
+          </div>
+
+          <div class="space-y-6">
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-blue-100"
+            >
+              <p class="text-blue-700 leading-relaxed">
+                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+              </p>
+            </div>
+
+            <div class="flex items-center justify-center space-x-4 text-sm">
+              <span
+                class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full flex items-center"
+              >
+                <i class="fas fa-check-circle mr-2"></i>善意披露
+              </span>
+              <span
+                class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full flex items-center"
+              >
+                <i class="fas fa-user-shield mr-2"></i>数据保护
+              </span>
+              <span
+                class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full flex items-center"
+              >
+                <i class="fas fa-handshake mr-2"></i>负责任报告
+              </span>
+            </div>
+
+            <div
+              class="bg-white/80 backdrop-blur-sm rounded-lg p-6 border border-blue-100"
+            >
+              <p class="text-blue-700">
+                衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Vulnerability Overview -->
+        <section class="mb-12 section-card bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-bug text-red-600 mr-3"></i>漏洞概述
+          </h2>
+          <div class="prose max-w-none">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      参数名
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      值（部分隐藏）
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      风险分析
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      pwpsApiUrl
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      https://api.plugshare.com/pwps/v1
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      额外的API端点，可能包含支付或用户数据
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      awsDomain
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      auth.plugshare.com
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      AWS Cognito身份验证服务，可能被滥用进行账户接管攻击
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      stripeKey
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      pk_live_{敏感信息已脱敏}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      公开的Stripe付款密钥，可能被滥用进行支付欺诈
+                    </td>
+                  </tr>
+                  <!-- 添加更多安全风险分析行 -->
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      amplitudeApiKey
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      c23f60036374ff9db6c5db04655749de
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      Amplitude分析工具API密钥，可能导致用户行为数据泄露
+                    </td>
+                  </tr>
+
+                  <!-- 详细安全分析表格 -->
+                  <tr>
+                    <td colspan="3" class="px-6 py-8">
+                      <div
+                        class="bg-blue-50/30 rounded-xl p-6 border border-blue-100"
+                      >
+                        <h3 class="text-lg font-semibold text-blue-900 mb-4">
+                          详细安全分析
+                        </h3>
+                        <div class="overflow-x-auto">
+                          <table class="min-w-full divide-y divide-blue-200">
+                            <thead class="bg-blue-50">
+                              <tr>
+                                <th
+                                  class="px-4 py-3 text-left text-xs font-medium text-blue-900"
+                                >
+                                  类别
+                                </th>
+                                <th
+                                  class="px-4 py-3 text-left text-xs font-medium text-blue-900"
+                                >
+                                  风险点
+                                </th>
+                                <th
+                                  class="px-4 py-3 text-left text-xs font-medium text-blue-900"
+                                >
+                                  可能的攻击方式
+                                </th>
+                                <th
+                                  class="px-4 py-3 text-left text-xs font-medium text-blue-900"
+                                >
+                                  影响
+                                </th>
+                                <th
+                                  class="px-4 py-3 text-left text-xs font-medium text-blue-900"
+                                >
+                                  修复建议
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-blue-100">
+                              <!-- API端点泄露 -->
+                              <tr class="hover:bg-blue-50/20">
+                                <td
+                                  class="px-4 py-3 text-sm font-medium text-blue-900"
+                                >
+                                  API 端点泄露
+                                </td>
+                                <td
+                                  class="px-4 py-3 text-sm font-mono text-blue-700"
+                                >
+                                  apiUrl: https://api.plugshare.com/v3<br />
+                                  pwpsApiUrl: https://api.plugshare.com/pwps/v1
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                  <ul
+                                    class="list-disc pl-4 space-y-1 text-gray-700"
+                                  >
+                                    <li>直接调用 API 进行数据爬取</li>
+                                    <li>批量请求导致 DoS 攻击</li>
+                                  </ul>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                  <div class="space-y-2">
+                                    <span
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                                    >
+                                      <i class="fas fa-database mr-1"></i
+                                      >数据泄露
+                                    </span>
+                                    <span
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800"
+                                    >
+                                      <i class="fas fa-ban mr-1"></i>服务不可用
+                                    </span>
+                                  </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm">
+                                  <div class="space-y-2">
+                                    <span
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                                    >
+                                      <i class="fas fa-lock mr-1"></i
+                                      >启用身份验证
+                                    </span>
+                                    <span
+                                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                                    >
+                                      <i class="fas fa-shield-alt mr-1"></i
+                                      >设置速率限制
+                                    </span>
+                                  </div>
+                                </td>
+                              </tr>
+
+                              <!-- 其他风险类别按相同模式添加 -->
+                            </tbody>
+                          </table>
+                        </div>
+
+                        <!-- 结论部分 -->
+                        <div
+                          class="mt-6 p-4 bg-yellow-50 rounded-lg border border-yellow-100"
+                        >
+                          <h4
+                            class="text-lg font-semibold text-yellow-900 mb-2"
+                          >
+                            结论
+                          </h4>
+                          <p class="text-yellow-800">
+                            PlugShare 公开暴露了多个 API
+                            端点及敏感密钥，可能导致
+                            <span class="font-semibold"
+                              >数据泄露、账户接管、支付欺诈等严重安全风险</span
+                            >。 建议立即采取
+                            <span class="font-semibold">安全加固措施</span>，
+                            移除 env.js 文件中的敏感信息，并在后端实现
+                            <span class="font-semibold"
+                              >身份验证、速率限制、支付密钥管理</span
+                            >
+                            等安全机制，以降低攻击风险。
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      awsUserPoolWebClientId
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      2u0{敏感信息已脱敏}
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      AWS Cognito客户端ID，可用于身份认证请求伪造
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      awsUserPoolId
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      us-east-1_oweQ7XmGf
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      AWS Cognito用户池ID，可能被用于枚举用户信息
+                    </td>
+                  </tr>
+                  <tr class="hover:bg-gray-50">
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900"
+                    >
+                      oauthRedirectUri
+                    </td>
+                    <td
+                      class="px-6 py-4 whitespace-nowrap text-sm text-blue-600"
+                    >
+                      https://www.plugshare.com/oauth
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500">
+                      OAuth重定向URI，可能存在开放重定向漏洞风险
+                    </td>
+                  </tr>
+                  <!-- Add other rows following the same pattern -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- Risk Analysis -->
+        <section class="mb-12 section-card bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-chart-line text-yellow-600 mr-3"></i>风险分析
+          </h2>
+          <div class="space-y-4">
+            <div class="flex items-start space-x-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-exclamation-circle text-red-600"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-2">API滥用风险</h3>
+                <p class="text-gray-600">
+                  公开的API端点可能被未授权用户访问，导致数据泄露服务和滥用。
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-key text-yellow-600"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-2">支付安全风险</h3>
+                <p class="text-gray-600">
+                  暴露的Stripe密钥可能被用于创建恶意支付请求，造成经济损失。
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-user-shield text-orange-600"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-2">身份认证风险</h3>
+                <p class="text-gray-600">
+                  AWS Cognito配置泄露可能导致身份认证绕过，威胁用户账户安全。
+                </p>
+              </div>
+            </div>
+
+            <div class="flex items-start space-x-4">
+              <div
+                class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center"
+              >
+                <i class="fas fa-database text-purple-600"></i>
+              </div>
+              <div>
+                <h3 class="font-semibold text-lg mb-2">数据隐私风险</h3>
+                <p class="text-gray-600">
+                  分析工具配置泄露可能导致用户行为数据被收集，侵犯用户隐私。
+                </p>
+              </div>
+            </div>
+            <!-- Add other risk items following the same pattern -->
+          </div>
+        </section>
+
+        <div class="mt-6" style="margin-bottom: 80px;">
+        <h4 class="font-semibold mb-4">提交截图证明</h4>
+        <img 
+          src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250327-cGx1Z3NoYXJlCg==_.png?raw=true"
+          alt="漏洞报告提交邮件截图"
+          class="rounded-lg shadow-md w-full"
+        />
+        </div>
+
+        <!-- Reproduction Steps -->
+        <section class="mb-12 section-card bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-code text-green-600 mr-3"></i>复现步骤
+          </h2>
+          <div class="space-y-6">
+            <p class="text-gray-700 mb-4">
+              攻击者可以使用简单的 curl 命令获取该 env.js
+              文件，并解析其中的敏感数据。以下是详细的复现方法：
+            </p>
+
+            <!-- CURL Command -->
+            <div class="space-y-2">
+              <h3 class="text-xl font-semibold mb-3">CURL 命令获取</h3>
+              <div class="bg-gray-800 rounded-lg p-4">
+                <pre
+                  class="language-bash"
+                ><code>curl 'https://www.plugshare.com/env.js' \
+-H 'sec-ch-ua-platform: "macOS"' \
+-H 'Referer: https://www.plugshare.com/' \
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36' \
+-H 'sec-ch-ua: "Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"' \
+-H 'DNT: 1' \
+-H 'sec-ch-ua-mobile: ?0'</code></pre>
+              </div>
+            </div>
+
+            <!-- Python Script -->
+            <div class="space-y-2">
+              <h3 class="text-xl font-semibold mb-3">Python 自动化脚本</h3>
+              <p class="text-gray-700 mb-2">
+                如果需要批量扫描和提取密钥，可使用以下 Python 脚本：
+              </p>
+              <div class="bg-gray-800 rounded-lg p-4">
+                <pre class="language-python"><code>import requests
+import re
+
+url = "https://www.plugshare.com/env.js"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+    "Referer": "https://www.plugshare.com/"
+}
+
+response = requests.get(url, headers=headers)
+
+if response.status_code == 200:
+    js_content = response.text
+    keys = re.findall(r"'(pk_live_[a-zA-Z0-9]+)'", js_content)  # 识别 Stripe 生产密钥
+    aws_client_id = re.findall(r"'([a-zA-Z0-9_-]{20,})'", js_content)  # 识别 Cognito 客户端 ID
+
+    print("发现的密钥信息：")
+    print("\n".join(keys))
+    print("AWS Cognito Client ID:", aws_client_id)
+else:
+    print("无法访问目标资源，可能已被修复。")</code></pre>
+              </div>
+            </div>
+
+            <!-- C++ Implementation -->
+            <div class="space-y-2">
+              <h3 class="text-xl font-semibold mb-3">C++ 实现</h3>
+              <p class="text-gray-700 mb-2">
+                使用 libcurl 库进行 HTTP 请求并提取密钥：
+              </p>
+              <div class="bg-gray-800 rounded-lg p-4">
+                <pre class="language-cpp"><code>#include &lt;iostream&gt;
+#include &lt;curl/curl.h&gt;
+#include &lt;regex&gt;
+
+size_t write_callback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    output->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+int main() {
+    CURL* curl;
+    CURLcode res;
+    std::string response_data;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.plugshare.com/env.js");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+
+        if (res == CURLE_OK) {
+            std::regex key_regex("'(pk_live_[a-zA-Z0-9]+)'");
+            std::smatch match;
+            if (std::regex_search(response_data, match, key_regex)) {
+                std::cout << "发现 Stripe API Key: " << match.str(1) << std::endl;
+            }
+        } else {
+            std::cout << "请求失败！" << std::endl;
+        }
+    }
+    return 0;
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Impact Analysis -->
+        <section class="mb-12 section-card bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-impact text-purple-600 mr-3"></i>影响范围
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-red-50 p-6 rounded-xl">
+              <h3 class="font-semibold text-lg mb-3">PlugShare用户</h3>
+              <p class="text-gray-700">可能导致账户接管、支付欺诈等风险</p>
+            </div>
+            <div class="bg-yellow-50 p-6 rounded-xl">
+              <h3 class="font-semibold text-lg mb-3">PlugShare业务</h3>
+              <p class="text-gray-700">
+                支付API泄露可能导致经济损失，身份认证漏洞可能影响数据完整性
+              </p>
+            </div>
+            <div class="bg-blue-50 p-6 rounded-xl mb-8">
+              <h3 class="font-semibold text-lg mb-3">AWS资源</h3>
+              <p class="text-gray-700">
+                攻击者可能利用AWS Cognito进行未授权访问，影响云服务安全
+              </p>
+            </div>
+            <!-- Add other impact items -->
+          </div>
+        </section>
+      
+
+      <section class="mb-12 section-card bg-white rounded-xl shadow-lg p-8">
+        <h2 class="text-2xl font-bold mb-6 flex items-center">
+          <i class="fas fa-network-wired text-indigo-600 mr-3"></i>子域名扫描
+        </h2>
+        <div class="space-y-6">
+          <!-- Command Section -->
+          <div class="bg-gray-900 rounded-xl p-6 border border-gray-800">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-200">
+                <i class="fas fa-terminal mr-2"></i>端口扫描命令
+              </h3>
+              <span class="px-3 py-1 bg-indigo-900/50 text-indigo-300 rounded-full text-sm">
+                NMAP Scan
+              </span>
+            </div>
+            <div class="bg-gray-800/50 rounded-lg p-4">
+              <pre class="language-bash"><code>for sub in $(cat subdomains.txt); do nmap -p- --min-rate=1000 -T4 -Pn $sub; done</code></pre>
+            </div>
+          </div>
+
+          <!-- Subdomains List -->
+          <div class="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-blue-900">
+                <i class="fas fa-sitemap mr-2"></i>发现的子域名
+              </h3>
+              <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
+                共 28 个子域名
+              </span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <!-- Core Services -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">www.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">api.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">auth.plugshare.com</code>
+              </div>
+              
+              <!-- Development & Testing -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">developer.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">staging.plugshare.com</code>
+              </div>
+              
+              <!-- Support & Help -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">help.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">faq.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">ezchargesupport.plugshare.com</code>
+              </div>
+              
+              <!-- Email & Communication -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">email.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">o2.email.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">o5256.e.mail.plugshare.com</code>
+              </div>
+              
+              <!-- Business & Analytics -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">reporting.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">status.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">company.plugshare.com</code>
+              </div>
+              
+              <!-- Partner Portals -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">tesla.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">vw.plugshare.com</code>
+              </div>
+              
+              <!-- Additional Services -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">store.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">photos.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">assets.plugshare.com</code>
+              </div>
+              
+              <!-- Marketing & Content -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">newsroom.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">launch.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">roadtrip.plugshare.com</code>
+              </div>
+              
+              <!-- Surveys & Feedback -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">survey3.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">survey6.plugshare.com</code>
+              </div>
+              
+              <!-- Payment & E-commerce -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">pay.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">ezcharge.plugshare.com</code>
+              </div>
+              
+              <!-- Tracking & Links -->
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">i.clicks.plugshare.com</code>
+              </div>
+              <div class="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-blue-100 hover:shadow-md transition-all">
+                <code class="text-blue-700">link.plugshare.com</code>
+              </div>
+            </div>
+          </div>
+      </section>
+
+      <section class="mb-16 px-4">
+        <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+          <i class="fas fa-envelope text-blue-600 mr-3"></i>
+          联系方式
+        </h2>
+
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <div class="space-y-6">
+            <!-- 安全研究员信息 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+                安全研究员信息
+              </h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <p class="mb-2"><strong>姓名:</strong> 钟智强</p>
+                  <p class="mb-2">
+                    <strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 |
+                    计算机视觉专家
+                  </p>
+                </div>
+                <div>
+                  <p class="mb-2">
+                    <strong>电子邮件:</strong>
+                    <a
+                      href="mailto:johnmelodymel@qq.com"
+                      class="text-blue-600 hover:underline"
+                      >johnmelodymel@qq.com</a
+                    >
+                  </p>
+                  <p><strong>微信:</strong> ctkqiang</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- 响应时间承诺 -->
+            <div class="bg-green-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-clock text-green-600 mr-2"></i>
+                响应时间承诺
+              </h4>
+              <ul class="list-none space-y-2">
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>紧急漏洞问题：24小时内响应</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                  <span>一般技术咨询：48小时内回复</span>
+                </li>
+              </ul>
+            </div>
+
+            <!-- 沟通渠道 -->
+            <div class="bg-blue-50 p-6 rounded-lg">
+              <h4 class="font-semibold mb-3 flex items-center">
+                <i class="fas fa-comments text-blue-600 mr-2"></i>
+                首选沟通渠道
+              </h4>
+              <div class="space-y-2">
+                <p>1. 电子邮件（安全加密通信）</p>
+                <p>2. 微信语音/视频会议</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">本报告符合ISO/IEC 27001:2022标准要求</p>
+        <p class="text-gray-400 text-sm">© 2025 上饶满星科技. 保留所有权利</p>
+      </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+  </body>
+</html>
