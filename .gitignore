@@ -1,3 +1,6 @@
+# Scan Results
+scan_results_*/
+*.txt
 t.html
 directory-list-2.3-medium.txt
 source/
