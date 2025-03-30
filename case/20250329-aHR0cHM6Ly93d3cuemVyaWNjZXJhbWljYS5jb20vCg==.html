@@ -36,10 +36,66 @@
     </style>
   </head>
   <body class="bg-gray-50 font-sans">
-    <!-- Navigation -->
-    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
-      <!-- 保持相同的导航结构 -->
+    <!-- Navigation Update -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 transition-all duration-300 ease-in-out">
+      <div class="max-w-7xl mx-auto px-2 sm:px-4">
+        <div class="flex justify-between items-center py-2 sm:py-4">
+          <div class="flex items-center space-x-2 sm:space-x-3">
+            <i class="fas fa-shield-halved text-blue-600 text-lg sm:text-xl animate-pulse"></i>
+            <span class="text-base sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:scale-105 transition-transform truncate max-w-[200px] sm:max-w-none">
+              安全审计报告 20250329-aHR0cHM6
+            </span>
+          </div>
+          <!-- Desktop Navigation -->
+          <div class="hidden md:flex space-x-6">
+            <a href="#overview" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
+              <i class="fas fa-bug mr-2"></i>漏洞概览
+            </a>
+            <a href="#technical" class="nav-link hover:text-blue-600 transition-colors hover:scale-105 transform">
+              <i class="fas fa-microscope mr-2"></i>技术细节
+            </a>
+          </div>
+          <!-- Mobile Menu Button -->
+          <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <i class="fas fa-bars text-blue-600 text-lg sm:text-xl hover:text-blue-800 transition-colors"></i>
+          </button>
+        </div>
+      </div>
     </nav>
+
+    <div id="google_translate_element" style="display: none;"></div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden lg:hidden bg-white/95 backdrop-blur-sm border-t shadow-lg transform transition-all duration-300 ease-in-out fixed top-[60px] left-0 w-full z-50 max-h-[calc(100vh-60px)] overflow-y-auto">
+      <div class="px-3 py-2 space-y-1">
+        <a href="#overview" class="block nav-link hover:text-blue-600 hover:bg-blue-50 px-3 py-2.5 rounded-lg transition-colors duration-200 active:bg-blue-100 text-sm flex items-center">
+          <i class="fas fa-bug mr-2 text-blue-600"></i>
+          <span>漏洞概览</span>
+        </a>
+        <a href="#technical" class="block nav-link hover:text-blue-600 hover:bg-blue-50 px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm flex items-center">
+          <i class="fas fa-microscope mr-2 text-blue-600"></i>
+          <span>技术细节</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Add mobile menu script -->
+    <script>
+      // Mobile menu toggle
+      document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+      });
+      
+      // Close menu on click outside
+      document.addEventListener('click', function(event) {
+        const menu = document.getElementById('mobile-menu');
+        const button = document.getElementById('mobile-menu-button');
+        if (!menu.contains(event.target) && !button.contains(event.target)) {
+          menu.classList.add('hidden');
+        }
+      });
+    </script>
 
     <!-- Main Content -->
     <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
@@ -63,7 +119,10 @@
             </h4>
             <strong>
               <p class="text-blue-700 leading-relaxed">
-                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。
+                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+              </p>
+              <p class="text-blue-700 mt-4">
+                衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。
               </p>
             </strong>
           </div>
@@ -206,54 +265,6 @@
           </div>
         </div>
       </section>
-
-      <!-- Recommendations Section -->
-      <section class="mb-20">
-        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
-          <h2 class="text-3xl font-bold mb-8 flex items-center">
-            <i
-              class="fas fa-shield-alt text-blue-600 mr-3 bg-blue-50 p-3 rounded-lg"
-            ></i>
-            安全建议
-          </h2>
-
-          <div class="space-y-6">
-            <!-- Server Security -->
-            <div class="border-l-4 border-blue-500 pl-6 py-4">
-              <h3 class="text-xl font-semibold mb-4">服务器安全加固</h3>
-              <ul class="list-disc pl-6 space-y-2">
-                <li>升级 LiteSpeed Web Server 到最新版本</li>
-                <li>配置适当的安全响应头</li>
-                <li>实施 HSTS 策略</li>
-                <li>加强子域名访问控制</li>
-              </ul>
-            </div>
-
-            <!-- Application Security -->
-            <div class="border-l-4 border-green-500 pl-6 py-4">
-              <h3 class="text-xl font-semibold mb-4">应用程序安全</h3>
-              <ul class="list-disc pl-6 space-y-2">
-                <li>更新 Laravel 框架到最新版本</li>
-                <li>完善 CSP 配置</li>
-                <li>加强 Cookie 安全性设置</li>
-                <li>实施更严格的 XSS 防护措施</li>
-              </ul>
-            </div>
-
-            <!-- Infrastructure Security -->
-            <div class="border-l-4 border-purple-500 pl-6 py-4">
-              <h3 class="text-xl font-semibold mb-4">基础设施安全</h3>
-              <ul class="list-disc pl-6 space-y-2">
-                <li>限制不必要的子域名访问</li>
-                <li>加强邮件服务器安全配置</li>
-                <li>实施 WAF 防护</li>
-                <li>定期进行安全扫描和监控</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
 
       <!-- Add this section after the Technical Analysis Section -->
       <section class="mb-20">
@@ -432,6 +443,52 @@
         </div>
       </section>
     </section>
+
+    <section class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i
+              class="fas fa-shield-alt text-blue-600 mr-3 bg-blue-50 p-3 rounded-lg"
+            ></i>
+            安全建议
+          </h2>
+
+          <div class="space-y-6">
+            <!-- Server Security -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">服务器安全加固</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>升级 LiteSpeed Web Server 到最新版本</li>
+                <li>配置适当的安全响应头</li>
+                <li>实施 HSTS 策略</li>
+                <li>加强子域名访问控制</li>
+              </ul>
+            </div>
+
+            <!-- Application Security -->
+            <div class="border-l-4 border-green-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">应用程序安全</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>更新 Laravel 框架到最新版本</li>
+                <li>完善 CSP 配置</li>
+                <li>加强 Cookie 安全性设置</li>
+                <li>实施更严格的 XSS 防护措施</li>
+              </ul>
+            </div>
+
+            <!-- Infrastructure Security -->
+            <div class="border-l-4 border-purple-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">基础设施安全</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>限制不必要的子域名访问</li>
+                <li>加强邮件服务器安全配置</li>
+                <li>实施 WAF 防护</li>
+                <li>定期进行安全扫描和监控</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <!-- Contact Section -->
       <section class="mb-16">
