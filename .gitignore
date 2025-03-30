@@ -1,3 +1,6 @@
+# Scan Results
+scan_results_*/
+*.txt
 t.html
 directory-list-2.3-medium.txt
 source/
@@ -5,3 +8,4 @@ output/
 sensitive_reports/
 tutorial/
 剧本/
+attack_list.txt
