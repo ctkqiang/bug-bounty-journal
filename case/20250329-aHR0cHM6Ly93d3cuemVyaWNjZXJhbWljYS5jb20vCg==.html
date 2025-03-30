@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <title>Zeric Ceramica 网站安全审计报告 - 上饶满星科技</title>
+    <!-- SEO Meta Tags -->
+    <meta
+      name="description"
+      content="Zeric Ceramica 网站安全审计报告：详细分析了网站中的安全漏洞，包括服务器配置问题、敏感信息泄露等安全问题。由上饶满星科技安全研究团队出具的专业漏洞分析报告。"
+    />
+    <meta
+      name="keywords"
+      content="Zeric Ceramica,安全审计,漏洞报告,服务器安全,网站安全,安全研究"
+    />
+    <meta name="author" content="上饶满星科技安全研究团队" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- 使用与原模板相同的样式表和脚本 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- 保持相同的样式定义 -->
+    <style>
+      /* 复制原模板中的所有样式定义 */
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <!-- Navigation -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50">
+      <!-- 保持相同的导航结构 -->
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
+      <!-- Section Header -->
+      <section class="mb-20">
+        <div class="text-center mb-12">
+          <h2
+            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+          >
+            Zeric Ceramica 网站安全审计报告
+          </h2>
+
+          <div
+            class="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500 mb-8"
+          >
+            <h4
+              class="text-lg font-semibold text-blue-800 mb-4 flex items-center"
+            >
+              <i class="fas fa-heart text-blue-600 mr-2"></i>
+              善意声明
+            </h4>
+            <strong>
+              <p class="text-blue-700 leading-relaxed">
+                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。
+              </p>
+            </strong>
+          </div>
+
+          <div class="bg-red-100 p-6 rounded-lg border-l-4 border-red-500 mb-8">
+            <h4 class="text-red-800">
+              严重性等级: <span class="font-bold">HIGH (CVSS 7.5)</span>
+            </h4>
+          </div>
+        </div>
+      </section>
+
+      <!-- Technical Analysis Section -->
+      <section id="technical" class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i
+              class="fas fa-layer-group text-blue-600 mr-3 bg-blue-50 p-3 rounded-lg"
+            ></i>
+            技术发现
+          </h2>
+
+          <!-- Server Information -->
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">服务器信息</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <ul class="space-y-2">
+                <li><strong>服务器类型:</strong> LiteSpeed</li>
+                <li><strong>服务器位置:</strong> 立陶宛 (LITHUANIA)</li>
+                <li><strong>IP地址:</strong> 88.222.211.117</li>
+                <li><strong>托管平台:</strong> Hostinger</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Subdomain Analysis -->
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">子域名分析</h3>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      子域名
+                    </th>
+                    <th
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      用途
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr>
+                    <td class="px-6 py-4">webdisk.zericceramica.com</td>
+                    <td class="px-6 py-4">Web磁盘服务</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4">webmail.zericceramica.com</td>
+                    <td class="px-6 py-4">邮件服务</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4">cpanel.zericceramica.com</td>
+                    <td class="px-6 py-4">控制面板</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4">mail.zericceramica.com</td>
+                    <td class="px-6 py-4">邮件服务</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Technology Stack -->
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">技术栈分析</h3>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="font-semibold mb-2">前端技术</h4>
+                <ul class="list-disc pl-6">
+                  <li>HTML5</li>
+                  <li>Bootstrap</li>
+                  <li>jQuery</li>
+                </ul>
+              </div>
+              <div class="bg-gray-50 p-4 rounded-lg">
+                <h4 class="font-semibold mb-2">后端技术</h4>
+                <ul class="list-disc pl-6">
+                  <li>PHP 8.2.27</li>
+                  <li>Laravel Framework</li>
+                  <li>LiteSpeed Web Server</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Headers Analysis -->
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">安全头部分析</h3>
+            <div class="bg-yellow-50 p-4 rounded-lg">
+              <h4 class="font-semibold mb-2 text-yellow-800">发现的问题</h4>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>缺少 X-Frame-Options 头部</li>
+                <li>缺少 X-XSS-Protection 头部</li>
+                <li>Content-Security-Policy 配置不完整</li>
+                <li>缺少 HSTS 配置</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Cookie Security -->
+          <div class="mb-8">
+            <h3 class="text-xl font-semibold mb-4">Cookie 安全性</h3>
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr>
+                    <th class="px-6 py-3 text-left">Cookie名称</th>
+                    <th class="px-6 py-3 text-left">安全属性</th>
+                    <th class="px-6 py-3 text-left">问题</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="px-6 py-4">XSRF-TOKEN</td>
+                    <td class="px-6 py-4">Secure, SameSite=Lax</td>
+                    <td class="px-6 py-4">缺少 HttpOnly</td>
+                  </tr>
+                  <tr>
+                    <td class="px-6 py-4">laravel_session</td>
+                    <td class="px-6 py-4">Secure, HttpOnly, SameSite=Lax</td>
+                    <td class="px-6 py-4">配置正确</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recommendations Section -->
+      <section class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i
+              class="fas fa-shield-alt text-blue-600 mr-3 bg-blue-50 p-3 rounded-lg"
+            ></i>
+            安全建议
+          </h2>
+
+          <div class="space-y-6">
+            <!-- Server Security -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">服务器安全加固</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>升级 LiteSpeed Web Server 到最新版本</li>
+                <li>配置适当的安全响应头</li>
+                <li>实施 HSTS 策略</li>
+                <li>加强子域名访问控制</li>
+              </ul>
+            </div>
+
+            <!-- Application Security -->
+            <div class="border-l-4 border-green-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">应用程序安全</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>更新 Laravel 框架到最新版本</li>
+                <li>完善 CSP 配置</li>
+                <li>加强 Cookie 安全性设置</li>
+                <li>实施更严格的 XSS 防护措施</li>
+              </ul>
+            </div>
+
+            <!-- Infrastructure Security -->
+            <div class="border-l-4 border-purple-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4">基础设施安全</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>限制不必要的子域名访问</li>
+                <li>加强邮件服务器安全配置</li>
+                <li>实施 WAF 防护</li>
+                <li>定期进行安全扫描和监控</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Add this section after the Technical Analysis Section -->
+      <section class="mb-20">
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i class="fas fa-exclamation-triangle text-red-600 mr-3 bg-red-50 p-3 rounded-lg"></i>
+            敏感信息泄露：.env 文件
+          </h2>
+      
+          <!-- Severity Level -->
+          <div class="bg-red-100 p-6 rounded-lg mb-8">
+            <h3 class="text-xl font-semibold text-red-800 mb-4">严重程度：危急</h3>
+            <p class="text-red-700">
+              应用程序的 .env 文件可被公开访问，导致数据库凭证和应用程序密钥等敏感配置数据泄露。
+            </p>
+          </div>
+      
+          <!-- Keep the Exposed Credentials Table in English -->
+          <div class="overflow-x-auto mb-8">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead>
+                <tr>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credential Type</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Value</th>
+                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Level</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Database Name</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">u31<span class="text-red-600">████████_zeric</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">High</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Database Username</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">u31<span class="text-red-600">████████_zeric</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">High</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Database Password</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">^4Y<span class="text-red-600">██████</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">APP_KEY</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono text-xs">bas<span class="text-red-600">████████████████████████████</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Critical</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Debug Mode</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">tru<span class="text-yellow-600">█</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Redis Host</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">127<span class="text-yellow-600">███████</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Redis Port</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">637<span class="text-yellow-600">█</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Mail Configuration</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">mai<span class="text-yellow-600">████████</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Environment</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">loc<span class="text-yellow-600">██</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Medium</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">Application URL</td>
+                  <td class="px-6 py-4 whitespace-nowrap font-mono">htt<span class="text-gray-600">█████████████████████</span></td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Low</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+      
+                    <!-- Evidence Screenshots -->
+          <div class="space-y-8 mt-8">
+            <div class="bg-white rounded-lg shadow-sm p-6">
+              <h4 class="font-semibold mb-4 text-lg">漏洞证据截图</h4>
+              
+              <!-- Screenshot 1 -->
+              <div class="mb-8">
+                <h5 class="text-sm text-gray-600 mb-2">证据 1: 环境变量泄露</h5>
+                <img 
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==1.png?raw=true"
+                  alt="环境变量泄露证据截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+
+              <!-- Screenshot 2 -->
+              <div class="mb-8">
+                <h5 class="text-sm text-gray-600 mb-2">证据 2: 服务器配置问题</h5>
+                <img 
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==2.png?raw=true"
+                  alt="服务器配置问题证据截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+
+              <!-- Screenshot 3 -->
+              <div class="mb-8">
+                <h5 class="text-sm text-gray-600 mb-2">证据 3: 安全头部缺失</h5>
+                <img 
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==3.png?raw=true"
+                  alt="安全头部缺失证据截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+
+              <!-- Screenshot 4 -->
+              <div class="mb-8">
+                <h5 class="text-sm text-gray-600 mb-2">证据 4: 系统信息泄露</h5>
+                <img 
+                  src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==4.png?raw=true"
+                  alt="系统信息泄露证据截图"
+                  class="rounded-lg shadow-md w-full"
+                />
+              </div>
+            </div>
+          </div>
+          
+          <!-- Security Implications -->
+          <div class="space-y-6">
+            <div class="bg-gray-50 p-6 rounded-lg">
+              <h3 class="text-xl font-semibold mb-4">安全影响</h3>
+              <ul class="list-disc pl-6 space-y-2">
+                <li>数据库完全访问权限被泄露</li>
+                <li>数据可能被窃取和篡改</li>
+                <li>由于 APP_KEY 泄露可能导致会话劫持</li>
+                <li>调试模式开启可能泄露应用程序逻辑</li>
+                <li>应用程序后端存在未授权访问风险</li>
+              </ul>
+            </div>
+      
+            <!-- Immediate Actions Required -->
+            <div class="bg-red-50 p-6 rounded-lg">
+              <h3 class="text-xl font-semibold mb-4 text-red-800">需要立即采取的措施</h3>
+              <ul class="list-disc pl-6 space-y-2 text-red-700">
+                <li>立即更改所有数据库凭证</li>
+                <li>生成新的 APP_KEY 并使所有现有会话失效</li>
+                <li>在生产环境中禁用调试模式</li>
+                <li>实施适当的文件访问控制</li>
+                <li>审计所有数据库访问日志以检查潜在的未授权访问</li>
+                <li>检查并更新服务器配置以防止 .env 文件泄露</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+      <!-- Contact Section -->
+      <section class="mb-16">
+        <div class="bg-white p-8 rounded-lg shadow-md">
+          <h2 class="text-3xl font-bold mb-8 flex items-center">
+            <i class="fas fa-envelope text-blue-600 mr-3"></i>
+            联系方式
+          </h2>
+
+          <div class="space-y-6">
+            <!-- 安全研究员信息 -->
+            <div class="border-l-4 border-blue-500 pl-6 py-4">
+              <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <i class="fas fa-user-shield text-blue-600 mr-2"></i>
+                安全研究员信息
+              </h3>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <p class="mb-2"><strong>姓名:</strong> 钟智强</p>
+                  <p class="mb-2">
+                    <strong>职位:</strong> 高级安全研究员 | 高级全栈开发工程师 |
+                    计算机视觉专家
+                  </p>
+                </div>
+                <div>
+                  <p class="mb-2">
+                    <strong>电子邮件:</strong>
+                    <a
+                      href="mailto:johnmelodymel@qq.com"
+                      class="text-blue-600 hover:underline"
+                      >johnmelodymel@qq.com</a
+                    >
+                  </p>
+                  <p><strong>微信:</strong> ctkqiang</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+      <div class="max-w-7xl mx-auto px-4 text-center">
+        <p class="mb-4">本报告符合ISO/IEC 27001:2022标准要求</p>
+        <p class="text-gray-400 text-sm">© 2025 上饶满星科技. 保留所有权利</p>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-json.min.js"></script>
+    <!-- 保持原有的其他脚本 -->
+  </body>
+</html>
