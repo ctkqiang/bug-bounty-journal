@@ -98,13 +98,34 @@
     </script>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-16 px-4 md:px-8 max-w-7xl mx-auto">
-      <!-- Section Header -->
-      <section class="mb-20">
-        <div class="text-center mb-12">
-          <h2
-            class="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
-          >
+    <!-- Add this in the head section -->
+    <style>
+      @media (max-width: 640px) {
+        .table-responsive {
+          display: block;
+          width: 100%;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        .mobile-card {
+          display: block;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          background: white;
+          border-radius: 0.5rem;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+      }
+    </style>
+
+    <!-- Update the main content padding for mobile -->
+    <main class="pt-16 sm:pt-24 pb-16 px-2 sm:px-4 md:px-8 max-w-7xl mx-auto">
+      
+      <!-- Update section headers for mobile -->
+      <section class="mb-12 sm:mb-20">
+        <div class="text-center mb-8 sm:mb-12">
+          <h2 class="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
             Zeric Ceramica 网站安全审计报告
           </h2>
 
