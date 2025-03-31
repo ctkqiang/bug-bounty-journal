@@ -327,6 +327,57 @@
 
 </section>
 
+<section class="mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-shield-alt text-blue-600 mr-3"></i>
+            CNVD漏洞提交记录
+          </h2>
+          <div class="bg-blue-50 p-4 rounded-lg mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-blue-800">
+                  已提交至国家信息安全漏洞共享平台（CNVD）
+                </h3>
+                <p class="text-blue-700 mt-2">
+                  漏洞编号：<span class="font-mono font-semibold"
+                    >CNVD-C-2025-176294</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                漏洞复现证明
+              </h3>
+              <p class="text-gray-600 mb-4">
+                环境配置文件直接暴露在公网的复现截图
+              </p>
+            </div>
+            <div class="relative">
+              <img
+                src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/CNVD-C-2025-176294.png?raw=true"
+                alt="环境配置文件泄露漏洞截图"
+                class="w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full"
+                >
+                  <i class="fas fa-exclamation-triangle mr-1"></i>
+                  高危漏洞
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Technical Analysis Section Update -->
       <section id="technical" class="mb-20">
         <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-100">
