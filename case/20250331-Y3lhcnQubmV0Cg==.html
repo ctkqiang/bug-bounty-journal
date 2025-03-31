@@ -87,7 +87,7 @@
             </h4>
             <strong>
               <p class="text-blue-700 leading-relaxed">
-                作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
+                作为一名戴着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。
               </p>
               <p class="text-blue-700 mt-4">
                 衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。
@@ -99,6 +99,58 @@
             <h4 class="text-red-800">
               严重性等级: <span class="font-bold">HIGH (CVSS 7.5)</span>
             </h4>
+          </div>
+        </div>
+      </section>
+
+      <!-- Screenshot Section -->
+      <section class="mb-12">
+        <div class="bg-white rounded-xl shadow-lg p-8">
+          <h2 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-shield-alt text-blue-600 mr-3"></i>
+            CNVD漏洞提交记录
+          </h2>
+          <div class="bg-blue-50 p-4 rounded-lg mb-6">
+            <div class="flex items-start space-x-4">
+              <div class="flex-shrink-0">
+                <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-blue-800">
+                  已提交至国家信息安全漏洞共享平台（CNVD）
+                </h3>
+                <p class="text-blue-700 mt-2">
+                  漏洞编号：<span class="font-mono font-semibold"
+                    >CNVD-C-2025-175237</span
+                  >
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 p-4 rounded-lg">
+            <div class="mb-4">
+              <h3 class="text-lg font-semibold text-gray-800 mb-2">
+                漏洞复现证明
+              </h3>
+              <p class="text-gray-600 mb-4">
+                环境配置文件直接暴露在公网的复现截图
+              </p>
+            </div>
+            <div class="relative">
+              <img
+                src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/20250331-Y3lhcnQubmV0Cg==CNVD-C-2025-175237.png?raw=true"
+                alt="环境配置文件泄露漏洞截图"
+                class="w-full rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300"
+              />
+              <div class="absolute top-4 right-4">
+                <span
+                  class="bg-red-100 text-red-800 text-sm font-medium px-3 py-1 rounded-full"
+                >
+                  <i class="fas fa-exclamation-triangle mr-1"></i>
+                  高危漏洞
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </section>
