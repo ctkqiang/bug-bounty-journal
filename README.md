@@ -14,12 +14,12 @@
 
 | 字段        | 详情                                                                                     |
 |-------------|----------------------------------------------------------------------------------------|
-| 案例编号    | 2025-0326                                                                              |
-| 事件名称    | ZUS Coffee移动应用源码泄露事件                                                          |
-| 严重等级    | 🔴 CRITICAL (CVSS 8.9)                                                                 |
-| 发现日期    | 2025年3月26日                                                                          |
-| 涉及系统    | ZUS Coffee Flutter移动应用                                                              |
-| 快速访问    | [20250326-enVzY29mZmVl](https://www.ctkqiang.xin/bug-bounty-journal/case/20250326-enVzY29mZmVl.html) |
+| 案例编号    | 2025-0331                                                                              |
+| 事件名称    | Cyart.net 环境配置泄露事件                                                              |
+| 严重等级    | 🔴 CRITICAL (CVSS 8.7)                                                                 |
+| 发现日期    | 2025年3月31日                                                                          |
+| 涉及系统    | Cyart.net Web应用                                                                      |
+| 快速访问    | [20250331-Y3lhcnQubmV0Cg==](https://www.ctkqiang.xin/bug-bounty-journal/case/20250331-Y3lhcnQubmV0Cg==.html) |
 | 审计团队    | 上饶满星科技安全研究部                                                                  |
 | 最新状态    | <span class="badge bg-red-100 text-red-800">待修复</span>                              |
 
@@ -27,8 +27,11 @@
 
 ## 📚 历史案例
 
-| 案例编号    | 事件名称                  | 严重等级 | 状态 |
-|-------------|---------------------------|----------|------|
-| 2025-0326   | ZUS Coffee移动应用源码泄露| CRITICAL | 🔴 待修复 |
-| 2025-0324   | MYJPJ移动应用数据泄露    | CRITICAL | 🔴 待修复 |
+| 案例编号    | 事件名称                    | 严重等级 | 状态 |
+|-------------|----------------------------|----------|------|
+| 2025-0331   | Cyart.net 环境配置泄露     | CRITICAL | 🔴 待修复 |
+| 2025-0329   | Zeric Ceramica 源码泄露    | CRITICAL | 🔴 待修复 |
+| 2025-0327   | PlugShare API 密钥泄露     | CRITICAL | 🔴 待修复 |
+| 2025-0326   | ZUS Coffee移动应用源码泄露  | CRITICAL | 🔴 待修复 |
+| 2025-0324   | MYJPJ移动应用数据泄露      | CRITICAL | 🔴 待修复 |
 
