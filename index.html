@@ -6,6 +6,9 @@
     <title>安全漏洞案例库 - 上饶满星科技</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
+      const urlParams = new URLSearchParams(window.location.search);
+      const refererValue = urlParams.get("referer") || "未定义来源";
+
       var _hmt = _hmt || [];
       (function () {
         var hm = document.createElement("script");
@@ -13,6 +16,8 @@
         var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
       })();
+
+      _hmt.push(["_trackEvent", "zzq", "referer", refererValue, 1]);
     </script>
 
     <link

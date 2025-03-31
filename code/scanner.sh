@@ -61,7 +61,7 @@ run_scan() {
     # 使用nmap扫描常见端口，检查开放服务
     # 设置10秒超时避免耗时过长
     echo "\n${GREEN}[+] 正在扫描开放端口...${NC}"
-    gtimeout 10 nmap -p 21,22,80,443,3306,5432,3389 -T4 -sV --open -Pn "$url" | grep "open" | tee "$output_dir/ports.txt" || {
+    gtimeout 10 nmap -sC -sV -A -T4 "$url" | grep "open" | tee "$output_dir/ports.txt" || {
         echo "${YELLOW}[!] 端口扫描超时，继续下一个任务...${NC}" | tee -a "$output_dir/ports.txt"
     }
 
