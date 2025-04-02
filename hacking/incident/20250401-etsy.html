@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Etsy钓鱼网站反制案例 - 上饶满星科技</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-6">
+      <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h1 class="text-2xl font-bold mb-4">
+          <i class="fas fa-shield-alt text-blue-600 mr-2"></i>
+          Etsy钓鱼网站反制案例
+        </h1>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">案例概述</h2>
+          <div class="bg-blue-50 p-4 rounded-lg">
+            <p class="text-gray-700">
+              攻击者通过伪造Etsy支付验证页面进行钓鱼攻击，我们采用社会工程学方法成功反制并使其关闭钓鱼网站。
+            </p>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">技术细节</h2>
+          <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+            <div>
+              <h3 class="font-semibold text-gray-700">钓鱼网站信息：</h3>
+              <ul class="list-disc pl-6 text-gray-600">
+                <li>域名：etsy.giving</li>
+                <li>IP地址：
+                  <ul class="list-circle pl-4">
+                    <li>104.21.16.232 (主)</li>
+                    <li>172.67.216.210 (备用)</li>
+                  </ul>
+                </li>
+                <li>DNS服务器响应时间：50ms</li>
+                <li>使用Cloudflare进行保护</li>
+                <li>基于Express框架开发</li>
+                <li>注册时间：2025年3月29日</li>
+                <li>注册商：Web Commerce Communications Limited (WebNic.cc)</li>
+                <li>域名状态：新注册期（addPeriod）</li>
+                <li>使用WhoisProtection.cc隐私保护服务</li>
+              </ul>
+            </div>
+
+            <div class="mt-4">
+              <h3 class="font-semibold text-gray-700">DNS查询结果：</h3>
+              <div class="bg-gray-100 p-3 rounded-lg font-mono text-sm overflow-x-auto">
+                <pre class="text-gray-700">$ dig etsy.giving
+;; ANSWER SECTION:
+etsy.giving.    32    IN    A    172.67.216.210
+etsy.giving.    32    IN    A    104.21.16.232
+
+;; Query time: 50 msec
+;; SERVER: 114.114.114.114#53</pre>
+              </div>
+            </div>
+
+            <div class="mt-4">
+              <h3 class="font-semibold text-gray-700">安全分析：</h3>
+              <p class="text-gray-600 mt-2">
+                攻击者试图通过Cloudflare的安全服务来隐藏真实服务器地址，并使用WHOIS隐私保护来掩盖身份信息。
+                DNS查询显示该域名使用了Cloudflare的双IP部署方案，进一步证实了攻击者在尝试隐藏真实服务器位置。
+                这种做法表明攻击者非常害怕被追踪和曝光。然而，通过域名注册信息可以看出，该钓鱼网站是一个新注册的域名，
+                这是典型的钓鱼攻击特征。
+              </p>
+            </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">现场证据</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-700 mb-2">钓鱼页面截图</h3>
+              <img 
+              
+                src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/hack/截屏2025-04-02 下午6.37.39.png?raw=true" 
+                alt="Etsy钓鱼页面" 
+                class="w-full rounded-lg shadow-lg mb-2"
+              />
+              <p class="text-sm text-gray-600">攻击者伪造的Etsy支付验证页面</p>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-lg">
+              <h3 class="font-semibold text-gray-700 mb-2">攻击者反应</h3>
+              <img 
+                src="https://github.com/ctkqiang/bug-bounty-journal/blob/main/assets/hack/WechatIMG77.jpg?raw=true" 
+                alt="攻击者情绪失控" 
+                class="w-full rounded-lg shadow-lg mb-2"
+              />
+              <p class="text-sm text-gray-600">攻击者在社会工程学反制下情绪失控的证据</p>
+              <div class="mt-2 bg-yellow-50 p-2 rounded text-sm text-yellow-800">
+                <i class="fas fa-exclamation-triangle mr-1"></i>
+                注：图片已进行适当处理以符合专业性要求
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">反制过程</h2>
+          <div class="space-y-4">
+            <div class="border-l-4 border-green-500 pl-4">
+              <h3 class="font-semibold text-gray-700 mb-2">
+                第一阶段：情报收集
+              </h3>
+              <p class="text-gray-600">
+                通过WhatWeb工具发现攻击者使用了Cloudflare和Express框架。
+              </p>
+            </div>
+
+            <div class="border-l-4 border-blue-500 pl-4">
+              <h3 class="font-semibold text-gray-700 mb-2">
+                第二阶段：心理反制
+              </h3>
+              <p class="text-gray-600">
+                利用客服聊天功能，采用情感化语言打击攻击者的心理防线。
+              </p>
+              <div class="mt-4 space-y-2">
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <p class="text-blue-700">
+                    攻击者："Чортава памры, памры, памры"
+                  </p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-lg">
+                  <p class="text-red-700">
+                    我方回应："（我已经获取了他的日志和摄像头照片） Is this
+                    you?"
+                  </p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-lg">
+                  <p class="text-red-700">
+                    我方回应："Why are you doing this?"
+                  </p>
+                </div>
+                <div class="bg-red-100 p-3 rounded-lg">
+                  <p class="text-red-700">我方回应："Seriously you need to get a real job"</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <p class="text-blue-700">攻击者："f*** ******* *** ***** china!"</p>
+                </div>
+                <div class="bg-blue-100 p-3 rounded-lg">
+                  <p class="text-blue-700">攻击者："**** ** mama"</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="border-l-4 border-purple-500 pl-4">
+              <h3 class="font-semibold text-gray-700 mb-2">
+                第三阶段：成功瓦解
+              </h3>
+              <p class="text-gray-600">
+                通过持续的心理压力，最终导致攻击者关闭钓鱼网站。网站返回404错误，表明反制成功。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold mb-3">案例总结</h2>
+          <div class="bg-yellow-50 p-4 rounded-lg">
+            <p class="text-gray-700">
+              本案例展示了社会工程学在网络安全防护中的独特价值。通过精准把握攻击者心理，
+              我们成功瓦解了一个正在运行的钓鱼网站，避免了更多用户受害。这种方法虽然非常规，
+              但在特定情况下能够取得显著效果。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

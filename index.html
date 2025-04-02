@@ -137,6 +137,15 @@
           </div>
           <div class="hidden lg:flex space-x-8">
             <a
+              href="hacking/index.html"
+              class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
+            >
+              <i
+                class="fas fa-terminal mr-2 transform group-hover:rotate-12 transition-transform text-red-600"
+              ></i
+              >实时演示
+            </a>
+            <a
               href="#recent"
               class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
             >
@@ -154,7 +163,6 @@
               ></i
               >案例归档
             </a>
-            <!-- Add PC search button -->
             <button
               onclick="toggleModal('searchModal')"
               class="nav-link text-gray-700 hover:text-blue-600 transition-colors flex items-center px-4 py-2 rounded hover:bg-blue-50"
@@ -177,6 +185,13 @@
         <!-- 手机菜单 -->
         <div id="mobile-menu" class="hidden lg:hidden pb-4">
           <div class="flex flex-col space-y-4">
+            <!-- Add Live Hacking Demo link for mobile -->
+            <a
+              href="hacking/index.html"
+              class="nav-link hover:text-blue-600 transition-colors flex items-center"
+            >
+              <i class="fas fa-terminal mr-2 text-red-600"></i>实时演示
+            </a>
             <a
               href="#recent"
               class="nav-link hover:text-blue-600 transition-colors flex items-center"
