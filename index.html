@@ -83,6 +83,20 @@
         }
       }
 
+      // 日期检查函数
+      function checkDateAndRedirect(targetUrl, fallbackUrl) {
+        const targetDate = new Date("2025-05-20T00:00:00");
+        const nextDay = new Date("2025-05-21T00:00:00");
+        const currentDate = new Date();
+
+        // 只有当日期是2025-05-20时才允许访问
+        if (currentDate >= targetDate && currentDate < nextDay) {
+          window.location.href = targetUrl;
+        } else {
+          window.location.href = fallbackUrl;
+        }
+      }
+
       function searchCases() {
         const searchTerm = document
           .querySelector("#searchModal input")
@@ -308,7 +322,8 @@
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <!-- 快手 Case -->
           <a
-            href="case/快手/20250430-a3VhaXNob3UK.html"
+            href="javascript:void(0);"
+            onclick="checkDateAndRedirect('case/快手/20250430-a3VhaXNob3UK.html', 'no.html')"
             class="group relative block bg-white rounded-xl shadow hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
           >
             <div
