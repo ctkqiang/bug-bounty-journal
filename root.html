@@ -1,0 +1,113 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <title>Login</title>
+    <style>form {
+        height: auto;
+    }</style>
+    <link rel="stylesheet" type="text/css" href="/css/base.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/style.css"/>
+    <link href="/css/tccf_style.css" type="text/css" rel="stylesheet" media="screen"/>
+    <style type="">
+        .corp_reg_a {
+            text-align: center;
+            padding: 12px 25px 12px 25px;
+            background: highlight;
+            width: 120px;
+            height: 39px;
+            color: white;
+            font: bold 14px sans;
+            border: 0px;
+            cursor: pointer;
+        }
+    </style>
+    <script type="text/javascript" src="/js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="/js/jsencrypt.min.js"></script>
+    <script type="text/javascript" src="/js/utils.js"></script>
+</head>
+
+<body class="login_bg">
+<div class="login_bg_head">
+    <div class="login_bg_head_img"><a href="javascript:;">
+        <img src="/images/birdnest/login_logo_en.png" width="655" height="100" alt="logo"/></a></div>
+</div>
+
+<form id="loginForm" name="form1" action="/authenticate.do" method="post">
+
+
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>
+                <div class="login" style="margin-top: 50px;">
+                    
+                    
+                    
+                    <div class="login_con" style=" height:550px; background:url(../images/birdnest/login_main-left.png) no-repeat  left 0px;">
+                        <div class="login_cons login_cons1">
+                            <ul class="login_list">
+                                <li class="login_list_height1">
+                                    <input id="loginname" name="j_username" type="text" value="" class="login_input"/>
+                                </li>
+                                <li class="login_list_height2">
+                                    <input id="password" name="j_password" type="password" value="" autocomplete="off" class="login_input"/>
+                                </li>
+                                <li class="login_list_height3">
+                                    <input name="vCode" type="text" class="login_input1" value="" maxlength="4"/>
+                                    &nbsp;
+                                    <img id="authImg" src="/auth.checkcode" onclick="refreshCheck();" title="Look not clear? Click to change another piece"
+                                         style="cursor:pointer;vertical-align: middle;"/>
+                                </li>
+                            </ul>
+                            <div class="login_pass">
+                                <input id="remChe" name="_spring_security_remember_me" type="checkbox"/>
+                                Remember the password&nbsp;
+                                <span style="color:red;"></span>
+
+                            </div>
+                            <div class="login_but">
+
+                                <input name="" type="button" onclick="doLogin()" value='login'/>
+                                <input name="corp_reg_btn" type="button" value='Enterprises registered' onclick="asdf('/registerCorpUser.do');"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>
+<script type="text/javascript">
+    function doLogin() {
+        var pass = $('#password').val();
+        //rsa算法
+        var jsencrypt = new JSEncrypt()
+        jsencrypt.setPublicKey(key)
+        pass = jsencrypt.encrypt(pass)
+        $('#password').val(pass);
+        $('#loginForm').submit();
+
+    }
+    function refreshCheck() {
+        document.getElementById("authImg").src = "/auth.checkcode?code=" + Math.random();
+    }
+    function asdf(url) {
+        window.location.href = url;
+    }
+</script>

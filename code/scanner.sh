@@ -16,11 +16,16 @@ NC='\033[0m'
 # nmap: 网络扫描工具
 # whatweb: Web技术识别工具
 # subfinder: 子域名发现工具
+# wafw00f: WAF检测工具
+# sslyze: SSL/TLS安全检测工具
+# dirsearch: 目录遍历扫描工具
 check_dependencies() {
-    local tools=("nmap" "whatweb" "subfinder")
+    local tools=("nmap" "whatweb" "subfinder" "wafw00f" "sslyze" "dirsearch")
     for tool in "${tools[@]}"; do
         if ! command -v "$tool" &>/dev/null; then
             echo "${RED}错误: 未找到 $tool。请先安装必要工具。${NC}"
+            echo "${YELLOW}提示: 可以使用以下命令安装:
+            pip3 install wafw00f sslyze dirsearch${NC}"
             exit 1
         fi
     done
@@ -52,16 +57,35 @@ run_scan() {
     echo "${GREEN}[+] 正在进行连通性测试...${NC}"
     ping -c 3 "$url" | tee "$output_dir/ping.txt"
 
-    # 获取HTTP响应头信息，了解服务器基本信息
-    echo "\n${GREEN}[+] 获取HTTP头信息...${NC}"
-    curl -I -L -k -s \
-        -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
-        "$url" | tee "$output_dir/headers.txt"
+    # 获取HTTP响应头信息和支持的请求方法
+    echo "\n${GREEN}[+] 获取HTTP头信息和请求方法...${NC}"
+    {
+        echo "=== HTTP头信息 ==="
+        curl -I -L -k -s \
+            -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36" \
+            "$url"
 
-    # 使用nmap扫描常见端口，检查开放服务
-    # 设置10秒超时避免耗时过长
+        echo "\n=== 支持的HTTP方法 ==="
+        for method in GET POST PUT DELETE OPTIONS HEAD TRACE CONNECT PATCH; do
+            code=$(curl -X "$method" -I -L -k -s -o /dev/null -w "%{http_code}" "$url")
+            echo "$method: $code"
+        done
+    } | tee "$output_dir/headers.txt"
+
+    # 使用nmap进行高级端口扫描
     echo "\n${GREEN}[+] 正在扫描开放端口...${NC}"
-    gtimeout 10 nmap -sC -sV -A -T4 "$url" | grep "open" | tee "$output_dir/ports.txt" || {
+    {
+        # 快速扫描常见端口
+        echo "=== 快速扫描常见端口 ==="
+        nmap -F -T4 "$url" | grep "open"
+
+        # 详细扫描发现的开放端口
+        echo "\n=== 详细扫描开放端口 ==="
+        open_ports=$(nmap -F -T4 "$url" | grep "open" | cut -d'/' -f1 | tr '\n' ',')
+        if [ ! -z "$open_ports" ]; then
+            nmap -p"$open_ports" -sC -sV -A -T4 "$url"
+        fi
+    } | tee "$output_dir/ports.txt" || {
         echo "${YELLOW}[!] 端口扫描超时，继续下一个任务...${NC}" | tee -a "$output_dir/ports.txt"
     }
 
@@ -72,6 +96,29 @@ run_scan() {
     # 查找相关子域名
     echo "\n${GREEN}[+] 查找子域名...${NC}"
     subfinder -d "$url" | tee "$output_dir/subdomains.txt"
+
+    # 检测WAF
+    echo "\n${GREEN}[+] 检测WAF...${NC}"
+    wafw00f "$url" | tee "$output_dir/waf.txt"
+
+    # SSL/TLS安全检测
+    echo "\n${GREEN}[+] 进行SSL/TLS安全检测...${NC}"
+    sslyze "$url" --regular | tee "$output_dir/ssl_tls.txt"
+
+    # 目录遍历扫描
+    echo "\n${GREEN}[+] 执行目录遍历扫描...${NC}"
+    dirsearch -u "$url" -e php,asp,aspx,jsp,html,zip,jar,sql -x 404,403,401 --random-agent -t 50 | tee "$output_dir/directories.txt"
+
+    # JavaScript文件分析
+    echo "\n${GREEN}[+] 分析JavaScript文件...${NC}"
+    curl -L -k -s "$url" | grep -Eo '(http|https)://[^/"]+/[^"]+\.js' | sort -u | tee "$output_dir/js_files.txt"
+    if [ -s "$output_dir/js_files.txt" ]; then
+        echo "\n${YELLOW}[*] 下载并分析JavaScript文件中的敏感信息...${NC}"
+        while IFS= read -r js_file; do
+            echo "分析: $js_file"
+            curl -L -k -s "$js_file" | grep -i "api\|key\|token\|secret\|password\|aws\|azure\|gcp" >>"$output_dir/js_analysis.txt"
+        done <"$output_dir/js_files.txt"
+    fi
 
     # 定义需要检查的敏感文件列表
     # 包括配置文件、版本控制文件、备份文件等
@@ -149,8 +196,73 @@ run_scan() {
         done
     } | tee "$output_dir/sensitive_files_report.txt"
 
+    # 生成HTML报告
+    echo "\n${GREEN}[+] 正在生成HTML报告...${NC}"
+    cat >"$output_dir/report.html" <<EOL
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安全扫描报告 - $url</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold mb-4 text-gray-800">安全扫描报告</h1>
+            <p class="text-gray-600">目标: $url</p>
+            <p class="text-gray-600">扫描时间: $(date '+%Y-%m-%d %H:%M:%S')</p>
+        </div>
+
+        <!-- 扫描结果部分 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- WAF检测 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-shield-alt mr-2"></i>WAF检测</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/waf.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+
+            <!-- SSL/TLS检测 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-lock mr-2"></i>SSL/TLS安全检测</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/ssl_tls.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+
+            <!-- 端口扫描 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-network-wired mr-2"></i>端口扫描</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/ports.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+
+            <!-- 目录扫描 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-folder-open mr-2"></i>目录扫描</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/directories.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+
+            <!-- 子域名 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fas fa-sitemap mr-2"></i>子域名</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/subdomains.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+
+            <!-- JavaScript分析 -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold mb-4 text-gray-800"><i class="fab fa-js mr-2"></i>JavaScript分析</h2>
+                <pre class="bg-gray-100 p-4 rounded overflow-auto max-h-60">$(cat "$output_dir/js_analysis.txt" 2>/dev/null || echo "无数据")</pre>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+EOL
+
     # 扫描完成提示
-    echo "\n${GREEN}[+] 扫描完成！结果保存在: $output_dir ${NC}"
+    echo "\n${GREEN}[+] 扫描完成！${NC}"
+    echo "${GREEN}[+] 结果保存在: $output_dir ${NC}"
+    echo "${GREEN}[+] 可以打开 $output_dir/report.html 查看完整报告${NC}"
 }
 
 # 主程序入口

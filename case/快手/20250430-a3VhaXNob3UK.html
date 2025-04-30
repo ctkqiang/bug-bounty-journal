@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <!-- Animate.css CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <!-- Mermaid.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.2.4/dist/mermaid.min.js"></script>
+    <!-- Alpine.js CDN -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.0/dist/cdn.min.js"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'forest' });
+        
+        // 添加页面滚动效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 平滑滚动
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // 代码复制功能
+            document.querySelectorAll('.copy-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const code = this.parentElement.querySelector('code').textContent;
+                    navigator.clipboard.writeText(code);
+                    
+                    const tooltip = this.querySelector('.copied-tip');
+                    tooltip.classList.add('opacity-100');
+                    setTimeout(() => {
+                        tooltip.classList.remove('opacity-100');
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(90deg, #ff6b6b, #ff8e53);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        
+        .copied-tip {
+            position: absolute;
+            top: -30px;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .code-block {
+            position: relative;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        
+        /* 添加可爱的滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(45deg, #ff5252, #ff7043);
+        }
+    </style>
+    <title>快手安全漏洞报告 - 20250430</title>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-gray-100 font-sans p-4 md:p-8">
+    <!-- 导航栏 -->
+    <nav class="bg-white/95 backdrop-blur-sm shadow-md fixed w-full z-50 top-0 left-0 transition-all duration-300 ease-in-out">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-3">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-shield-halved text-rose-500 text-xl animate-pulse"></i>
+                    <span class="text-xl font-bold bg-gradient-to-r from-rose-500 to-amber-500 bg-clip-text text-transparent hover:scale-105 transition-transform">
+                        快手安全报告 20250430
+                    </span>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex space-x-6">
+                    <a href="#overview" class="nav-link hover:text-rose-500 transition-colors hover:scale-105 transform">
+                        <i class="fas fa-bug mr-2"></i>漏洞概览
+                    </a>
+                    <a href="#details" class="nav-link hover:text-rose-500 transition-colors hover:scale-105 transform">
+                        <i class="fas fa-microscope mr-2"></i>技术细节
+                    </a>
+                    <a href="#reproduce" class="nav-link hover:text-rose-500 transition-colors hover:scale-105 transform">
+                        <i class="fas fa-vial mr-2"></i>漏洞复现
+                    </a>
+                    <a href="./report.pdf" download class="nav-link bg-gradient-to-r from-rose-500 to-amber-500 text-white px-3 py-1 rounded-full hover:shadow-lg transition-all hover:scale-105 transform flex items-center">
+                        <i class="fas fa-file-pdf mr-2 animate-pulse"></i>下载PDF报告
+                    </a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                    <i class="fas fa-bars text-rose-500 text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- 移动端菜单 -->
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-sm border-t shadow-lg fixed top-[60px] left-0 w-full z-40 max-h-[calc(100vh-60px)] overflow-y-auto">
+        <div class="px-3 py-2 space-y-1">
+            <a href="#overview" class="block nav-link hover:text-rose-500 hover:bg-rose-50 px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm flex items-center">
+                <i class="fas fa-bug mr-2 text-rose-500"></i>漏洞概览
+            </a>
+            <a href="#details" class="block nav-link hover:text-rose-500 hover:bg-rose-50 px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm flex items-center">
+                <i class="fas fa-microscope mr-2 text-rose-500"></i>技术细节
+            </a>
+            <a href="#reproduce" class="block nav-link hover:text-rose-500 hover:bg-rose-50 px-3 py-2.5 rounded-lg transition-colors duration-200 text-sm flex items-center">
+                <i class="fas fa-vial mr-2 text-rose-500"></i>漏洞复现
+            </a>
+        </div>
+    </div>
+    
+    <!-- 主内容区 -->
+    <div class="container mx-auto bg-white p-6 md:p-8 rounded-xl shadow-xl animate__animated animate__fadeIn mt-16">
+        <h1 class="text-3xl md:text-4xl font-bold mb-4 gradient-text">移动应用安全漏洞报告</h1>
+
+        <!-- 善意声明卡片 -->
+        <div class="bg-rose-50 p-6 rounded-xl border-l-4 border-rose-400 mb-8 transform hover:scale-[1.01] transition-transform">
+            <div class="flex items-center space-x-3">
+                <i class="fas fa-heart text-rose-500 text-2xl"></i>
+                <h4 class="text-lg md:text-xl font-semibold text-rose-800">善意声明</h4>
+            </div>
+            <p class="mt-3 text-rose-700 leading-relaxed">
+                本次安全审计旨在帮助提升快手应用的安全性，所有敏感信息均已脱敏处理。我们始终遵循负责任披露原则，期待与开发团队共同守护用户数据安全。(๑>ᴗ<๑)
+            </p>
+        </div>
+
+        <!-- 应用信息表格 -->
+        <div class="overflow-hidden rounded-xl shadow-md mb-8">
+            <table class="w-full">
+                <thead>
+                    <tr class="bg-gradient-to-r from-rose-500 to-amber-500 text-white">
+                        <th class="px-4 py-3 text-left font-semibold">字段</th>
+                        <th class="px-4 py-3 text-left font-semibold">值</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">版本号</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                <i class="fas fa-code-branch mr-1"></i>
+                                13.3.41.41640 (41640)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">支持语言</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800">
+                                <i class="fas fa-language mr-1"></i>
+                                1 种
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">包名</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-800">
+                                <i class="fas fa-box mr-1"></i>
+                                com.smile.gifmaker
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">下载量</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-100 text-green-800">
+                                <i class="fas fa-download mr-1"></i>
+                                154 次
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">文件大小</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                                <i class="fas fa-file-archive mr-1"></i>
+                                128.23 MB (134,456,598 字节)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">安装位置</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-teal-100 text-teal-800">
+                                <i class="fas fa-hdd mr-1"></i>
+                                支持外部存储
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">最低安卓版本</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800">
+                                <i class="fas fa-mobile-alt mr-1"></i>
+                                5.0 (Lollipop, API 21)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">目标安卓版本</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
+                                <i class="fas fa-bullseye mr-1"></i>
+                                11 (API 30)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">处理器架构</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-cyan-100 text-cyan-800">
+                                <i class="fas fa-microchip mr-1"></i>
+                                arm64-v8a (64 位 ARM)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">屏幕 DPI</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-lime-100 text-lime-800">
+                                <i class="fas fa-desktop mr-1"></i>
+                                通用适配(nodpi)
+                            </span>
+                        </td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition-colors">
+                        <td class="px-4 py-3 font-medium">签名算法</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-fuchsia-100 text-fuchsia-800">
+                                <i class="fas fa-signature mr-1"></i>
+                                MD5/SHA-1/SHA-256
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 漏洞概要 -->
+        <section id="overview" class="mb-12 pt-4">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-exclamation-triangle mr-2 text-amber-500"></i>
+                <span class="gradient-text">一、漏洞概要</span>
+            </h2>
+            <div class="bg-amber-50 p-5 rounded-xl border border-amber-200 mb-6">
+                <p class="mb-3"><span class="font-semibold text-amber-800">漏洞标题：</span>敏感信息明文存储及 API 密钥泄露导致的多重安全风险</p>
+                <p class="mb-3"><span class="font-semibold text-amber-800">风险等级：</span>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                        <i class="fas fa-radiation mr-1"></i>高危
+                    </span>
+                </p>
+                <p class="mb-3"><span class="font-semibold text-amber-800">影响范围：</span>Android 客户端及关联后端服务</p>
+                <p><span class="font-semibold text-amber-800">发现时间：</span>2025 年 4 月 29 日</p>
+            </div>
+        </section>
+
+        <!-- 漏洞详情 -->
+        <section id="details" class="mb-12 pt-4">
+            <h2 class="text-2xl font-bold mb-4 flex items-center">
+                <i class="fas fa-microscope mr-2 text-rose-500"></i>
+                <span class="gradient-text">二、漏洞详情</span>
+            </h2>
+            
+            <!-- 敏感密钥硬编码漏洞 -->
+            <div class="mb-8 bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+                <h3 class="text-xl font-bold mb-4 text-rose-600 flex items-center">
+                    <i class="fas fa-key mr-2"></i>1. 敏感密钥硬编码漏洞
+                </h3>
+                <p class="mb-2"><strong>漏洞位置</strong>：</p>
+                <pre class="bg-gray-200 p-4 mb-4 rounded-md">
+                    <code>
+./smali_classes5/tmb/y0.smali
+./smali_classes4/gla/i.smali
+kuaishou.md (AndroidManifest.xml)
+pentest.py
+                    </code>
+                </pre>
+                <p class="mb-2"><strong>技术细节</strong>：</p>
+                
+                <!-- 美化后的API密钥表格 -->
+                <div class="overflow-hidden rounded-xl shadow-md mb-6 hover:shadow-lg transition-all duration-300">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-gradient-to-r from-rose-500 to-amber-500 text-white">
+                                <th class="px-4 py-3 text-left font-semibold">服务名称</th>
+                                <th class="px-4 py-3 text-left font-semibold">泄露密钥</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-200">
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">百度地图</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>UEnH61Elxr</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">ColorOS相机</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>ATBEAiBlu2</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">OPPO卡券服务</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>ADBFAiEA7t</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">高德地图</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>d23a42abfd</del></strong>**********</code>
+                                    <div class="mt-2 p-2 bg-green-50 rounded-md border border-green-200">
+                                        <div class="flex items-center mb-1">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-green-100 text-green-800 text-xs mr-2">
+                                                <i class="fas fa-check-circle mr-1"></i>状态码: 200
+                                            </span>
+                                            <span class="text-xs text-green-700">响应时间: 2.30秒</span>
+                                        </div>
+                                        <details class="text-xs">
+                                            <summary class="cursor-pointer text-amber-700 hover:text-amber-800 transition-colors">
+                                                <i class="fas fa-info-circle mr-1"></i>查看API测试详情
+                                            </summary>
+                                            <div class="mt-2 p-2 bg-gray-800 text-gray-200 rounded overflow-x-auto">
+<pre class="text-xs whitespace-pre-wrap">
+🎯 接口名称: amap_api
+🔗 接口地址: https://restapi.amap.com/v3/place
+🟢 状态信息:
+├── 请求方法: GET
+├── 状态代码: 200
+├── 响应类型: JSON
+├── 响应大小: 202 字节
+
+📋 响应头信息:
+Server: Tengine
+Date: Tue, 29 Apr 2025 20:58:53 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: close
+Vary: Accept-Encoding
+gsid: 0110932***********443860
+sc: 0.000
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Methods: *
+Access-Control-Allow-Headers: DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,key,x-biz,x-info,platinfo,encr,enginever,gzipped,poiid
+Content-Encoding: gzip
+</pre>
+                                            </div>
+                                            <div class="mt-2 p-2 bg-gray-800 text-gray-200 rounded overflow-x-auto">
+<pre class="text-xs whitespace-pre-wrap">
+📄 响应内容:
+{
+  "info": "USERKEY_PLAT_NOMATCH",
+  "infocode": "10009",
+  "status": "0",
+  "sec_code_debug": "434d1f***********658b8",
+  "key": "d23a4***********6aaa",
+  "sec_code": "47449f***********b528"
+}
+</pre>
+                                            </div>
+                                        </details>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">腾讯地图</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>OLABZ-KGH3</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">ColorOS OLK</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>ATBGAiEA13</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">ColorOS Hyper</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>ATBEAiBJNH</del></strong>**********</code>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-rose-50 transition-colors">
+                                <td class="px-4 py-3 font-medium">VIVO推送</td>
+                                <td class="px-4 py-3 font-mono text-sm bg-gray-50 rounded overflow-x-auto">
+                                    <code class="text-rose-600"><strong><del>a71e4cd2-3</del></strong>**********</code>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="mb-2"><strong>风险链分析</strong>：</p>
+                <div class="mermaid mb-8">
+                    graph TD
+                    A[密钥硬编码] --> B[APK反编译获取密钥]
+                    B --> C1[地图服务滥用]
+                    B --> C2[推送服务劫持]
+                    B --> C3[用户数据泄露]
+                    C1 --> D[伪造地理位置]
+                    C2 --> E[垃圾信息推送]
+                    C3 --> F[用户画像构建]
+                </div>
+
+                <h3 class="text-xl font-bold mb-2">2. 不安全通信协议</h3>
+                <p class="mb-2"><strong>漏洞证据</strong>：</p>
+                <pre class="bg-gray-200 p-4 mb-4 rounded-md">
+                    <code>
+================================================================================
+🎯 接口名称: oplus_card
+❌ 错误信息: Failed to establish a new connection: [Errno 8] nodename nor servname provided
+----------------------------------------
+================================================================================
+🎯 接口名称: vivo_push
+❌ 错误信息: CertificateError("hostname 'push.vivo.com' doesn't match either of '*.vivo.com.cn'")
+                    </code>
+                </pre>
+                <p class="mb-8"><strong>风险点</strong>：</p>
+                <ul class="list-disc pl-4 mb-8">
+                    <li>使用自签名证书未通过 CA 认证</li>
+                    <li>未正确处理 SSL/TLS 证书验证</li>
+                    <li>部分接口未启用 HTTPS(如：<code>http://bd-origin.pull.yximgs.com</code>)</li>
+                </ul>
+
+                <h3 class="text-xl font-bold mb-2">3. 调试信息泄露</h3>
+                <p class="mb-2"><strong>敏感字段</strong>：</p>
+                <pre class="bg-gray-200 p-4 mb-8 rounded-md">
+                    <code>
+const-string v3, "access_key"
+const-string v1, "https://api.weixin.qq.com/sns/userinfo?access_token=%s&openid=%s"
+                    </code>
+                </pre>
+
+                <h3 class="text-xl font-bold mb-2">4. API 调用测试结果</h3>
+                <!-- 删除旧的API测试结果代码块 -->
+                
+                <!-- 新的可折叠API测试结果面板 -->
+                <div x-data="{open: true}" class="mb-8 bg-gray-50 rounded-xl shadow-sm overflow-hidden">
+                    <div @click="open = !open" class="bg-gradient-to-r from-rose-500 to-amber-50 p-4 flex justify-between items-center cursor-pointer hover:from-rose-100 hover:to-amber-100 transition-colors">
+                        <div class="flex items-center">
+                            <i class="fas fa-network-wired text-rose-500 mr-3"></i>
+                            <span class="font-semibold">API 测试详细结果</span>
+                        </div>
+                        <i x-bind:class="open ? 'fa-chevron-up' : 'fa-chevron-down'" class="fas text-gray-500 transition-transform" :class="{'rotate-180': !open}"></i>
+                    </div>
+                    
+                    <div x-show="open" x-transition class="divide-y divide-gray-100">
+                        <!-- 百度地图 API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>百度地图
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>状态码: 200
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> baidu_lbs
+<span class="text-rose-400">🔗 接口地址:</span> https://api.map.baidu.com/location/v2
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">UEnH61ElxrwvKKBOA6oTgio7</span>
+
+<span class="text-green-400">🟢 状态信息:</span>
+├── 请求方法: GET
+├── 状态代码: 200
+├── 响应类型: HTML
+├── 响应大小: 15255 字节
+└── 响应时间: 0.75 秒
+
+<span class="text-blue-400">🔍 完整请求地址:</span>
+└── http://www.baidu.com/error.html
+                                </pre>
+                            </div>
+                        </div>
+                        
+                        <!-- ColorOS 相机 API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-camera mr-1"></i>ColorOS 相机
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>连接失败
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> coloros_camera
+<span class="text-rose-400">🔗 接口地址:</span> https://api.coloros.com/camera/v1
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">ATBEAiBlu2AMxWd3cbaDkGXBlGP9ojLOanK26swRCrx8kOhedQIgMrU1ySPRc8VudROsZzGCX+9FdGHFzKsxNK7wTXs7EQ5xU+ypfAAAAA==</span>
+
+<span class="text-red-400">❌ 错误信息:</span> HTTPSConnectionPool(host='api.coloros.com', port=443): 
+Max retries exceeded with url: /camera/v1?key=ATBEAiBlu2AMxWd3cbaDkGXBlGP9ojLOanK26swRCrx8kOhedQIgMrU1ySPRc8VudROsZzGCX%2B9FdGHFzKsxNK7wTXs7EQ5xU%2BypfAAAAA%3D%3D 
+(Caused by NewConnectionError('&lt;urllib3.connection.HTTPSConnection object&gt;: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+                                </pre>
+                            </div>
+                        </div>
+                        
+                        <!-- ColorOS OLK API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-mobile-alt mr-1"></i>ColorOS OLK
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>连接失败
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> coloros_olk
+<span class="text-rose-400">🔗 接口地址:</span> https://api.coloros.com/olk/v1
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">ATBGAiEA13a94ZZ+9ScjSIFyINJKOZzMH+dxxYwvFEsXG6/C1EYCIQDsk3VJQw1yuumBy8MmpVDIij7kqiQK3KEKU5DUE+BaGm3GSt38AAAA</span>
+
+<span class="text-red-400">❌ 错误信息:</span> HTTPSConnectionPool(host='api.coloros.com', port=443): 
+Max retries exceeded with url: /olk/v1?key=ATBGAiEA13a94ZZ%2B9ScjSIFyINJKOZzMH%2BdxxYwvFEsXG6%2FC1EYCIQDsk3VJQw1yuumBy8MmpVDIij7kqiQK3KEKU5DUE%2BBaGm3GSt38AAAA 
+(Caused by NewConnectionError('&lt;urllib3.connection.HTTPSConnection object&gt;: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+                                </pre>
+                            </div>
+                        </div>
+                        
+                        <!-- ColorOS Hyper API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-bolt mr-1"></i>ColorOS Hyper
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>连接失败
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> coloros_hyper
+<span class="text-rose-400">🔗 接口地址:</span> https://api.coloros.com/hyper/v1
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">ATBEAiBJNHhwZ0FWIadgsHfFx1oB0BXsLZ9mxrmQc4L/hbAgWwIgPWNKxfYUT/5mFlXVTnn4RAEzHqaPX6Y1fTS1PeG4fQdokG/xYAAAAA==</span>
+
+<span class="text-red-400">❌ 错误信息:</span> HTTPSConnectionPool(host='api.coloros.com', port=443): 
+Max retries exceeded with url: /hyper/v1?key=ATBEAiBJNHhwZ0FWIadgsHfFx1oB0BXsLZ9mxrmQc4L%2FhbAgWwIgPWNKxfYUT%2F5mFlXVTnn4RAEzHqaPX6Y1fTS1PeG4fQdokG%2FxYAAAAA%3D%3D 
+(Caused by NewConnectionError('&lt;urllib3.connection.HTTPSConnection object&gt;: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+                                </pre>
+                            </div>
+                        </div>
+                        
+                        <!-- OPPO 卡券服务 API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-ticket-alt mr-1"></i>OPPO 卡券服务
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>连接失败
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> oplus_card
+<span class="text-rose-400">🔗 接口地址:</span> https://api.oplus.com/card/v1
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">ADBFAiEA7tcO65jxF48sKrZjVHgP1bNOxAvgTvpUt2wdpw33o5ACIEbYd9Jb/3VxPPTRDipl3uXbNpjmi0ysYP59kCcgA0J/bwme5Q==</span>
+
+<span class="text-red-400">❌ 错误信息:</span> HTTPSConnectionPool(host='api.oplus.com', port=443): 
+Max retries exceeded with url: /card/v1?key=ADBFAiEA7tcO65jxF48sKrZjVHgP1bNOxAvgTvpUt2wdpw33o5ACIEbYd9Jb%2F3VxPPTRDipl3uXbNpjmi0ysYP59kCcgA0J%2Fbwme5Q%3D%3D 
+(Caused by NewConnectionError('&lt;urllib3.connection.HTTPSConnection object&gt;: Failed to establish a new connection: [Errno 8] nodename nor servname provided, or not known'))
+                                </pre>
+                            </div>
+                        </div>
+                        
+                        <!-- VIVO 推送 API -->
+                        <div class="p-4 hover:bg-rose-50 transition-colors">
+                            <div class="flex items-center mb-2">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 mr-2">
+                                    <i class="fas fa-bell mr-1"></i>VIVO 推送
+                                </span>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full bg-red-100 text-red-800">
+                                    <i class="fas fa-exclamation-circle mr-1"></i>证书错误
+                                </span>
+                            </div>
+                            
+                            <div class="code-block relative bg-gray-800 text-gray-100 p-4 rounded-lg overflow-x-auto text-sm">
+                                <button class="copy-btn">
+                                    <i class="fas fa-copy"></i>
+                                    <span class="copied-tip">已复制! (≧∇≦)ﾉ</span>
+                                </button>
+                                <pre class="whitespace-pre-wrap">
+<span class="text-amber-400">================================================================================</span>
+<span class="text-rose-400">🎯 接口名称:</span> vivo_push
+<span class="text-rose-400">🔗 接口地址:</span> https://push.vivo.com/api/v1/notify
+<span class="text-rose-400">🔑 API 密钥:</span> <span class="text-green-300">a71e4cd2-3308-4f30-8cde-652d6ec3d7ce</span>
+
+<span class="text-red-400">❌ 错误信息:</span> HTTPSConnectionPool(host='push.vivo.com', port=443): 
+Max retries exceeded with url: /api/v1/notify?key=a71e4cd2-3308-4f30-8cde-652d6ec3d7ce 
+(Caused by SSLError(CertificateError("hostname 'push.vivo.com' doesn't match either of '\*.vivo.com.cn', 'vivo.com.cn'")))
+                                </pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 添加漏洞风险评估卡片 -->
+                <h3 class="text-xl font-bold mb-4 text-rose-600 flex items-center">
+                    <i class="fas fa-chart-pie mr-2"></i>5. 风险评估
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="bg-gradient-to-br from-green-50 to-green-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-green-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-tools text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-green-800">修复难度</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-green-600">中等</span>
+                        </div>
+                        <p class="text-green-700 text-sm mt-2">
+                            需要更新密钥管理策略，实施安全存储机制，并发布新版本应用
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <!-- 风险等级卡片 -->
+                    <div class="bg-gradient-to-br from-red-50 to-rose-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-red-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-radiation text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-red-800">风险等级</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-red-600">高危</span>
+                        </div>
+                        <p class="text-red-700 text-sm mt-2">
+                            密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果
+                        </p>
+                    </div>
+                    
+                    <!-- 影响范围卡片 -->
+                    <div class="bg-gradient-to-br from-amber-50 to-amber-100 p-5 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center mb-3">
+                            <div class="w-12 h-12 rounded-full bg-amber-500 flex items-center justify-center text-white mr-3">
+                                <i class="fas fa-globe text-xl"></i>
+                            </div>
+                            <h4 class="text-lg font-semibold text-amber-800">影响范围</h4>
+                        </div>
+                        <div class="text-center py-3">
+                            <span class="text-4xl font-bold text-amber-600">广泛</span>
+                        </div>
+                        <p class="text-amber-700 text-sm mt-2">
+                            影响所有安装该版本应用的用户，以及相关的第三方服务提供商
+                        </p>
+                    </div>
+                    
+                    <!-- 修复难度卡片 -->
+                    <div class="
