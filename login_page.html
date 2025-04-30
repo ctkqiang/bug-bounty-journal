@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="renderer" content="webkit|ie-comp|ie-stand" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>登录</title>
+    <!-- <script type="text/javascript">
+        var ua = navigator.userAgent;
+        if(ua.indexOf('Mobile') > -1) {
+            window.location.href = 'login.html';
+        }
+    </script> -->
+    <link rel="shortcut icon" href="statics/images/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="statics/xui/styles/xui.css" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="plugins/login/login_skin.css"
+    />
+    <link rel="stylesheet" type="text/css" href="statics/skins/skin.css" />
+    <link rel="stylesheet" type="text/css" href="plugins/login/login.css" />
+    <!--[if lte IE 7]>
+      <link rel="stylesheet" type="text/css" href="statics/styles/ie.css" />
+    <![endif]-->
+    <!--[if IE 6]>
+      <script type="text/javascript" src="statics/scripts/iepngfx.js"></script>
+    <![endif]-->
+    <style>
+      .login-iframe {
+        position: absolute;
+        width: 265px;
+        height: 420px;
+        left: 50%;
+        top: 70px;
+        margin-left: -131px;
+        z-index: 10000;
+      }
+
+      .container-wrap .container {
+        visibility: hidden;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="header-wrap">
+      <div class="header clearfix">
+        <div class="logo-wrap fl">
+          <img
+            class="logo-img_new"
+            src="plugins/login/images/login/nav_logo_1.png"
+          />
+          <img class="logo-img" src="plugins/login/images/login/nav_logo.png" />
+        </div>
+        <div class="header-title fr">
+          <!-- <span class="help-center"></span>
+                     -->
+          <!-- 
+                     --><span class="language-wrap"
+            ><span class="language-current"></span
+            ><span class="language-img-arrow index_arrow_down"></span
+          ></span>
+          <!-- 
+                 -->
+        </div>
+      </div>
+    </div>
+    <div class="main">
+      <img class="main-logo" src="plugins/login/images/login/bg_banner.png" />
+      <div class="iframebox">
+        <div class="nav">
+          <div class="nav-favorite"></div>
+          <div class="nav-help help-center"></div>
+        </div>
+        <div class="iframe-title"></div>
+        <div class="iframe-main">
+          <iframe class="iframe" src=""></iframe>
+        </div>
+        <div class="iframe-footer">
+          <div class="dwclient"></div>
+          <div class="client-wrap"></div>
+        </div>
+      </div>
+      <div class="login-footer-wrap">
+        <div class="login-footer"></div>
+        <div class="login-contact"></div>
+      </div>
+    </div>
+    <!-- <div class="container-wrap">    </div> -->
+    <!--发布-->
+
+    <!--测试-->
+    <!-- <iframe class="login-iframe" src="https://passporttest.escience.cn/oauth2/authorize?response_type=code&redirect_uri=https://drive.escience.cn/uploadWeb/api/Sso&client_id=29616&theme=embed"></iframe> -->
+    <!-- <div class="container"></div>
+        <div class="client-wrap"></div> -->
+
+    <script type="text/javascript" src="statics/scripts/json2.js"></script>
+    <script type="text/javascript" src="statics/scripts/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="statics/scripts/underscore-min.js"
+    ></script>
+    <script type="text/javascript" src="statics/xui/xui.min.js"></script>
+    <script type="text/javascript" src="statics/scripts/sea.js"></script>
+    <script type="text/javascript">
+      window.i18n = new Lang();
+      i18n.loadPack("./locales/login/");
+      seajs.config({
+        base: "./modules/",
+        alias: {
+          config: "../../config",
+          util: "../base/util",
+          Handlebars: "../../statics/scripts/handlebars.min",
+          helper: "../base/helper",
+        },
+        map: [[".js", ".js"]],
+      });
+      seajs.use("login/main");
+      var request = getRequest();
+      var state = "";
+      if (request.from) {
+        state = request.from;
+      }
+      //passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=https://pantest.cstcloud.cn/uploadWeb/api/Sso&client_id=31658&theme=embed"
+         https: var url =
+        "https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=https://pan.cstcloud.cn/uploadWeb/api/Sso&client_id=22677&theme=embed&state=" +
+        state;
+      if (window.language == "en") {
+        url =
+          "https://passport.escience.cn/oauth2/authorize?response_type=code&redirect_uri=https://pan.cstcloud.cn/uploadWeb/api/Sso&client_id=22677&theme=embed&locale=en_US&state=" +
+          state;
+      
+}
+      $(".iframe").attr("src", url);
+      function getRequest() {
+        var url = window.location.search;
+        var request = {};
+        var strs = [];
+        if (url.indexOf("?") !== -1) {
+          var str = url.substr(1);
+          strs = str.split("&");
+          for (var i = 0; i < strs.length; i++) {
+            request[strs[i].split("=")[0]] = strs[i].split("=")[1];
+          }
+        }
+        return request;
+      }
+    </script>
+    <script type="text/javascript">
+      window.onload = function () {
+        var wdwdth = $(window).width();
+        if (wdwdth <= 1600) {
+          $(".header-wrap .logo-img").css("margin-left", "250px");
+        } else {
+          $(".header-wrap .logo-img").css("margin-left", "50px");
+        }
+        if (wdwdth <= 1260) {
+          $("body").css("background-size", "auto");
+        }
+      };
+
+      window.onresize = function () {
+        var wdwdth = $(window).width();
+        if (wdwdth <= 1600) {
+          $(".header-wrap .logo-img").css("margin-left", "250px");
+        } else {
+          $(".header-wrap .logo-img").css("margin-left", "50px");
+        }
+        var scro = detectZoom();
+        if (scro == 100) {
+          $("body").css("background-size", "auto");
+        } else {
+          $("body").css("background-size", "100%");
+        }
+      };
+      function detectZoom() {
+        var ratio = 0,
+          screen = window.screen,
+          ua = navigator.userAgent.toLowerCase();
+
+        if (window.devicePixelRatio !== undefined) {
+          ratio = window.devicePixelRatio;
+        } else if (~ua.indexOf("msie")) {
+          if (screen.deviceXDPI && screen.logicalXDPI) {
+            ratio = screen.deviceXDPI / screen.logicalXDPI;
+          }
+        } else if (
+          window.outerWidth !== undefined &&
+          window.innerWidth !== undefined
+        ) {
+          ratio = window.outerWidth / window.innerWidth;
+        }
+
+        if (ratio) {
+          ratio = Math.round(ratio * 100);
+        }
+
+        return ratio;
+      }
+    </script>
+  </body>
+</html>
