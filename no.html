@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>访问受限 - 安全漏洞报告库</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      @keyframes pulse-border {
+        0% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+        }
+        70% {
+          box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+        }
+        100% {
+          box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+        }
+      }
+      .animate-pulse-border {
+        animation: pulse-border 2s infinite;
+      }
+      .bg-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f87171' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      }
+    </style>
+  </head>
+  <body class="bg-pattern min-h-screen flex items-center justify-center p-4">
+    <div
+      class="bg-white p-8 rounded-2xl shadow-2xl max-w-md w-full mx-4 border-t-4 border-red-500 animate-pulse-border transition-all duration-300 hover:shadow-red-100"
+    >
+      <div class="text-center">
+        <div class="relative mx-auto h-24 w-24 mb-4">
+          <div
+            class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"
+          ></div>
+          <div
+            class="relative flex items-center justify-center h-24 w-24 bg-red-50 rounded-full"
+          >
+            <i class="fas fa-lock text-red-500 text-4xl"></i>
+          </div>
+        </div>
+
+        <h2
+          class="mt-4 text-2xl font-bold text-gray-900 bg-gradient-to-r from-red-500 to-amber-500 bg-clip-text text-transparent"
+        >
+          暂无访问权限
+        </h2>
+
+        <p class="mt-4 text-gray-600 leading-relaxed">
+          该案例尚未在SRC通过审核，暂无权限公开发布。我们正在努力确保所有报告符合安全披露标准。
+        </p>
+
+        <div
+          class="mt-6 p-4 bg-red-50 rounded-lg text-sm text-red-700 flex items-start"
+        >
+          <i class="fas fa-info-circle text-red-500 mt-1 mr-3 text-lg"></i>
+          <p class="text-left">
+            安全研究人员需要遵循负责任的披露原则，确保漏洞信息不会被滥用。请稍后再来查看。
+          </p>
+        </div>
+
+        <a
+          href="index.html"
+          class="mt-8 inline-flex items-center justify-center bg-gradient-to-r from-red-500 to-amber-500 text-white font-semibold py-3 px-6 rounded-full shadow-lg hover:shadow-xl transition duration-300 ease-in-out transform hover:-translate-y-1 hover:scale-105"
+        >
+          <i class="fas fa-home mr-2"></i>
+          返回首页
+        </a>
+      </div>
+
+      <div
+        class="mt-8 pt-6 border-t border-gray-100 text-center text-xs text-gray-400"
+      >
+        <p>© 2025 安全漏洞报告库</p>
+      </div>
+    </div>
+  </body>
+</html>
