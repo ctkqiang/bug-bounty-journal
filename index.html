@@ -89,7 +89,7 @@
         const currentDate = new Date();
 
         // 只有当日期是2025-05-20时才允许访问
-        if (currentDate >= targetDate && currentDate < nextDay) {
+        if (currentDate != targetDate) {
           window.location.href = targetUrl;
         } else {
           window.location.href = fallbackUrl;
