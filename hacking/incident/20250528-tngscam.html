@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TNG数字钱包诈骗案例 - 上饶满星科技</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+      .timeline-item {
+        position: relative;
+        padding-left: 2.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .timeline-item:before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 6px;
+        height: 100%;
+        background: linear-gradient(to bottom, #6366F1, #8B5CF6);
+        border-radius: 3px;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      }
+      .timeline-item:hover:before {
+        background: linear-gradient(to bottom, #4F46E5, #7C3AED);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+        transform: translateY(0);
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .btn-pink {
+        background-color: #EC4899;
+      }
+      .btn-pink:hover {
+        background-color: #DB2777;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div class="max-w-4xl mx-auto p-6">
+      <div class="bg-white rounded-xl shadow-xl p-8 mb-8 border border-gray-100 card-hover">
+        <div class="flex items-center mb-6">
+          <div class="bg-blue-100 p-3 rounded-full mr-4">
+            <i class="fas fa-shield-alt text-blue-600 text-2xl"></i>
+          </div>
+          <h1 class="text-3xl font-bold text-gray-800">
+            TNG数字钱包诈骗案例警示
+          </h1>
+        </div>
+
+        <div class="mb-8 bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
+          <h2 class="text-xl font-semibold mb-4 text-blue-800">案例概述</h2>
+          <p class="text-gray-700 leading-relaxed">
+            近期接到自称执法部门的陌生来电，声称TNG eWallet账号涉嫌洗黑钱，要求配合调查。对方话术紧凑、催促配合，意图制造紧张氛围。通过冷静应对和多方核查，成功识破骗局，避免财产损失。
+          </p>
+        </div>
+
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">诈骗流程还原</h2>
+          <div class="space-y-6">
+            <div class="timeline-item">
+              <h3 class="font-semibold text-lg text-gray-700 mb-2">可疑来电经过：</h3>
+              <ul class="list-disc pl-6 text-gray-600 space-y-2">
+                <li class="leading-snug">陌生号码来电，自称执法部门，称账号涉案。</li>
+                <li class="leading-snug">对方反复强调案情严重，要求立即配合。</li>
+                <li class="leading-snug">提出核实请求后，对方语气转为强硬，持续施压。</li>
+                <li class="leading-snug">对方威胁若不配合将冻结所有银行账户并面临刑事指控。</li>
+                <li class="leading-snug">骗子声称已掌握我的个人信息，包括身份证号和家庭住址。</li>
+              </ul>
+            </div>
+            <div class="timeline-item">
+              <h3 class="font-semibold text-lg text-gray-700 mb-2">三重验证识破骗局：</h3>
+              <ol class="list-decimal pl-6 text-gray-600 space-y-2">
+                <li class="leading-snug">致电TNG eWallet官方客服，确认账号无异常。</li>
+                <li class="leading-snug">前往马来西亚警方，警方系统查无此案。</li>
+                <li class="leading-snug">提出回电沟通后，对方立即挂断并拉黑。</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8">
+          <h2 class="text-xl font-semibold mb-4 text-gray-800 border-b pb-2">现场证据</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-5 rounded-lg shadow-md border border-gray-200 hover:shadow-lg transition-shadow">
+              <h3 class="font-semibold text-gray-700 mb-3 flex items-center">
+                <i class="fas fa-comment-dots text-blue-500 mr-2"></i>
+                聊天记录截图
+              </h3>
+              <img 
+                src="../assets/tng.jpg" 
+                alt="TNG诈骗聊天截图" 
+                class="w-full rounded-lg shadow-inner border border-gray-200 mb-3"
+                loading="lazy"
+              />
+              <p class="text-sm text-gray-500 italic">骗子诱导受害人配合调查的聊天记录</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-8 bg-yellow-50 p-6 rounded-xl border border-yellow-200">
+          <h2 class="text-xl font-semibold mb-4 text-yellow-800 flex items-center">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            防骗指南
+          </h2>
+          <ul class="list-disc pl-6 text-gray-700 space-y-2">
+            <li class="leading-relaxed">官方不会通过电话要求转账或索要验证码。</li>
+            <li class="leading-relaxed">遇到可疑来电，务必通过官网渠道核实。</li>
+            <li class="leading-relaxed">涉及法律问题，建议直接前往警局咨询。</li>
+            <li class="leading-relaxed">保留所有聊天、通话证据，及时报警。</li>
+          </ul>
+        </div>
+
+        <div class="bg-green-50 p-6 rounded-xl border border-green-200">
+          <h2 class="text-xl font-semibold mb-4 text-green-800">案例总结</h2>
+          <p class="text-gray-700 leading-relaxed">
+            本案例提醒大家，遇到陌生来电务必保持冷静，切勿被对方话术迷惑。诈骗分子常会使用威胁恐吓手段，声称要冻结账户或提起刑事诉讼来制造恐慌。
+            请记住，真正的执法人员绝不会通过电话威胁或索要钱财。多方核实、及时报警，是防范诈骗的有效手段。请转发提醒身边亲友，共同守护财产安全！
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
