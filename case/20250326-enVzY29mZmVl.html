@@ -190,6 +190,8 @@
     </script>
   </head>
   <body class="bg-gray-50">
+    <!-- Environment Variables (from .env.prod, .env.staging, .env.dev) -->
+    
     <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b z-50 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -420,6 +422,71 @@
             <h4 class="text-xl font-semibold text-red-600 mb-4">
               安全隐患分析
             </h4>
+
+                    <!-- Environment Variables Section -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6 flex items-center">
+            <i class="fas fa-key text-red-600 mr-2"></i>
+            环境变量泄露分析
+          </h3>
+
+          <div class="space-y-6">
+            <h4 class="text-xl font-semibold text-red-600 mb-4">
+              从Flutter应用提取的环境配置
+            </h4>
+
+            <!-- Code Display Container -->
+            <div class="relative">
+              <!-- Code Header -->
+              <div class="bg-gray-800 rounded-t-lg px-4 py-2 flex justify-between items-center">
+                <div class="flex items-center">
+                  <i class="fas fa-file-code text-green-400 mr-2"></i>
+                  <span class="text-gray-300 text-sm">Environment Variables (.env.prod, .env.staging, .env.dev)</span>
+                </div>
+                <div class="flex space-x-2">
+                  <button class="text-gray-400 hover:text-white transition-colors" onclick="copyCode(this)">
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <!-- Scrollable Code Content -->
+              <div class="bg-gray-800 rounded-b-lg p-4 overflow-x-auto max-h-[300px] scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800">
+                <pre class="text-green-400 font-mono text-sm leading-relaxed whitespace-pre">
+<code>ENVIRONMENT=production
+ENV_TYPE=L
+
+APP_NAME="ZUS Coffee"
+
+BASE_URL=https://app.zuscoffee
+API_URL_MY=$BASE_URL.com
+API_URL_SG=$BASE_URL.sg
+API_URL_BN=$BASE_URL.com.bn
+API_URL_PH=https://appv2.zuscoffee.ph
+API_URL_TH=https://app.th.zuscoffee.com
+
+APPIER_IS_SANDBOX=false
+
+APPIER_APP_ID_MY=xxxxxxx
+APPIER_APP_ID_SG=xxxxxxx
+APPIER_APP_ID_BN=xxxxxxx
+APPIER_APP_ID_PH=xxxxxxx
+APPIER_APP_ID_TH=xxxxxxx
+
+ONE_SIGNAL_APP_ID=xxxxxxx
+
+NOTIFICATION_APP_GROUP=xxxxxxx
+
+LIVE_ACTIVITIES_APP_GROUP=xxxxxxx
+
+FIREBASE_PROJECT_NUMBER=xxxxxxx
+
+DATADOG_CLIENT_TOKEN=xxxxxxx
+DATADOG_APP_ID=xxxxxxx
+
+GOOGLE_API_KEY=xxxxxxx</code></pre>
+              </div>
+            </div>
 
             <!-- Code Display Container -->
                     <div class="relative">
@@ -1092,6 +1159,7 @@ package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
             </table>
           </div>
         </div>
+        
 
         <!-- Risk Assessment -->
         <div class="bg-white p-8 rounded-lg shadow-md mb-8">
@@ -1145,6 +1213,23 @@ package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
           </div>
         </div>
 
+        <!-- WordPress User Data Exposure -->
+        <div class="bg-white p-8 rounded-lg shadow-md mb-8">
+          <h3 class="text-2xl font-bold mb-6">WordPress 用户数据泄露风险</h3>
+          <p class="mb-4">发现网站通过公开API接口泄露用户信息，接口地址：<a href="https://zuscoffee.com/wp-json/wp/v2/users" class="text-red-600 hover:underline">https://zuscoffee.com/wp-json/wp/v2/users</a></p>
+          <div class="bg-red-50 p-4 rounded-md mb-4">
+            <h4 class="font-semibold mb-2">脱敏后泄露的用户信息样本：</h4>
+            <ul class="list-disc pl-6 space-y-3">
+              <li>用户ID: 7, 姓名: Chrystal Lum, 个人页面: <a href="https://zuscoffee.com/author/chrystalise/" class="text-red-600 hover:underline">https://zuscoffee.com/author/chrystalise/</a>, 头像URL: https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g</li>
+              <li>用户ID: 6, 姓名: Jamie Master, 个人页面: <a href="https://zuscoffee.com/author/masterbate/" class="text-red-600 hover:underline">https://zuscoffee.com/author/masterbate/</a>, 头像URL: https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g</li>
+              <li>用户ID: 5, 姓名: Pineapple Studio, 个人页面: <a href="https://zuscoffee.com/author/pineapple-studio/" class="text-red-600 hover:underline">https://zuscoffee.com/author/pineapple-studio/</a>, 头像URL: https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g</li>
+              <li>用户ID: 3, 姓名: TY, 个人页面: <a href="https://zuscoffee.com/author/tingyan/" class="text-red-600 hover:underline">https://zuscoffee.com/author/tingyan/</a>, 头像URL: https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g</li>
+              <li>用户ID: 1, 姓名: zusadmin, 个人页面: <a href="https://zuscoffee.com/author/zusadmin/" class="text-red-600 hover:underline">https://zuscoffee.com/author/zusadmin/</a>, 头像URL: https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g</li>
+            </ul>
+          </div>
+          <p class="text-orange-600 font-semibold">风险影响：攻击者可获取用户身份信息、个人页面地址，进而实施定向钓鱼或身份冒用攻击</p>
+        </div>
+
         <!-- Recommendations -->
         <div class="bg-white p-8 rounded-lg shadow-md">
           <h3 class="text-2xl font-bold mb-6">建议措施</h3>
@@ -1173,7 +1258,105 @@ package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
             </div>
           </div>
         </div>
-      </section>
+
+        <!-- 漏洞复现使用工具列表 -->
+        <section class="mb-16 px-4">
+          <div class="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-100 hover:shadow-xl transition-all duration-300">
+            <h3 class="text-2xl font-bold mb-6 flex items-center">
+              <i class="fas fa-wrench text-blue-600 mr-3"></i>
+              漏洞复现使用工具列表
+            </h3>
+            <p class="mb-6 text-gray-600 leading-relaxed">以下为本次安全审计中使用的工具，开发团队可参考以复现漏洞：</p>
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-6 rounded-xl border border-gray-200">
+              <ul class="space-y-4">
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-key text-blue-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">flutter_secret_exposed</strong>
+                    <p class="text-gray-600 text-sm mb-2">用于检测Flutter应用中的硬编码敏感信息</p>
+                    <a href="https://github.com/ctkqiang/flutter_secret_exposed" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fab fa-github mr-1"></i>GitHub: ctkqiang/flutter_secret_exposed
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-mobile-alt text-purple-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">MobileAppAnalyzer</strong>
+                    <p class="text-gray-600 text-sm mb-2">移动应用静态分析工具，用于提取配置信息</p>
+                    <a href="https://github.com/ctkqiang/MobileAppAnalyzer" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fab fa-github mr-1"></i>GitHub: ctkqiang/MobileAppAnalyzer
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-search text-green-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">dirleaks</strong>
+                    <p class="text-gray-600 text-sm mb-2">目录扫描工具，用于发现隐藏的敏感文件和接口</p>
+                    <a href="https://github.com/ctkqiang/dirleaks" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fab fa-github mr-1"></i>GitHub: ctkqiang/dirleaks
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-bug text-orange-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">Frida</strong>
+                    <p class="text-gray-600 text-sm mb-2">动态分析工具，用于Hook和监控应用运行时行为</p>
+                    <a href="https://frida.re/" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fas fa-external-link-alt mr-1"></i>官方: frida.re
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-globe-asia text-red-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">MalaysianOSINT</strong>
+                    <p class="text-gray-600 text-sm mb-2">马来西亚地区开源情报收集工具</p>
+                    <a href="https://github.com/ctkqiang/MalaysianOSINT" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fab fa-github mr-1"></i>GitHub: ctkqiang/MalaysianOSINT
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-rocket text-yellow-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">metasploit-framework</strong>
+                    <p class="text-gray-600 text-sm mb-2">漏洞利用框架，用于验证漏洞可利用性</p>
+                    <a href="https://www.metasploit.com/" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fas fa-external-link-alt mr-1"></i>官方: metasploit.com
+                    </a>
+                  </div>
+                </li>
+                <li class="flex items-start space-x-3 p-3 rounded-lg hover:bg-white hover:shadow-sm transition-all duration-200">
+                  <div class="flex-shrink-0 w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-file-code text-indigo-600 text-sm"></i>
+                  </div>
+                  <div class="flex-1">
+                    <strong class="text-gray-800 block mb-1">apktool</strong>
+                    <p class="text-gray-600 text-sm mb-2">APK反编译工具，用于分析应用源码和资源</p>
+                    <a href="https://github.com/iBotPeaches/Apktool" class="text-blue-600 hover:text-blue-800 text-sm hover:underline transition-colors">
+                      <i class="fab fa-github mr-1"></i>GitHub: iBotPeaches/Apktool
+                    </a>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </section>
 
       <section class="mb-16 px-4">
         <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
@@ -1242,6 +1425,7 @@ package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
             </div>
           </div>
         </div>
+        
       </section>
     </main>
 
@@ -1260,5 +1444,7 @@ package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart
     <script>
       // [Previous scripts from 20250324-24f24c.html]
     </script>
+
+    
   </body>
 </html>
