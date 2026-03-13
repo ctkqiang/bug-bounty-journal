@@ -320,9 +320,10 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          <!-- QuestDB Case -->
+          
+          <!-- CNVD-2026-13173 Case -->
           <a
-            href="case/20260214questdb.html"
+            href="case/20260310-CNVD-2026-1317.html"
             class="group relative block bg-white rounded-xl shadow hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
           >
             <div
@@ -333,35 +334,30 @@
                 class="flex items-center justify-between mb-4 transition-transform duration-300 group-hover:scale-105"
               >
                 <span class="text-sm text-gray-500 font-medium"
-                  >2026-02-14</span
+                  >2026-03-10</span
                 >
                 <span
-                  class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-semibold shadow hover:shadow-md transition-all duration-300"
+                  class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-semibold shadow hover:shadow-md transition-all duration-300"
                 >
-                  <i class="fas fa-biohazard mr-1"></i>严重
+                  <i class="fas fa-exclamation-triangle mr-1"></i>中危
                 </span>
               </div>
               <h3
                 class="text-xl font-bold text-gray-800 mb-2 group-hover:text-blue-600 transition-colors"
               >
                 <i class="fas fa-database text-blue-600 mr-2"></i>
-                QuestDB 认证绕过与 SQL 注入风险
+                CNVD-2026-13173 QuestDB 未授权访问漏洞
               </h3>
               <p
                 class="text-gray-600 mb-4 line-clamp-2 group-hover:line-clamp-none transition-all duration-300"
               >
-                QuestDB 存在严重的身份验证绕过漏洞，即使在配置了安全选项的情况下，HTTP 端点依然允许未授权访问。同时分析了潜在的 SQL 注入风险及攻击场景。
+                QuestDB 存在未授权访问漏洞，攻击者可利用该漏洞获取敏感信息。认证配置失效导致未授权用户能够访问系统中的敏感数据。
               </p>
               <div class="flex flex-wrap gap-2">
                 <span
                   class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
                 >
-                  <i class="fas fa-user-lock mr-1"></i>认证绕过
-                </span>
-                <span
-                  class="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
-                >
-                  <i class="fas fa-bug mr-1"></i>SQL注入
+                  <i class="fas fa-user-lock mr-1"></i>未授权访问
                 </span>
                 <span
                   class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
@@ -369,9 +365,20 @@
                   <i class="fas fa-server mr-1"></i>QuestDB
                 </span>
                 <span
+                  class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium shadow hover:shadow-md transition-all duration-300"
+                >
+                  <i class="fas fa-file-alt mr-1"></i>CNVD
+                </span>
+                <span
                   class="px-2 py-1 bg-pink-100 text-pink-800 rounded-full text-sm"
                 >
-                  <i class="fas fa-shield-alt mr-1"></i>安全审计
+                  <i class="fas fa-shield-alt mr-1"></i>安全测试
+                </span>
+
+                <span
+                  class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm"
+                >
+                  <i class="fas fa-map-marker-alt mr-1"></i>中国
                 </span>
               </div>
             </div>

