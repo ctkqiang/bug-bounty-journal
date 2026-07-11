@@ -5,7 +5,7 @@ import { useScrollAnimation } from '@/composables/useScrollAnimation'
 import IncidentCard from '@/components/IncidentCard.vue'
 import '@/styles/incidents.css'
 
-const { allIncidents } = useIncidents()
+const { searchQuery, filteredIncidents } = useIncidents()
 const { observeElement } = useScrollAnimation()
 
 const headerRef = ref<HTMLElement>()
@@ -34,7 +34,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="incidents-view">
+  <div class="incidents">
     <!-- PAGE HEADER -->
     <section ref="headerRef" class="incidents-header scroll-hidden">
       <h1 class="incidents-title">
@@ -44,37 +44,48 @@ onMounted(() => {
       <p class="incidents-subtitle">真实攻防场景还原 · 社会工程学反制 · 诈骗警示</p>
     </section>
 
-    <!-- INCIDENTS GRID -->
-    <section ref="gridRef" class="incidents-grid scroll-hidden">
+    <!-- SEARCH -->
+    <div class="incidents-search-wrapper">
+      <i class="fas fa-search incidents-search-icon"></i>
+      <input v-model="searchQuery" type="text" class="incidents-search-input" placeholder="搜索安全事件..." />
+    </div>
+
+    <!-- INCIDENTS LIST -->
+    <section ref="gridRef" class="incidents-list scroll-hidden">
       <div
-        v-for="(incident, idx) in allIncidents"
+        v-for="(incident, idx) in filteredIncidents"
         :key="incident.id"
         class="incident-item"
         :style="{ animationDelay: `${idx * 0.15}s` }"
       >
         <IncidentCard :incident="incident" />
 
-        <!-- TIMELINE (phases) -->
-        <div v-if="incident.phases && incident.phases.length > 0" class="incident-timeline">
+        <!-- PHASES TIMELINE -->
+        <div v-if="incident.phases && incident.phases.length > 0" class="incident-phases">
           <div
             v-for="(phase, pi) in incident.phases"
             :key="pi"
-            class="timeline-phase"
-            :data-color="phase.color"
+            class="incident-phase"
+            :class="`incident-phase--${phase.color}`"
           >
-            <h3 class="phase-title">{{ phase.phase }}</h3>
-            <p class="phase-desc">{{ phase.description }}</p>
+            <div class="incident-phase-header">
+              <span class="incident-phase-name">{{ phase.phase }}</span>
+            </div>
+            <p class="incident-phase-desc">{{ phase.description }}</p>
 
             <!-- DIALOGUES -->
-            <div v-if="phase.dialogues && phase.dialogues.length > 0" class="dialogues">
+            <div v-if="phase.dialogues && phase.dialogues.length > 0" class="incident-dialogues">
               <div
                 v-for="(dialogue, di) in phase.dialogues"
                 :key="di"
-                class="dialogue"
-                :class="dialogue.isAttacker ? 'dialogue-attacker' : 'dialogue-defender'"
+                class="dialogue-box"
+                :class="dialogue.isAttacker ? 'dialogue-box--attacker' : 'dialogue-box--defender'"
               >
-                <span class="dialogue-speaker">{{ dialogue.speaker }}</span>
-                <span class="dialogue-text">{{ dialogue.text }}</span>
+                <div class="dialogue-speaker">
+                  <i class="fas dialogue-speaker-icon" :class="dialogue.isAttacker ? 'fa-skull' : 'fa-shield'"></i>
+                  {{ dialogue.speaker }}
+                </div>
+                <div class="dialogue-text">{{ dialogue.text }}</div>
               </div>
             </div>
 

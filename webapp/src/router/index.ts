@@ -33,6 +33,24 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '安全札记 | 哪吒网络安全' }
   },
   {
+    path: '/blog/:id',
+    name: 'blog-detail',
+    component: () => import('@/views/BlogDetailView.vue'),
+    meta: { title: '文章详情 | 哪吒网络安全' }
+  },
+  {
+    path: '/tutorials',
+    name: 'tutorials',
+    component: () => import('@/views/TutorialView.vue'),
+    meta: { title: '实战教程 | 哪吒网络安全' }
+  },
+  {
+    path: '/tutorials/:id',
+    name: 'tutorial-detail',
+    component: () => import('@/views/TutorialDetailView.vue'),
+    meta: { title: '教程详情 | 哪吒网络安全' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/'
   }

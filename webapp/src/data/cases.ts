@@ -1985,7 +1985,22 @@ int main() {
         contents: [
           {
             type: 'subheading',
-            text: '1.1 应用基本信息'
+            text: '1.1 总体概述：Web vs Mobile 安全性对比'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-shield-alt', title: 'Web 应用安全性', desc: '经检测，ZUS Coffee Web 部分整体防护措施较为完善，WAF、CloudFront、CORS 配置及认证机制均运行正常，未发现明显漏洞，开发团队做得非常出色。', color: 'green' },
+              { icon: 'fa-mobile-alt', title: '移动应用安全性', desc: '移动应用基于 Flutter 开发。通过 APK 反编译、提取 libapp.so 文件及字符串分析，发现多个敏感 API 接口和硬编码敏感信息。漏洞集中在移动端，可能导致 API 滥用、数据泄露、虚假推荐操控、会话劫持及推送通知滥用等风险。', color: 'red' }
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '本次审计覆盖 ZUS Coffee 的 Web 应用与移动应用两条攻击面。Web 侧的防护（WAF、CloudFront CDN、CORS 白名单、认证机制）整体表现优秀，未发现可利用的高危漏洞；而移动端因 Flutter AOT 产物未进行有效混淆与加固，成为本次审计的主要风险来源。后续章节将围绕移动端漏洞展开详细分析。'
+          },
+          {
+            type: 'subheading',
+            text: '1.2 应用基本信息'
           },
           {
             type: 'paragraph',
@@ -2005,7 +2020,7 @@ int main() {
           },
           {
             type: 'subheading',
-            text: '1.2 核心发现'
+            text: '1.3 核心发现'
           },
           {
             type: 'impact-grid',
@@ -2193,41 +2208,425 @@ GOOGLE_API_KEY=xxxxxxx`
           {
             type: 'list',
             items: [
-              'package:love_coffee/main.dart',
-              'package:love_coffee/api/api_caller.dart',
-              'package:love_coffee/api/api_response.dart',
-              'package:love_coffee/models/user_models/user.dart',
-              'package:love_coffee/models/user_models/user_registration.dart',
-              'package:love_coffee/models/order.dart',
-              'package:love_coffee/models/checkout_models/checkout.dart',
-              'package:love_coffee/models/checkout_models/cart_item.dart',
+              'package:love_coffee/screens/home_loyalty_term_condition/components/loyalty_card.dart',
+              'package:love_coffee/providers/product_detail_provider.dart',
+              'package:love_coffee/screens/delete_account/delete_account.dart',
+              'package:love_coffee/screens/home_menu_main_v3/menu_page.dart',
+              'package:love_coffee/models/help_centre/help_search.dart',
+              'package:love_coffee/components/payment_details_field.dart',
+              'package:love_coffee/models/google_models/google_autocomplete.dart',
+              'package:love_coffee/screens/payment/payment_method_page.dart',
+              'package:love_coffee/components/message_border.dart',
+              'package:love_coffee/services/SharedPreference_tutorial.dart',
+              'package:love_coffee/shared_functions/badge_display.dart',
+              'package:love_coffee/services/SharedPreference_UUID.dart',
+              'package:love_coffee/screens/voucher/referee_perk_details.dart',
+              'package:love_coffee/extensions/ordinal_number.dart',
+              'package:love_coffee/screens/login_signup/components/phone_number_field.dart',
+              'package:love_coffee/providers/country_provider.dart',
+              'package:love_coffee/screens/help_centre/component/shimmer_loading.dart',
               'package:love_coffee/models/balance_models/balance_type.dart',
+              'package:love_coffee/models/mission_models/mission.dart',
+              'package:love_coffee/models/tumbler_models/tumbler_catalogue.dart',
               'package:love_coffee/models/voucher_models/voucher.dart',
-              'package:love_coffee/models/store_models/store.dart',
-              'package:love_coffee/models/product_models/product.dart',
-              'package:love_coffee/models/referral_models/referral_info.dart',
-              'package:love_coffee/models/gift_card_models/gift_card.dart',
-              'package:love_coffee/models/payment_models/payment_method.dart',
-              'package:love_coffee/providers/auth_provider.dart',
-              'package:love_coffee/providers/checkout_provider.dart',
-              'package:love_coffee/providers/order_provider.dart',
-              'package:love_coffee/providers/user_provider.dart',
-              'package:love_coffee/screens/login_signup/login_signup.dart',
-              'package:love_coffee/screens/checkout_processing/checkout_processing_page.dart',
+              'package:love_coffee/components/conditional_builder.dart',
+              'package:love_coffee/components/padded_pdf_table_row.dart',
+              'package:love_coffee/components/custom_badge.dart',
+              'package:love_coffee/components/countdown_timer_builder.dart',
+              'package:love_coffee/screens/home_order_details/components/payment_method_section.dart',
+              'package:love_coffee/shared_functions/share_dialog_logout.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_start.dart',
               'package:love_coffee/screens/zus_balance/zus_balance_main.dart',
-              'package:love_coffee/screens/voucher/voucher_main.dart',
-              'package:love_coffee/services/Post_api_service.dart',
-              'package:love_coffee/services/Get_api_service.dart',
-              'package:love_coffee/services/firebase_analytics.dart',
-              'package:love_coffee/managers/one_signal_manager.dart',
+              'package:love_coffee/global_variable/Global_variable.dart',
+              'package:love_coffee/models/product_models/product_category.dart',
+              'package:love_coffee/screens/help_centre/faq_category_page.dart',
+              'package:love_coffee/providers/help_centre_provider.dart',
+              'package:love_coffee/providers/home_provider.dart',
+              'package:love_coffee/screens/gift_card/gift_card_history_sent.dart',
+              'package:love_coffee/api/api_caller.dart',
+              'package:love_coffee/services/SharedPreference_rateOrderId.dart',
+              'package:love_coffee/screens/voucher/widgets/loyalty_voucher_item.dart',
+              'package:love_coffee/screens/delivery/screens/google_map_screen.dart',
+              'package:love_coffee/providers/login_provider.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_reload.dart',
+              'package:love_coffee/shared_functions/confirmation_dialogs.dart',
+              'package:love_coffee/models/user_models/user_registration.dart',
+              'package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_search_bar.dart',
+              'package:love_coffee/managers/yellow_ai_manager.dart',
+              'package:love_coffee/models/referral_models/referral_info.dart',
+              'package:love_coffee/components/custom_button.dart',
+              'package:love_coffee/components/shimmer_widget.dart',
+              'package:love_coffee/models/product_models/product_alternative.dart',
+              'package:love_coffee/screens/home_page_main/home_page_main.dart',
+              'package:love_coffee/services/SharedPreference_pickup.dart',
+              'package:love_coffee/models/loyalty_modals/loyalty_zus_point_history.dart',
+              'package:love_coffee/screens/home_menu_main_v3/components/product_search_delegate.dart',
+              'package:love_coffee/providers/balance_provider.dart',
+              'package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_fourth_page.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_reload_gift_card.dart',
+              'package:love_coffee/models/store_models/store.dart',
+              'package:love_coffee/screens/mission_reward/redeem_reward_details.dart',
+              'package:love_coffee/components/payment_method_field.dart',
+              'package:love_coffee/screens/voucher/voucher_details.dart',
+              'package:love_coffee/models/get_HereMaps_result.dart',
+              'package:love_coffee/screens/checkout_processing/component/out_of_stock_nested_menu.dart',
+              'package:love_coffee/screens/sms_confirmation/component/otp_field.dart',
+              'package:love_coffee/screens/home_page_main/components/home_action_button.dart',
+              'package:love_coffee/shared_functions/navigation_helper.dart',
+              'package:love_coffee/screens/product_details/widgets/prdt_hot_ice_selection.dart',
+              'package:love_coffee/shared_functions/order_method_dialog.dart',
+              'package:love_coffee/shared_functions/payment_function.dart',
+              'package:love_coffee/services/SharedPreference_buy1free1banner.dart',
+              'package:love_coffee/components/custom_bottom_widget.dart',
+              'package:love_coffee/shared_functions/date_range_picker.dart',
+              'package:love_coffee/providers/zus_wrapped_provider.dart',
+              'package:love_coffee/components/transparent_route.dart',
+              'package:love_coffee/screens/user_profile_edit/profile_register_page.dart',
+              'package:love_coffee/screens/qr_code/qr_code_scan.dart',
+              'package:love_coffee/screens/home_loyalty_term_condition/loyalty_page.dart',
+              'package:love_coffee/screens/pickup/pickup_page.dart',
+              'package:love_coffee/providers/outlet_provider.dart',
+              'package:love_coffee/models/user_models/user_balance.dart',
+              'package:love_coffee/screens/user_profile/user_profile_main.dart',
+              'package:love_coffee/models/loyalty_modals/loyalty_info.dart',
+              'package:love_coffee/models/get_api_token.dart',
+              'package:love_coffee/models/mini_game.dart',
+              'package:love_coffee/screens/gift_card/gift_card_history.dart',
+              'package:love_coffee/screens/mini_game/screens/mini_game_info.dart',
+              'package:love_coffee/models/referral_models/referee_perk.dart',
+              'package:love_coffee/managers/dynamic_link_manager.dart',
+              'package:love_coffee/providers/auth_provider.dart',
+              'package:love_coffee/shared_functions/custom_appbar.dart',
+              'package:love_coffee/models/store_models/store_condition.dart',
+              'package:love_coffee/screens/full_banner/full_banner_page.dart',
+              'package:love_coffee/screens/tutorial_screen/tutorial_main.dart',
+              'package:love_coffee/screens/product_details/widgets/product_ingredient_info.dart',
+              'package:love_coffee/models/order.dart',
+              'package:love_coffee/models/product_models/nutrition_facts.dart',
+              'package:love_coffee/screens/product_details/product_details.dart',
+              'package:love_coffee/services/SharedPreference_delivery_store.dart',
+              'package:love_coffee/screens/home_zus_points_transaction_history/zus_points_transaction_history_page.dart',
+              'package:love_coffee/screens/gift_card/gift_card_main_send.dart',
+              'package:love_coffee/models/root_product.dart',
               'package:love_coffee/managers/molpay_manager.dart',
+              'package:love_coffee/services/firebase_analytics.dart',
+              'package:love_coffee/screens/checkout_processing/component/order_summary.dart',
+              'package:love_coffee/screens/pickup/component/pickup_shimmer_loading.dart',
+              'package:love_coffee/screens/voucher/partnership_voucher_details.dart',
+              'package:love_coffee/screens/product_details/widgets/product_upsells.dart',
+              'package:love_coffee/screens/order_feedback/order_feedback.dart',
+              'package:love_coffee/providers/banner_provider.dart',
+              'package:love_coffee/components/redeem_gift_card_overview.dart',
+              'package:love_coffee/screens/user_buy1free1_tutorial/buy_one_free_one_tutorial_page.dart',
+              'package:love_coffee/extensions/quick_action_shortcut.dart',
+              'package:love_coffee/models/balance_models/balance_redeem.dart',
+              'package:love_coffee/providers/bottom_navigation_provider.dart',
+              'package:love_coffee/screens/help_centre/component/search_bar.dart',
+              'package:love_coffee/models/country_models/country_list_option.dart',
+              'package:love_coffee/screens/mini_game/widgets/flipper.dart',
+              'package:love_coffee/services/SharedPreference_store.dart',
+              'package:love_coffee/shared_functions/shake_animation.dart',
+              'package:love_coffee/services/post_api_service.dart',
+              'package:love_coffee/providers/quick_action_provider.dart',
+              'package:love_coffee/screens/web_view/web_view_banner.dart',
+              'package:love_coffee/managers/one_signal_manager.dart',
+              'package:love_coffee/models/balance_models/balance_invoice.dart',
+              'package:love_coffee/services/SharedPreference_favoriteStore.dart',
+              'package:love_coffee/screens/voucher/widgets/referee_perk_item.dart',
+              'package:love_coffee/screens/delivery/components/delivery_search_bar.dart',
+              'package:love_coffee/shared_functions/bottom_sheet.dart',
+              'package:love_coffee/components/store_pinned_message_widget.dart',
+              'package:love_coffee/screens/home_page_main/components/merchandise_shimmer.dart',
+              'package:love_coffee/screens/country_detection/country_detection_page.dart',
+              'package:love_coffee/screens/voucher/widgets/partnership_voucher_item.dart',
+              'package:love_coffee/providers/reward_provider.dart',
+              'package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_dialog.dart',
+              'package:love_coffee/screens/mini_game/screens/mini_game_main.dart',
+              'package:love_coffee/models/voucher_models/partnership_voucher.dart',
+              'package:love_coffee/models/molpay_models/molpay_result.dart',
+              'package:love_coffee/components/benefit_notice.dart',
+              'package:love_coffee/providers/day_night_provider.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_transaction_history.dart',
+              'package:love_coffee/models/user_models/user_loyalty.dart',
+              'package:love_coffee/screens/referral/referral_invite_history.dart',
+              'package:love_coffee/models/product_models/product_addon.dart',
+              'package:love_coffee/models/get_checkout_pay.dart',
+              'package:love_coffee/screens/pickup/pickup_state_outlets.dart',
+              'package:love_coffee/models/gift_card_models/gift_card_page.dart',
+              'package:love_coffee/screens/order/generate_order_receipt.dart',
+              'package:love_coffee/screens/mission_reward/mission_reward_main.dart',
+              'package:love_coffee/screens/pickup/pickup_nearby_outlets_hms.dart',
+              'package:love_coffee/models/checkout_models/checkout.dart',
+              'package:love_coffee/screens/mission_reward/mission_details.dart',
+              'package:love_coffee/extensions/duration_format.dart',
+              'package:love_coffee/screens/product_details/widgets/product_nutrition_info.dart',
+              'package:love_coffee/screens/referral/referral_qr.dart',
+              'package:love_coffee/screens/user_profile_edit/component/profile_field.dart',
+              'package:love_coffee/models/molpay_models/molpay_info.dart',
+              'package:love_coffee/screens/mini_game/screens/mini_game_history.dart',
+              'package:love_coffee/models/referral_models/referral_reward_table_row.dart',
+              'package:love_coffee/providers/referral_provider.dart',
+              'package:love_coffee/screens/home_page_main/components/home_floating_button.dart',
+              'package:love_coffee/services/Get_api_service.dart',
+              'package:love_coffee/screens/help_centre/faq_answer_page.dart',
+              'package:love_coffee/models/tumbler_models/tumbler_info.dart',
+              'package:love_coffee/services/SharedPreference_DeliverType.dart',
+              'package:love_coffee/services/SharedPreference_Auth.dart',
+              'package:love_coffee/models/balance_models/balance_html.dart',
+              'package:love_coffee/screens/sms_confirmation/component/resend_code_option.dart',
+              'package:love_coffee/models/google_models/google_place_search.dart',
+              'package:love_coffee/screens/voucher/widgets/voucher_item.dart',
+              'package:love_coffee/models/conversation.dart',
+              'package:love_coffee/screens/delivery/screens/delivery_main.dart',
+              'package:love_coffee/models/system_init.dart',
+              'package:love_coffee/screens/mission_reward/reward_coming_soon.dart',
               'package:love_coffee/constants/constants.dart',
-              'package:love_coffee/global_variable/Global_variable.dart'
+              'package:love_coffee/screens/delivery/components/bottom_address_display.dart',
+              'package:love_coffee/api/api_response.dart',
+              'package:love_coffee/screens/help_centre/component/search_result_container.dart',
+              'package:love_coffee/screens/home_navigation/home_navigation.dart',
+              'package:love_coffee/screens/login_signup/components/country_prefix_dialog/country_prefix_tile.dart',
+              'package:love_coffee/models/payment_details.dart',
+              'package:love_coffee/screens/mission_reward/redeem_reward_main.dart',
+              'package:love_coffee/screens/login_signup/components/received_via_button.dart',
+              'package:love_coffee/models/store_models/store_pinned_message.dart',
+              'package:love_coffee/providers/user_provider.dart',
+              'package:love_coffee/screens/splash_screen/splash_screen.dart',
+              'package:love_coffee/components/map_sheet.dart',
+              'package:love_coffee/components/custom_search_delegate.dart',
+              'package:love_coffee/models/user_models/user_tumbler.dart',
+              'package:love_coffee/screens/product_details/widgets/product_basic_info.dart',
+              'package:love_coffee/providers/schedule_provider.dart',
+              'package:love_coffee/screens/home_menu_checkout/menu_checkout_page.dart',
+              'package:love_coffee/models/live_chat.dart',
+              'package:love_coffee/models/balance_models/balance_campaign.dart',
+              'package:love_coffee/screens/mission_reward/redeem_partnership_details.dart',
+              'package:love_coffee/screens/tumbler/tumbler_main.dart',
+              'package:love_coffee/models/popups.dart',
+              'package:love_coffee/shared_functions/arrow_animation.dart',
+              'package:love_coffee/screens/select_country/select_country.dart',
+              'package:love_coffee/models/checkout_models/cart_item.dart',
+              'package:love_coffee/components/custom_drop_down.dart',
+              'package:love_coffee/models/delivery_models/delivery_rider.dart',
+              'package:love_coffee/screens/referral/referral_journey.dart',
+              'package:love_coffee/models/get_out_of_stock_product.dart',
+              'package:love_coffee/screens/settings/components/setting_tile.dart',
+              'package:love_coffee/providers/contact_provider.dart',
+              'package:love_coffee/helper/convert_type_helper.dart',
+              'package:love_coffee/models/loyalty_notify_message.dart',
+              'package:love_coffee/models/delivery_models/delivery_address.dart',
+              'package:love_coffee/models/gift_card_models/gift_card_create.dart',
+              'package:love_coffee/providers/event_provider.dart',
+              'package:love_coffee/screens/login_signup/components/auth_agreement_section.dart',
+              'package:love_coffee/shared_functions/route_animations.dart',
+              'package:love_coffee/models/product_models/product.dart',
+              'package:love_coffee/screens/pickup/component/outlet_item.dart',
+              'package:love_coffee/models/user_models/user.dart',
+              'package:love_coffee/services/Post_api_service.dart',
+              'package:love_coffee/screens/product_details/widgets/product_bundles.dart',
+              'package:love_coffee/models/product_models/product_ingredient.dart',
+              'package:love_coffee/screens/gift_card/widgets/redeemed_gift_card.dart',
+              'package:love_coffee/enums/day_night.dart',
+              'package:love_coffee/providers/product_provider.dart',
+              'package:love_coffee/screens/help_centre/help_centre_screen.dart',
+              'package:love_coffee/models/balance_models/balance_log.dart',
+              'package:love_coffee/providers/gift_card_provider.dart',
+              'package:love_coffee/screens/order/order_receipt_preview.dart',
+              'package:love_coffee/screens/home_loyalty_faq/loyalty_faq_page.dart',
+              'package:love_coffee/extensions/stable_sort_list.dart',
+              'package:love_coffee/providers/feedback_provider.dart',
+              'package:love_coffee/screens/home_page_main/components/home_order_feedback.dart',
+              'package:love_coffee/screens/mission_reward/reward_main.dart',
+              'package:love_coffee/screens/home_order_main/home_order_main.dart',
+              'package:love_coffee/models/referral_models/referee_onboard_info.dart',
+              'package:love_coffee/shared_functions/base_model.dart',
+              'package:love_coffee/models/product_models/order_product.dart',
+              'package:love_coffee/managers/cdp_manager.dart',
+              'package:love_coffee/shared_functions/custom_toast.dart',
+              'package:love_coffee/main.dart',
+              'package:love_coffee/screens/home_order_main/components/filter.dart',
+              'package:love_coffee/components/bouncing_widget.dart',
+              'package:love_coffee/screens/gift_card/gift_card_redeem_tab.dart',
+              'package:love_coffee/providers/checkout_provider.dart',
+              'package:love_coffee/models/referral_models/referee.dart',
+              'package:love_coffee/screens/settings/settings.dart',
+              'package:love_coffee/services/location_service.dart',
+              'package:love_coffee/screens/home_general_feedback/general_feedback_page.dart',
+              'package:love_coffee/screens/home_page_main/components/home_banner.dart',
+              'package:love_coffee/models/country_models/get_countries.dart',
+              'package:love_coffee/models/user_models/user_zus_points.dart',
+              'package:love_coffee/extensions/string_ext.dart',
+              'package:love_coffee/models/gift_card_models/gift_card_init.dart',
+              'package:love_coffee/models/balance_models/balance_details.dart',
+              'package:love_coffee/screens/user_profile_edit/component/birthday_bottom_sheet.dart',
+              'package:love_coffee/models/gift_card_models/gift_card_background.dart',
+              'package:love_coffee/models/checkout_processing.dart',
+              'package:love_coffee/providers/splash_provider.dart',
+              'package:love_coffee/screens/product_details/widgets/prdt_details_bottom_display.dart',
+              'package:love_coffee/api/api_response.g.dart',
+              'package:love_coffee/shared_functions/loading_dialog.dart',
+              'package:love_coffee/components/show_clear_cart_dialog.dart',
+              'package:love_coffee/components/html_page.dart',
+              'package:love_coffee/screens/product_details/widgets/prdt_preferrence_selection.dart',
+              'package:love_coffee/services/SharedPreference_store_dropdown_menu.dart',
+              'package:love_coffee/screens/home_order_details/home_order_details_page.dart',
+              'package:love_coffee/providers/global_provider.dart',
+              'package:love_coffee/screens/product_details/widgets/product_addons.dart',
+              'package:love_coffee/models/app_banner.dart',
+              'package:love_coffee/services/sp_service.dart',
+              'package:love_coffee/screens/mini_game/models/lucky_draw_model.dart',
+              'package:love_coffee/models/balance_models/balance_reload_ref.dart',
+              'package:love_coffee/services/SharedPreference_service.dart',
+              'package:love_coffee/screens/referral/referral_main.dart',
+              'package:love_coffee/screens/gift_card/gift_card_sent_details.dart',
+              'package:love_coffee/screens/home_order_main/components/order_list_shimmer.dart',
+              'package:love_coffee/models/outlet_state.dart',
+              'package:love_coffee/configs/size_config.dart',
+              'package:love_coffee/screens/gift_card/gift_card_purchase.dart',
+              'package:love_coffee/models/get_generalFeedbacktag.dart',
+              'package:love_coffee/screens/home_menu_checkout/components/schedule_time_dropdown.dart',
+              'package:love_coffee/providers/pickup_provider.dart',
+              'package:love_coffee/models/referral_models/referral_invite_history.dart',
+              'package:love_coffee/screens/mission_reward/mission_main.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_transaction_details.dart',
+              'package:love_coffee/screens/product_details/widgets/product_reviews.dart',
+              'package:love_coffee/utils/signup_util.dart',
+              'package:love_coffee/screens/pickup/pickup_nearby_outlets.dart',
+              'package:love_coffee/screens/gift_card/gift_card_main.dart',
+              'package:love_coffee/providers/order_provider.dart',
+              'package:love_coffee/models/payment_models/payment_channel.dart',
+              'package:love_coffee/shared_functions/customer_support_dialog.dart',
+              'package:love_coffee/models/product_models/product_review.dart',
+              'package:love_coffee/screens/home_order_main/components/order_item.dart',
+              'package:love_coffee/managers/live_chat_manager.dart',
+              'package:love_coffee/screens/setup_bio/setup_biometric_screen.dart',
+              'package:love_coffee/screens/home_page_main/components/home_shimmer_loading.dart',
+              'package:love_coffee/providers/delivery_provider.dart',
+              'package:love_coffee/models/gift_card_models/gift_card.dart',
+              'package:love_coffee/shared_functions/scheduling_time_func.dart',
+              'package:love_coffee/services/SharedPreference_Delivery.dart',
+              'package:love_coffee/screens/voucher/voucher_main.dart',
+              'package:love_coffee/services/SharedPreference_faq.dart',
+              'package:love_coffee/models/gift_card_models/gift_card_campaign.dart',
+              'package:love_coffee/components/custom_alert_dialog.dart',
+              'package:love_coffee/screens/home_menu_checkout/components/menu_checkout_item_shimmer.dart',
+              'package:love_coffee/models/product_models/product_pool.dart',
+              'package:love_coffee/screens/gift_card/gift_card_tnc.dart',
+              'package:love_coffee/screens/home_order_main/components/no_order.dart',
+              'package:love_coffee/screens/gift_card/gift_card_redeemed_details.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_term.dart',
+              'package:love_coffee/components/custom_error_message.dart',
+              'package:love_coffee/screens/pickup/component/pickup_location_button.dart',
+              'package:love_coffee/screens/delivery/screens/delivery_set_address.dart',
+              'package:love_coffee/managers/freshchat_manager.dart',
+              'package:love_coffee/managers/connectivity_manager.dart',
+              'package:love_coffee/shared_functions/url_launch.dart',
+              'package:love_coffee/screens/referral/referral_registration.dart',
+              'package:love_coffee/screens/voucher/voucher_checkout.dart',
+              'package:love_coffee/screens/checkout_processing/checkout_processing_page.dart',
+              'package:love_coffee/extensions/md5_hash.dart',
+              'package:love_coffee/models/feedback_models/order_feedback.dart',
+              'package:love_coffee/models/payment_models/payment_method.dart',
+              'package:love_coffee/screens/product_details/widgets/product_extra_note_info.dart',
+              'package:love_coffee/screens/sms_confirmation/sms_confirmation.dart',
+              'package:love_coffee/extensions/list_ext.dart',
+              'package:love_coffee/screens/zus_wrapped/pages/zus_wrapped_welcome.dart',
+              'package:love_coffee/models/merch.dart',
+              'package:love_coffee/theme/style.dart',
+              'package:love_coffee/screens/login_signup/login_signup.dart',
+              'package:love_coffee/screens/gift_card/gift_card_main_redeem.dart',
+              'package:love_coffee/screens/mission_reward/redeem_reward_faq_screen.dart',
+              'package:love_coffee/models/product_models/product_tag.dart',
+              'package:love_coffee/models/help_centre/faq.dart',
+              'package:love_coffee/screens/gift_card/gift_card_history_redeemed.dart',
+              'package:love_coffee/screens/help_centre/component/live_chat_button.dart',
+              'package:love_coffee/screens/mini_game/widgets/mini_game_tnc.dart'
             ]
           },
           {
             type: 'paragraph',
             text: '完整的源文件列表超过 300 项，涵盖了应用的所有业务模块。攻击者通过分析这些文件路径即可还原应用的整体架构与业务流程，结合逆向工具可进一步获取具体实现逻辑。'
+          }
+        ]
+      },
+      {
+        heading: '测试方法与流程',
+        icon: 'fa-flask',
+        accent: '#0d6efd',
+        contents: [
+          {
+            type: 'subheading',
+            text: '移动应用测试方法'
+          },
+          {
+            type: 'paragraph',
+            text: '针对 ZUS Coffee 移动应用的安全审计，整体流程分为四个阶段：APK 反编译与文件提取、字符串提取与目录结构分析、敏感 API 路径搜索、第三方服务与硬编码密钥提取。以下为各阶段的操作命令与说明，开发团队可据此复现审计过程。'
+          },
+          {
+            type: 'subheading',
+            text: '1. APK 反编译与文件提取'
+          },
+          {
+            type: 'list',
+            items: [
+              '将 APK 文件后缀改为 .zip 并解压，获取其中的 lib/arm64-v8a/libapp.so（Flutter AOT 编译产物）',
+              '提取 libapp.so 文件，作为后续字符串提取与符号分析的目标',
+              '使用 apktool d zuscoffee.apk 反编译 AndroidManifest.xml 与资源文件，定位硬编码密钥'
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '2. 字符串提取与目录结构分析'
+          },
+          {
+            type: 'paragraph',
+            text: '通过 strings 命令对 libapp.so 进行字符串提取，并使用 grep 过滤出 Dart 源文件路径。该命令可将所有 package:love_coffee 前缀的字符串输出到文件，便于后续分析业务模块结构。'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `strings libapp.so | grep -i dart && strings libapp.so | grep -i "package:love_coffee" > output/zus_filtered_strings.txt`
+          },
+          {
+            type: 'subheading',
+            text: '3. 敏感 API 路径搜索'
+          },
+          {
+            type: 'paragraph',
+            text: '使用 grep 对提取的字符串进行二次过滤，分别搜索 v1 与 v3 接口路径。v1 接口主要覆盖余额、购物车、结账、用户与反馈业务；v3 接口则覆盖认证与地区相关功能。'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `strings source/libapp.so | grep "/api/v1/"`
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `strings source/libapp.so | grep "/api/v3/"`
+          },
+          {
+            type: 'paragraph',
+            text: '上述命令可完整还原应用的 API 端点清单，结合业务上下文即可判断哪些接口存在未授权访问、参数篡改或越权操作的风险。'
+          },
+          {
+            type: 'subheading',
+            text: '4. 第三方服务与硬编码密钥提取'
+          },
+          {
+            type: 'paragraph',
+            text: '通过分析 AndroidManifest.xml 中的 meta-data 节点，可提取到 Branch Key 等第三方服务密钥。以下为从 manifest 中提取到的 Branch Key 配置示例（已脱敏）：'
+          },
+          {
+            type: 'code',
+            language: 'xml',
+            code: `<meta-data android:name="io.branch.sdk.BranchKey" 
+    android:value="key_live_xxxxxxxxxxxxxxxx"/>`
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '注意：Branch Key 为 key_live_ 前缀的生产环境密钥，攻击者无需任何特殊权限即可通过反编译 APK 获取。建议立即轮换该密钥，并将敏感配置迁移至服务端管理。'
           }
         ]
       },
@@ -2246,7 +2645,15 @@ GOOGLE_API_KEY=xxxxxxx`
           },
           {
             type: 'subheading',
-            text: '5.2 v1 接口（余额 / 购物车 / 结账 / 用户 / 反馈）'
+            text: '5.2 API 按业务功能分类'
+          },
+          {
+            type: 'paragraph',
+            text: '根据提取到的 API 路径特征，将其按业务功能划分为四类：余额相关接口、购物车与结账接口、用户与反馈接口、认证与地区接口（v3）。以下为各分类下的具体端点：'
+          },
+          {
+            type: 'subheading',
+            text: '5.2.1 余额相关接口'
           },
           {
             type: 'list',
@@ -2256,20 +2663,50 @@ GOOGLE_API_KEY=xxxxxxx`
               '/api/v1/balance/gift-card/update-gc',
               '/api/v1/balance/gift-card/view-redeemed',
               '/api/v1/balance/gift-card/view-sent',
-              '/api/v1/balance/gift-card/continue-payment',
+              '/api/v1/balance/gift-card/continue-payment'
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '余额相关接口覆盖了 ZUS Balance 的历史查询、充值、礼品卡更新、已兑换与已发送礼品卡查看以及继续支付等操作，直接关联用户资金与礼品卡资产。'
+          },
+          {
+            type: 'subheading',
+            text: '5.2.2 购物车与结账接口'
+          },
+          {
+            type: 'list',
+            items: [
               '/api/v1/cart/add',
               '/api/v1/cart/clear',
               '/api/v1/checkout',
               '/api/v1/checkout/pay',
               '/api/v1/checkout/update/payment_method',
-              '/api/v1/orders/continue_payment',
+              '/api/v1/orders/continue_payment'
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '购物车与结账接口覆盖了加购、清空购物车、结账、支付、更新支付方式以及订单继续支付等核心交易流程，攻击者可借此构造伪造订单或绕过支付校验。'
+          },
+          {
+            type: 'subheading',
+            text: '5.2.3 用户与反馈接口'
+          },
+          {
+            type: 'list',
+            items: [
               '/api/v1/user/import-contact-v2',
               '/api/v1/feedback/order_product/store'
             ]
           },
           {
+            type: 'paragraph',
+            text: '用户与反馈接口涉及通讯录导入与订单商品反馈存储，import-contact-v2 接口若未做权限校验，可能被用于批量导入联系人实施社交工程攻击。'
+          },
+          {
             type: 'subheading',
-            text: '5.3 v3 接口（认证 / 地区）'
+            text: '5.2.4 认证与地区接口（v3）'
           },
           {
             type: 'list',
@@ -2280,6 +2717,10 @@ GOOGLE_API_KEY=xxxxxxx`
               '/api/v3/user/switch_country',
               '/api/v3/countries'
             ]
+          },
+          {
+            type: 'paragraph',
+            text: 'v3 接口为较新的认证与地区模块，涵盖登录、注册、手机号认证、国家切换与国家列表查询。攻击者可结合泄露的 API 路径批量注册账户或切换地区绕过业务限制。'
           },
           {
             type: 'paragraph',
@@ -2346,18 +2787,18 @@ curl -s https://zuscoffee.com/wp-json/wp/v2/users | jq '.[] | {id, name, slug, l
           },
           {
             type: 'table',
-            headers: ['用户 ID', '姓名', 'Slug', '个人页面', 'Woocommerce ID'],
+            headers: ['用户 ID', '姓名', 'Slug', '个人页面', '头像 URL', 'Woocommerce ID'],
             rows: [
-              ['7', 'Chrystal Lum', 'chrystalise', 'https://zuscoffee.com/author/chrystalise/', 'wc_user_7'],
-              ['6', 'Jamie Master', 'masterbate', 'https://zuscoffee.com/author/masterbate/', 'wc_user_6'],
-              ['5', 'Pineapple Studio', 'pineapple-studio', 'https://zuscoffee.com/author/pineapple-studio/', 'wc_user_5'],
-              ['3', 'TY', 'tingyan', 'https://zuscoffee.com/author/tingyan/', 'wc_user_3'],
-              ['1', 'zusadmin', 'zusadmin', 'https://zuscoffee.com/author/zusadmin/', 'wc_user_1']
+              ['7', 'Chrystal Lum', 'chrystalise', 'https://zuscoffee.com/author/chrystalise/', 'https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g', 'wc_user_7'],
+              ['6', 'Jamie Master', 'masterbate', 'https://zuscoffee.com/author/masterbate/', 'https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g', 'wc_user_6'],
+              ['5', 'Pineapple Studio', 'pineapple-studio', 'https://zuscoffee.com/author/pineapple-studio/', 'https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g', 'wc_user_5'],
+              ['3', 'TY', 'tingyan', 'https://zuscoffee.com/author/tingyan/', 'https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g', 'wc_user_3'],
+              ['1', 'zusadmin', 'zusadmin', 'https://zuscoffee.com/author/zusadmin/', 'https://secure.gravatar.com/avatar/xxxxxxx?s=24&d=mm&r=g', 'wc_user_1']
             ]
           },
           {
             type: 'paragraph',
-            text: '风险影响：攻击者可获取用户身份信息、个人页面地址，进而实施定向钓鱼或身份冒用攻击。其中 ID 为 1 的 zusadmin 为管理员账户，其信息暴露后可能被用于针对性的暴力破解或社会工程学攻击。建议在 WordPress 配置中禁用 /wp-json/wp/v2/users 接口的公开访问。'
+            text: '风险影响：攻击者可获取用户身份信息、个人页面地址以及头像 URL，进而实施定向钓鱼或身份冒用攻击。头像 URL 可被用于伪造用户身份在第三方平台进行社工攻击。其中 ID 为 1 的 zusadmin 为管理员账户，其信息暴露后可能被用于针对性的暴力破解或社会工程学攻击。建议在 WordPress 配置中禁用 /wp-json/wp/v2/users 接口的公开访问。'
           }
         ]
       },
@@ -2414,6 +2855,33 @@ curl -s https://zuscoffee.com/wp-json/wp/v2/users | jq '.[] | {id, name, slug, l
           {
             type: 'paragraph',
             text: '上述攻击场景均基于本次审计中实际提取到的硬编码敏感数据。攻击者无需任何特殊权限即可通过反编译 APK 获取这些凭证，结合泄露的 API 路径清单，可对系统发起多维度的攻击。建议立即对所有泄露的密钥进行轮换，并对 Firebase 安全规则进行重新审查。'
+          },
+          {
+            type: 'subheading',
+            text: '9.2 涉及的敏感数据清单'
+          },
+          {
+            type: 'paragraph',
+            text: '本次审计涉及的所有敏感数据均从客户端 APK 中提取，无需任何特殊权限即可获取。以下为按风险等级排序的敏感数据清单：'
+          },
+          {
+            type: 'list',
+            items: [
+              'Google API Keys 与 Crash Reporting API Key — 可用于发起未授权请求、耗尽配额、伪造崩溃报告',
+              'Firebase Database URL — 若安全规则配置不当，可读取或篡改用户订单与个人信息',
+              'Branch Key 深链配置（key_live_ 前缀） — 可操控归因系统，制造虚假推荐获取不正当奖励',
+              'Facebook Client Token — 可伪造登录请求或劫持用户会话',
+              'GCM Sender ID — 可发送未授权推送通知，诱导钓鱼攻击',
+              'APPIER App ID（MY/SG/BN/PH/TH 五国） — 可滥用数据分析与归因服务',
+              'OneSignal App ID 与 Notification App Group — 可滥用推送服务',
+              'Datadog Client Token 与 App ID — 可伪造或污染监控数据',
+              'Live Activities App Group — iOS 实时活动相关配置，可能被滥用'
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '高危提示：上述敏感数据均为客户端硬编码，且涉及马来西亚、新加坡、文莱、菲律宾、泰国五国配置。攻击者通过反编译 APK 即可获取全部凭证，影响范围覆盖整个东南亚市场。建议立即按国家维度逐一轮换所有密钥，并将敏感配置迁移至服务端管理。'
           }
         ]
       },
@@ -2479,6 +2947,54 @@ await storage.delete(key: 'api_token');`
             type: 'success-box',
             icon: 'fa-check-circle',
             text: '修复验证：完成上述修复后，使用 flutter_secret_exposed 和 MobileAppAnalyzer 重新扫描 APK，确认所有硬编码密钥已被移除；使用 curl 验证 /wp-json/wp/v2/users 接口已返回 401/403；持续监控 7 天确认无异常访问记录。'
+          }
+        ]
+      },
+      {
+        heading: '联系方式',
+        icon: 'fa-envelope',
+        accent: '#0d6efd',
+        contents: [
+          {
+            type: 'subheading',
+            text: '安全研究员信息'
+          },
+          {
+            type: 'table',
+            headers: ['项目', '详情'],
+            rows: [
+              ['姓名', '钟智强'],
+              ['职位', '高级安全研究员 | 高级全栈开发工程师 | 计算机视觉专家'],
+              ['电子邮件', 'johnmelodymel@qq.com'],
+              ['微信', 'ctkqiang']
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '响应时间承诺'
+          },
+          {
+            type: 'list',
+            items: [
+              '紧急漏洞问题：24 小时内响应',
+              '一般技术咨询：48 小时内回复'
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '首选沟通渠道'
+          },
+          {
+            type: 'list',
+            items: [
+              '1. 电子邮件（安全加密通信）',
+              '2. 微信语音/视频会议'
+            ]
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-shield-alt',
+            text: '本报告由安全研究员钟智强以善意披露原则提交。如对报告内容有任何疑问或需要进一步的技术支持，请通过上述联系方式直接沟通。所有漏洞细节均以脱敏形式呈现，仅供 ZUS Coffee 开发团队参考修复。'
           }
         ]
       },

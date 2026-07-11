@@ -16,6 +16,7 @@ const navLinks: NavLink[] = [
   { label: '首页', to: '/', icon: 'fas fa-house' },
   { label: '实战对抗', to: '/incidents', icon: 'fas fa-khanda' },
   { label: '开源兵器库', to: '/projects', icon: 'fas fa-code-branch' },
+  { label: '实战教程', to: '/tutorials', icon: 'fas fa-graduation-cap' },
   { label: '安全札记', to: '/blog', icon: 'fas fa-scroll' },
 ]
 
