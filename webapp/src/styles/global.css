@@ -1,0 +1,170 @@
+/* ============================================
+   GLOBAL RESET & BASE STYLES
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&family=ZCOOL+XiaoWei&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--nz-font-body);
+  background: var(--nz-void);
+  color: var(--nz-text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Background atmosphere - dark with fire glow */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(255, 45, 45, 0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 100%, rgba(157, 78, 221, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(255, 107, 26, 0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Noise texture overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
+#app {
+  position: relative;
+  z-index: var(--nz-z-content);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-root {
+  position: relative;
+  z-index: var(--nz-z-content);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding-top: 80px;
+  position: relative;
+  z-index: var(--nz-z-content);
+}
+
+/* Typography defaults */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--nz-font-display);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+a {
+  color: var(--nz-fire-gold);
+  text-decoration: none;
+  transition: color var(--nz-transition-fast);
+}
+
+a:hover {
+  color: var(--nz-fire-orange);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--nz-abyss);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--nz-fire-red), var(--nz-fire-orange));
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--nz-fire-orange), var(--nz-fire-gold));
+}
+
+/* Selection */
+::selection {
+  background: var(--nz-fire-orange);
+  color: var(--nz-void);
+}
+
+/* Focus outline */
+:focus-visible {
+  outline: 2px solid var(--nz-fire-gold);
+  outline-offset: 2px;
+}
+
+/* Utility classes */
+.text-gold { color: var(--nz-text-gold); }
+.text-fire { color: var(--nz-text-fire); }
+.text-lotus { color: var(--nz-lotus-light); }
+.text-muted { color: var(--nz-text-muted); }
+.text-secondary { color: var(--nz-text-secondary); }
+
+.gradient-gold-text {
+  background: var(--nz-grad-gold-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.gradient-fire-text {
+  background: var(--nz-grad-fire-text);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Scroll animation classes */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Page transition */
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}

@@ -1,0 +1,297 @@
+/* ============================================
+   NEZHA THEME - FIRE PARTICLES
+   魔童哪吒: Floating fire particle overlay
+   ============================================ */
+
+/* === Particle Overlay Container === */
+.fire-particles {
+  position: fixed;
+  inset: 0;
+  z-index: var(--nz-z-particles);
+  pointer-events: none;
+  overflow: hidden;
+  /* Non-interactive — clicks pass through to content below */
+}
+
+/* === Individual Particle === */
+.fire-particle {
+  position: absolute;
+  bottom: -20px;
+  border-radius: 50%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  /* CSS variables for dynamic customization via inline styles */
+  --particle-size: 6px;
+  --particle-color: var(--nz-fire-orange);
+  --particle-drift: 30px;
+  --particle-duration: 8s;
+  --particle-delay: 0s;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  background: var(--particle-color);
+  box-shadow:
+    0 0 6px var(--particle-color),
+    0 0 12px var(--particle-color),
+    0 0 20px rgba(255, 107, 26, 0.3);
+  opacity: 0;
+  filter: blur(0.5px);
+  animation: fire-particle-rise var(--particle-duration) ease-out var(--particle-delay) infinite;
+}
+
+/* === Particle Drift Animation === */
+@keyframes fire-particle-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) scale(0.3);
+  }
+  10% {
+    opacity: 0.8;
+    transform: translateY(-10vh) translateX(calc(var(--particle-drift) * 0.1)) scale(0.8);
+  }
+  30% {
+    opacity: 0.9;
+    transform: translateY(-30vh) translateX(calc(var(--particle-drift) * 0.3)) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-50vh) translateX(calc(var(--particle-drift) * 0.5)) scale(1.1);
+  }
+  70% {
+    opacity: 0.4;
+    transform: translateY(-70vh) translateX(calc(var(--particle-drift) * 0.7)) scale(0.9);
+  }
+  90% {
+    opacity: 0.2;
+    transform: translateY(-90vh) translateX(calc(var(--particle-drift) * 0.9)) scale(0.6);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-110vh) translateX(var(--particle-drift)) scale(0.2);
+  }
+}
+
+/* === Particle Color Variants === */
+
+/* Red fire particles */
+.fire-particle--red {
+  --particle-color: var(--nz-fire-red);
+  box-shadow:
+    0 0 6px var(--nz-fire-red),
+    0 0 12px var(--nz-fire-red),
+    0 0 20px rgba(255, 45, 45, 0.3);
+}
+
+/* Orange fire particles */
+.fire-particle--orange {
+  --particle-color: var(--nz-fire-orange);
+  box-shadow:
+    0 0 6px var(--nz-fire-orange),
+    0 0 12px var(--nz-fire-orange),
+    0 0 20px rgba(255, 107, 26, 0.3);
+}
+
+/* Gold fire particles */
+.fire-particle--gold {
+  --particle-color: var(--nz-fire-gold);
+  box-shadow:
+    0 0 6px var(--nz-fire-gold),
+    0 0 12px var(--nz-fire-gold),
+    0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+/* Ember particles — brighter, smaller */
+.fire-particle--ember {
+  --particle-color: var(--nz-ember);
+  box-shadow:
+    0 0 8px var(--nz-ember),
+    0 0 16px var(--nz-ember),
+    0 0 24px rgba(255, 69, 0, 0.4);
+}
+
+/* Lotus particles — purple accent */
+.fire-particle--lotus {
+  --particle-color: var(--nz-lotus-light);
+  box-shadow:
+    0 0 6px var(--nz-lotus-light),
+    0 0 12px var(--nz-lotus-light),
+    0 0 20px rgba(157, 78, 221, 0.3);
+}
+
+/* === Particle Size Variants === */
+.fire-particle--xs { --particle-size: 3px; }
+.fire-particle--sm { --particle-size: 5px; }
+.fire-particle--md { --particle-size: 7px; }
+.fire-particle--lg { --particle-size: 10px; }
+.fire-particle--xl { --particle-size: 14px; }
+
+/* === Particle Speed Variants === */
+.fire-particle--slow { --particle-duration: 12s; }
+.fire-particle--normal { --particle-duration: 8s; }
+.fire-particle--fast { --particle-duration: 5s; }
+
+/* === Pre-positioned Particles === */
+/* These provide a default set of particles when JS is not controlling positions */
+
+.fire-particle:nth-child(1) {
+  left: 5%;
+  --particle-drift: 40px;
+  --particle-duration: 9s;
+  --particle-delay: 0s;
+}
+
+.fire-particle:nth-child(2) {
+  left: 12%;
+  --particle-drift: -30px;
+  --particle-duration: 7s;
+  --particle-delay: 1.5s;
+}
+
+.fire-particle:nth-child(3) {
+  left: 20%;
+  --particle-drift: 50px;
+  --particle-duration: 10s;
+  --particle-delay: 0.5s;
+}
+
+.fire-particle:nth-child(4) {
+  left: 28%;
+  --particle-drift: -40px;
+  --particle-duration: 8s;
+  --particle-delay: 2s;
+}
+
+.fire-particle:nth-child(5) {
+  left: 35%;
+  --particle-drift: 35px;
+  --particle-duration: 11s;
+  --particle-delay: 1s;
+}
+
+.fire-particle:nth-child(6) {
+  left: 42%;
+  --particle-drift: -50px;
+  --particle-duration: 7.5s;
+  --particle-delay: 2.5s;
+}
+
+.fire-particle:nth-child(7) {
+  left: 50%;
+  --particle-drift: 45px;
+  --particle-duration: 9.5s;
+  --particle-delay: 0.3s;
+}
+
+.fire-particle:nth-child(8) {
+  left: 58%;
+  --particle-drift: -35px;
+  --particle-duration: 8.5s;
+  --particle-delay: 1.8s;
+}
+
+.fire-particle:nth-child(9) {
+  left: 65%;
+  --particle-drift: 55px;
+  --particle-duration: 10.5s;
+  --particle-delay: 0.8s;
+}
+
+.fire-particle:nth-child(10) {
+  left: 72%;
+  --particle-drift: -45px;
+  --particle-duration: 7s;
+  --particle-delay: 2.2s;
+}
+
+.fire-particle:nth-child(11) {
+  left: 80%;
+  --particle-drift: 30px;
+  --particle-duration: 9s;
+  --particle-delay: 1.2s;
+}
+
+.fire-particle:nth-child(12) {
+  left: 88%;
+  --particle-drift: -55px;
+  --particle-duration: 8s;
+  --particle-delay: 0.6s;
+}
+
+.fire-particle:nth-child(13) {
+  left: 95%;
+  --particle-drift: 40px;
+  --particle-duration: 10s;
+  --particle-delay: 2.8s;
+}
+
+.fire-particle:nth-child(14) {
+  left: 15%;
+  --particle-drift: -25px;
+  --particle-duration: 6.5s;
+  --particle-delay: 3.2s;
+}
+
+.fire-particle:nth-child(15) {
+  left: 45%;
+  --particle-drift: 60px;
+  --particle-duration: 11.5s;
+  --particle-delay: 1.5s;
+}
+
+.fire-particle:nth-child(16) {
+  left: 75%;
+  --particle-drift: -30px;
+  --particle-duration: 7.8s;
+  --particle-delay: 2.5s;
+}
+
+/* === Glow halo around larger particles === */
+.fire-particle--lg::before,
+.fire-particle--xl::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--particle-color) 0%,
+    transparent 70%
+  );
+  opacity: 0.4;
+  filter: blur(4px);
+}
+
+/* === Twinkling effect for gold particles === */
+.fire-particle--gold {
+  animation:
+    fire-particle-rise var(--particle-duration) ease-out var(--particle-delay) infinite,
+    fire-particle-twinkle 1.5s ease-in-out infinite;
+}
+
+@keyframes fire-particle-twinkle {
+  0%, 100% { filter: blur(0.5px) brightness(1); }
+  50% { filter: blur(0.5px) brightness(1.4); }
+}
+
+/* === Responsive — fewer particles on mobile for performance === */
+@media (max-width: 768px) {
+  .fire-particle:nth-child(n+9) {
+    display: none;
+  }
+
+  .fire-particle {
+    --particle-duration: 10s;
+  }
+}
+
+@media (max-width: 480px) {
+  .fire-particle:nth-child(n+6) {
+    display: none;
+  }
+}
+
+/* === Reduced Motion — disable particle animation === */
+@media (prefers-reduced-motion: reduce) {
+  .fire-particles {
+    display: none;
+  }
+}

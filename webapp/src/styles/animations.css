@@ -1,0 +1,305 @@
+/* ============================================
+   NEZHA THEME - ANIMATIONS & EFFECTS
+   魔童哪吒: Fire, Lightning, Lotus Energy
+   ============================================ */
+
+/* === KEYFRAMES === */
+
+/* Fire flicker - flame breathing effect */
+@keyframes nz-flicker {
+  0%, 100% { opacity: 1; transform: scale(1) rotate(0deg); }
+  25% { opacity: 0.85; transform: scale(1.02) rotate(0.5deg); }
+  50% { opacity: 0.95; transform: scale(0.99) rotate(-0.3deg); }
+  75% { opacity: 0.8; transform: scale(1.01) rotate(0.2deg); }
+}
+
+/* Flame rise - particles floating up */
+@keyframes nz-flame-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  20% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) scale(1.5);
+  }
+}
+
+/* Ember glow - pulsing golden glow */
+@keyframes nz-ember-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 107, 26, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(255, 107, 26, 0.3);
+  }
+}
+
+/* Thunder strike - lightning flash */
+@keyframes nz-thunder {
+  0%, 90%, 100% { opacity: 0; }
+  92% { opacity: 0.6; }
+  94% { opacity: 0; }
+  96% { opacity: 0.8; }
+  98% { opacity: 0; }
+}
+
+/* Lotus bloom - expanding circle */
+@keyframes nz-lotus-bloom {
+  0% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2) rotate(180deg);
+    opacity: 0;
+  }
+}
+
+/* Scroll reveal - from below */
+@keyframes nz-reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(60px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Card flip */
+@keyframes nz-card-flip-in {
+  from {
+    opacity: 0;
+    transform: perspective(1000px) rotateY(90deg);
+  }
+  to {
+    opacity: 1;
+    transform: perspective(1000px) rotateY(0deg);
+  }
+}
+
+/* Text shimmer */
+@keyframes nz-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+/* Pulse ring - radar/hunter sense */
+@keyframes nz-pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Float - gentle hover */
+@keyframes nz-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Slide in from left */
+@keyframes nz-slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide in from right */
+@keyframes nz-slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale in */
+@keyframes nz-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fire spin */
+@keyframes nz-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Energy charge - bar fill */
+@keyframes nz-energy-fill {
+  from { width: 0%; }
+  to { width: var(--target-width, 100%); }
+}
+
+/* Typewriter cursor blink */
+@keyframes nz-cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Fire particle drift */
+@keyframes nz-particle-drift {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(var(--drift-x, 50px), -100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Glow text pulse */
+@keyframes nz-glow-pulse {
+  0%, 100% {
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 107, 26, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 40px rgba(255, 107, 26, 0.5);
+  }
+}
+
+/* === ANIMATION UTILITY CLASSES === */
+
+.nz-flicker { animation: nz-flicker 3s ease-in-out infinite; }
+.nz-float { animation: nz-float 3s ease-in-out infinite; }
+.nz-spin-slow { animation: nz-spin 20s linear infinite; }
+.nz-glow-pulse { animation: nz-glow-pulse 2.5s ease-in-out infinite; }
+.nz-ember-glow { animation: nz-ember-glow 3s ease-in-out infinite; }
+
+.nz-reveal-up { animation: nz-reveal-up 0.6s ease-out forwards; }
+.nz-slide-left { animation: nz-slide-in-left 0.5s ease-out forwards; }
+.nz-slide-right { animation: nz-slide-in-right 0.5s ease-out forwards; }
+.nz-scale-in { animation: nz-scale-in 0.4s ease-out forwards; }
+.nz-card-flip-in { animation: nz-card-flip-in 0.6s ease-out forwards; }
+
+/* Staggered delays */
+.nz-delay-1 { animation-delay: 0.1s; opacity: 0; }
+.nz-delay-2 { animation-delay: 0.2s; opacity: 0; }
+.nz-delay-3 { animation-delay: 0.3s; opacity: 0; }
+.nz-delay-4 { animation-delay: 0.4s; opacity: 0; }
+.nz-delay-5 { animation-delay: 0.5s; opacity: 0; }
+.nz-delay-6 { animation-delay: 0.6s; opacity: 0; }
+
+/* Shimmer text */
+.nz-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    var(--nz-fire-gold) 0%,
+    var(--nz-fire-orange) 25%,
+    var(--nz-fire-gold) 50%,
+    var(--nz-fire-orange) 75%,
+    var(--nz-fire-gold) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: nz-shimmer 3s linear infinite;
+}
+
+/* Fire glow border */
+.nz-fire-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.nz-fire-border::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: var(--nz-grad-fire);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity var(--nz-transition-normal);
+}
+
+.nz-fire-border:hover::before {
+  opacity: 1;
+}
+
+/* Pulse ring effect */
+.nz-pulse-ring::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 2px solid var(--nz-fire-gold);
+  border-radius: inherit;
+  animation: nz-pulse-ring 2s ease-out infinite;
+}
+
+/* Scroll-triggered reveal */
+.scroll-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-visible {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Hover lift */
+.nz-hover-lift {
+  transition: transform var(--nz-transition-normal), box-shadow var(--nz-transition-normal);
+}
+
+.nz-hover-lift:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--nz-shadow-fire);
+}
+
+/* Card glass effect */
+.nz-glass {
+  background: rgba(30, 30, 46, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+}
+
+.nz-glass:hover {
+  border-color: rgba(255, 215, 0, 0.3);
+}

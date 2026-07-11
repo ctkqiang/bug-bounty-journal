@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <radialGradient id="fireGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="40%" stop-color="#FF4500"/>
+      <stop offset="100%" stop-color="#8B0000"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="45" fill="#0a0a0f"/>
+  <path d="M50 15 C55 25, 65 28, 60 40 C70 35, 75 45, 70 55 C80 50, 82 65, 72 70 C78 75, 70 85, 60 80 C55 88, 45 88, 40 80 C30 85, 22 75, 28 70 C18 65, 20 50, 30 55 C25 45, 30 35, 40 40 C35 28, 45 25, 50 15Z" fill="url(#fireGrad)"/>
+  <circle cx="42" cy="45" r="3" fill="#FFD700"/>
+  <circle cx="58" cy="45" r="3" fill="#FFD700"/>
+  <path d="M40 58 Q50 65, 60 58" stroke="#FFD700" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

@@ -1,0 +1,96 @@
+/* ============================================
+   NEZHA THEME - DESIGN TOKENS
+   魔童哪吒: Fire, Darkness, Gold, Mystic Purple
+   ============================================ */
+
+:root {
+  /* Core Palette - Nezha's Fire */
+  --nz-fire-red: #FF2D2D;
+  --nz-fire-orange: #FF6B1A;
+  --nz-fire-gold: #FFD700;
+  --nz-fire-deep: #CC1A1A;
+  --nz-ember: #FF4500;
+  --nz-flame: #FF8C00;
+
+  /* Dark Base - Abyss */
+  --nz-void: #0a0a0f;
+  --nz-abyss: #12121a;
+  --nz-shadow: #1a1a2e;
+  --nz-dark-surface: #16213e;
+  --nz-dark-card: #1e1e2e;
+  --nz-dark-border: #2a2a3e;
+
+  /* Mystic Accents - Lotus & Lightning */
+  --nz-lotus: #9D4EDD;
+  --nz-lotus-light: #C77DFF;
+  --nz-lotus-dark: #7B2CBF;
+  --nz-lightning: #00F5FF;
+  --nz-lightning-dim: #00B8C4;
+
+  /* Text */
+  --nz-text-primary: #F0F0F5;
+  --nz-text-secondary: #A0A0B8;
+  --nz-text-muted: #6B6B80;
+  --nz-text-gold: #FFD700;
+  --nz-text-fire: #FF6B1A;
+
+  /* Severity Colors */
+  --nz-critical: #FF1744;
+  --nz-critical-glow: rgba(255, 23, 68, 0.4);
+  --nz-high: #FF6B1A;
+  --nz-high-glow: rgba(255, 107, 26, 0.3);
+  --nz-medium: #FFD700;
+  --nz-medium-glow: rgba(255, 215, 0, 0.3);
+  --nz-low: #00E676;
+  --nz-low-glow: rgba(0, 230, 118, 0.3);
+
+  /* Gradients */
+  --nz-grad-fire: linear-gradient(135deg, #FF2D2D 0%, #FF6B1A 50%, #FFD700 100%);
+  --nz-grad-ember: linear-gradient(180deg, #FF4500 0%, #CC1A1A 100%);
+  --nz-grad-dark: linear-gradient(180deg, #0a0a0f 0%, #16213e 100%);
+  --nz-grad-lotus: linear-gradient(135deg, #7B2CBF 0%, #C77DFF 100%);
+  --nz-grad-card: linear-gradient(145deg, #1e1e2e 0%, #16213e 100%);
+  --nz-grad-gold-text: linear-gradient(135deg, #FFD700 0%, #FF6B1A 100%);
+  --nz-grad-fire-text: linear-gradient(135deg, #FF2D2D 0%, #FF8C00 100%);
+
+  /* Shadows */
+  --nz-shadow-fire: 0 0 20px rgba(255, 45, 45, 0.3), 0 0 40px rgba(255, 107, 26, 0.15);
+  --nz-shadow-gold: 0 0 20px rgba(255, 215, 0, 0.3), 0 0 40px rgba(255, 107, 26, 0.1);
+  --nz-shadow-lotus: 0 0 20px rgba(157, 78, 221, 0.3), 0 0 40px rgba(123, 44, 191, 0.15);
+  --nz-shadow-card: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 1px rgba(255, 215, 0, 0.1);
+  --nz-shadow-deep: 0 10px 40px rgba(0, 0, 0, 0.7);
+
+  /* Typography */
+  --nz-font-display: 'ZCOOL KuaiLe', 'Noto Serif SC', 'Songti SC', serif;
+  --nz-font-body: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --nz-font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', monospace;
+  --nz-font-brush: 'ZCOOL XiaoWei', 'STKaiti', 'KaiTi', serif;
+
+  /* Spacing */
+  --nz-gap-xs: 0.25rem;
+  --nz-gap-sm: 0.5rem;
+  --nz-gap-md: 1rem;
+  --nz-gap-lg: 1.5rem;
+  --nz-gap-xl: 2.5rem;
+  --nz-gap-2xl: 4rem;
+
+  /* Radius */
+  --nz-radius-sm: 8px;
+  --nz-radius-md: 12px;
+  --nz-radius-lg: 20px;
+  --nz-radius-xl: 28px;
+  --nz-radius-full: 9999px;
+
+  /* Transitions */
+  --nz-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --nz-transition-normal: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --nz-transition-slow: 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  --nz-transition-bounce: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* Z-Index */
+  --nz-z-particles: 1;
+  --nz-z-content: 10;
+  --nz-z-nav: 100;
+  --nz-z-modal: 1000;
+  --nz-z-loader: 9999;
+}
