@@ -2,16 +2,165 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    <meta name="renderer" content="webkit" />
+    <meta name="force-rendering" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <meta name="description" content="哪吒网络安全漏洞案例库 - 专注网络安全，守护数字世界" />
-    <meta name="keywords" content="网络安全,漏洞分析,安全审计,渗透测试,CNVD,bug bounty" />
-    <meta name="author" content="钟智强" />
-    <meta property="og:title" content="哪吒网络安全漏洞案例库" />
-    <meta property="og:description" content="专注网络安全，守护数字世界" />
+    <link rel="canonical" href="https://www.ctkqiang.xin/bug-bounty-journal/" />
+
+    <title>哪吒网络安全 | 魔童漏洞案例库 - Nezha Cybersecurity Bug Bounty Journal</title>
+
+    <!-- Primary Meta -->
+    <meta name="description" content="哪吒网络安全漏洞案例库 - 真实渗透测试漏洞案例、PoC验证与修复方案。涵盖CNVD漏洞、API密钥泄露、源码泄露、未授权访问等安全研究。Nezha Cybersecurity Bug Bounty Journal - Real-world vulnerability cases, PoC verification and remediation." />
+    <meta name="keywords" content="网络安全,漏洞分析,安全审计,渗透测试,CNVD,bug bounty,漏洞案例,cybersecurity,vulnerability research,penetration testing,security audit,API leak,source code leak,钟智强,哪吒安全,红队,蓝队,安全研究,信息安全,web安全,移动安全,云安全" />
+    <meta name="author" content="钟智强 (John Melody)" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="googlebot" content="index, follow" />
+    <meta name="theme-color" content="#0a0a0f" />
+
+    <!-- China Search Engines -->
+    <meta name="applicable-device" content="pc,mobile" />
+    <meta name="MobileOptimized" content="width" />
+    <meta name="HandheldFriendly" content="true" />
+    <meta name="sogou_site_verification" content="" />
+    <meta name="360-site-verification" content="" />
+    <meta name="msvalidate.01" content="" />
+    <meta name="baidu-site-verification" content="" />
+    <meta name="bytedance-verification-code" content="" />
+
+    <!-- Open Graph (Facebook, LinkedIn, WeChat) -->
     <meta property="og:type" content="website" />
-    <title>哪吒网络安全 | 魔童漏洞案例库</title>
+    <meta property="og:site_name" content="哪吒网络安全" />
+    <meta property="og:title" content="哪吒网络安全 | 魔童漏洞案例库" />
+    <meta property="og:description" content="真实渗透测试漏洞案例库 - 涵盖CNVD漏洞、API密钥泄露、源码泄露、未授权访问等安全研究与PoC验证。Real-world bug bounty cases with full technical analysis." />
+    <meta property="og:url" content="https://www.ctkqiang.xin/bug-bounty-journal/" />
+    <meta property="og:image" content="https://www.ctkqiang.xin/bug-bounty-journal/favicon.svg" />
+    <meta property="og:locale" content="zh_CN" />
+    <meta property="og:locale:alternate" content="en_US" />
+    <meta property="og:locale:alternate" content="zh_TW" />
+    <meta property="og:locale:alternate" content="ms_MY" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="哪吒网络安全 | Nezha Cybersecurity Bug Bounty Journal" />
+    <meta name="twitter:description" content="Real-world vulnerability cases with PoC verification - CNVD vulnerabilities, API key leaks, source code exposure, unauthorized access research." />
+    <meta name="twitter:image" content="https://www.ctkqiang.xin/bug-bounty-journal/favicon.svg" />
+    <meta name="twitter:site" content="@ctkqiang" />
+    <meta name="twitter:creator" content="@ctkqiang" />
+
+    <!-- Structured Data: WebSite -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "哪吒网络安全漏洞案例库",
+      "alternateName": ["Nezha Cybersecurity Bug Bounty Journal", "哪吒安全", "魔童漏洞库"],
+      "url": "https://www.ctkqiang.xin/bug-bounty-journal/",
+      "description": "真实渗透测试漏洞案例库，涵盖CNVD漏洞、API密钥泄露、源码泄露、未授权访问等安全研究与PoC验证",
+      "inLanguage": ["zh-CN", "en"],
+      "author": {
+        "@type": "Person",
+        "name": "钟智强",
+        "alternateName": "John Melody",
+        "url": "https://github.com/ctkqiang"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "哪吒网络安全",
+        "url": "https://www.ctkqiang.xin"
+      }
+    }
+    </script>
+
+    <!-- Structured Data: ItemList (Vulnerability Cases) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "name": "安全漏洞案例列表",
+      "description": "已公开披露的安全漏洞研究案例",
+      "numberOfItems": 7,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "CNVD-2026-13173 QuestDB 未授权访问漏洞",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/cnvd-2026-13173"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "快手 API 密钥泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/kuaishou-api-leak"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "Cyart.net 环境配置泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/cyart-env-leak"
+        },
+        {
+          "@type": "ListItem",
+          "position": 4,
+          "name": "Zeric Ceramica .env 配置文件泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/zeric-source-leak"
+        },
+        {
+          "@type": "ListItem",
+          "position": 5,
+          "name": "PlugShare API 密钥泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/plugshare-api-leak"
+        },
+        {
+          "@type": "ListItem",
+          "position": 6,
+          "name": "ZUS Coffee 移动应用源码泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/zus-coffee-leak"
+        },
+        {
+          "@type": "ListItem",
+          "position": 7,
+          "name": "MYJPJ 移动应用数据泄露",
+          "url": "https://www.ctkqiang.xin/bug-bounty-journal/case/myjpj-data-leak"
+        }
+      ]
+    }
+    </script>
+
+    <!-- Structured Data: Person (Author) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "name": "钟智强",
+      "alternateName": "John Melody",
+      "jobTitle": "Security Researcher",
+      "url": "https://github.com/ctkqiang",
+      "sameAs": [
+        "https://github.com/ctkqiang",
+        "https://www.ctkqiang.xin"
+      ],
+      "knowsAbout": [
+        "Penetration Testing",
+        "Vulnerability Research",
+        "Web Security",
+        "Mobile Security",
+        "API Security",
+        "Bug Bounty",
+        "渗透测试",
+        "漏洞挖掘",
+        "网络安全"
+      ]
+    }
+    </script>
+
+    <!-- Preconnect -->
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   </head>
   <body>
     <div id="app"></div>
