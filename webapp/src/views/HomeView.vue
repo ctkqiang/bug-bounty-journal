@@ -444,7 +444,7 @@ onMounted(() => {
             </div>
             <div class="cta-contact-text">
               <span class="cta-contact-label">邮箱</span>
-              <span class="cta-contact-value">security@nezha-cyber.com</span>
+              <span class="cta-contact-value">johnmelodymel@qq.com</span>
             </div>
           </div>
           <div class="cta-contact-item">
@@ -453,13 +453,13 @@ onMounted(() => {
             </div>
             <div class="cta-contact-text">
               <span class="cta-contact-label">微信</span>
-              <span class="cta-contact-value">NezhaCyber_Sec</span>
+              <span class="cta-contact-value">ctkqiang</span>
             </div>
           </div>
         </div>
 
         <div class="cta-actions">
-          <a href="mailto:security@nezha-cyber.com" class="cta-btn cta-btn--primary">
+          <a href="mailto:johnmelodymel@qq.com" class="cta-btn cta-btn--primary">
             <i class="fas fa-paper-plane"></i>
             立即咨询
           </a>
