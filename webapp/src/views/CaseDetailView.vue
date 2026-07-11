@@ -13,6 +13,7 @@ import 'prismjs/components/prism-python'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-yaml'
 import 'prismjs/components/prism-markdown'
+import 'prismjs/components/prism-c'
 import 'prismjs/components/prism-cpp'
 import 'prismjs/components/prism-dart'
 import 'prismjs/components/prism-nginx'
@@ -37,16 +38,34 @@ const highlightAll = () => {
   })
 }
 
-onMounted(() => {
-  if (heroRef.value) observeElement(heroRef.value, () => {})
-  if (benevolenceRef.value) observeElement(benevolenceRef.value, () => {})
-  if (sectionsRef.value) observeElement(sectionsRef.value, () => {})
-  highlightAll()
-})
+const setupObservers = () => {
+  nextTick(() => {
+    if (heroRef.value) observeElement(heroRef.value, () => {})
+    if (benevolenceRef.value) observeElement(benevolenceRef.value, () => {})
+    if (sectionsRef.value) observeElement(sectionsRef.value, () => {})
+    highlightAll()
+  })
+}
+
+onMounted(setupObservers)
 
 watch(() => route.params.id, () => {
-  highlightAll()
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  nextTick(() => {
+    setupObservers()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  })
+})
+
+watch(sectionsRef, (el) => {
+  if (el) observeElement(el, () => {})
+})
+
+watch(heroRef, (el) => {
+  if (el) observeElement(el, () => {})
+})
+
+watch(benevolenceRef, (el) => {
+  if (el) observeElement(el, () => {})
 })
 
 const goBack = () => {

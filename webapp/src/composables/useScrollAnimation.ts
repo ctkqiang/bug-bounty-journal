@@ -5,13 +5,10 @@ const callbackMap = new WeakMap<Element, () => void>()
 export function useScrollAnimation() {
   const observer = ref<IntersectionObserver | null>(null)
 
-  const observeElement = (el: Element, callback: () => void) => {
-    if (!observer.value) return
-    observer.value.observe(el)
-    callbackMap.set(el, callback)
-  }
+  const pendingElements: { el: Element; cb: () => void }[] = []
 
-  onMounted(() => {
+  const createObserver = () => {
+    if (observer.value) return
     observer.value = new IntersectionObserver(
       (entries) => {
         entries.forEach(entry => {
@@ -23,9 +20,25 @@ export function useScrollAnimation() {
           }
         })
       },
-      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      { threshold: 0.05, rootMargin: '0px 0px -30px 0px' }
     )
-  })
+    for (const { el, cb } of pendingElements) {
+      observer.value.observe(el)
+      callbackMap.set(el, cb)
+    }
+    pendingElements.length = 0
+  }
+
+  const observeElement = (el: Element, callback: () => void) => {
+    if (observer.value) {
+      observer.value.observe(el)
+      callbackMap.set(el, callback)
+    } else {
+      pendingElements.push({ el, cb: callback })
+    }
+  }
+
+  onMounted(createObserver)
 
   onUnmounted(() => {
     observer.value?.disconnect()

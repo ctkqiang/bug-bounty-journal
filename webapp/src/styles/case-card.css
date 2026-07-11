@@ -216,7 +216,7 @@
 /* === Case Title with fire-orange icon === */
 .case-card-title {
   font-family: var(--nz-font-display);
-  font-size: 1.3rem;
+  font-size: 1.2rem;
   font-weight: 700;
   line-height: 1.35;
   color: var(--nz-text-primary);
@@ -225,6 +225,7 @@
   align-items: flex-start;
   gap: var(--nz-gap-sm);
   transition: color var(--nz-transition-fast);
+  margin-bottom: var(--nz-gap-xs);
 }
 
 .case-card:hover .case-card-title {
@@ -269,16 +270,11 @@
 /* === Description with line clamp === */
 .case-card-description {
   font-family: var(--nz-font-body);
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.88rem;
+  line-height: 1.75;
   color: var(--nz-text-secondary);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-top: var(--nz-gap-xs);
+  margin: var(--nz-gap-sm) 0;
+  letter-spacing: 0.01em;
 }
 
 /* === CVSS Score badge === */
@@ -313,7 +309,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--nz-gap-xs);
-  padding: var(--nz-gap-sm) 0;
+  padding: var(--nz-gap-xs) 0 var(--nz-gap-sm);
+  margin-top: auto;
 }
 
 .case-card-tag {
@@ -377,6 +374,216 @@
   background: rgba(0, 230, 118, 0.08);
   color: var(--nz-low);
   border-color: rgba(0, 230, 118, 0.25);
+}
+
+/* === Severity Accent Bar === */
+.case-card-accent-bar {
+  height: 3px;
+  width: 100%;
+  background: var(--nz-grad-fire);
+  opacity: 0.7;
+  transition: opacity var(--nz-transition-normal);
+}
+
+.case-card:hover .case-card-accent-bar {
+  opacity: 1;
+}
+
+.case-card-accent-bar[data-severity="critical"] {
+  background: linear-gradient(90deg, #FF1744, #FF5252, #FF8A80);
+  box-shadow: 0 0 12px rgba(255, 23, 68, 0.4);
+}
+
+.case-card-accent-bar[data-severity="high"] {
+  background: linear-gradient(90deg, #FF6B1A, #FF8C00, #FFB74D);
+  box-shadow: 0 0 12px rgba(255, 107, 26, 0.4);
+}
+
+.case-card-accent-bar[data-severity="medium"] {
+  background: linear-gradient(90deg, #FFD700, #FFB300, #FFA000);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+.case-card-accent-bar[data-severity="low"] {
+  background: linear-gradient(90deg, #00E676, #69F0AE, #B9F6CA);
+  box-shadow: 0 0 12px rgba(0, 230, 118, 0.3);
+}
+
+/* === Header Left Group === */
+.case-card-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* === CNVD Badge (enhanced) === */
+.case-card-cnvd {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--nz-font-mono);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px var(--nz-gap-sm);
+  background: rgba(0, 245, 255, 0.05);
+  border: 1px solid rgba(0, 245, 255, 0.15);
+  border-radius: 4px;
+  color: var(--nz-lightning-dim);
+  width: fit-content;
+  transition: all var(--nz-transition-fast);
+}
+
+.case-card:hover .case-card-cnvd {
+  border-color: rgba(0, 245, 255, 0.3);
+  background: rgba(0, 245, 255, 0.08);
+}
+
+.case-card-cnvd i {
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+/* === CVSS Badge (enhanced) === */
+.case-card-cvss {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--nz-font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: var(--nz-gap-xs) var(--nz-gap-sm);
+  border-radius: var(--nz-radius-sm);
+  width: fit-content;
+  margin-bottom: var(--nz-gap-xs);
+  transition: all var(--nz-transition-fast);
+}
+
+.case-card-cvss i {
+  font-size: 0.85em;
+}
+
+.case-card-cvss[data-level="critical"] {
+  color: var(--nz-critical);
+  background: rgba(255, 23, 68, 0.06);
+  border: 1px solid rgba(255, 23, 68, 0.2);
+}
+
+.case-card-cvss[data-level="high"] {
+  color: var(--nz-fire-orange);
+  background: rgba(255, 107, 26, 0.06);
+  border: 1px solid rgba(255, 107, 26, 0.2);
+}
+
+.case-card-cvss[data-level="medium"] {
+  color: var(--nz-fire-gold);
+  background: rgba(255, 215, 0, 0.06);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+}
+
+.case-card-cvss[data-level="low"] {
+  color: var(--nz-low);
+  background: rgba(0, 230, 118, 0.06);
+  border: 1px solid rgba(0, 230, 118, 0.2);
+}
+
+.case-card-cvss-label {
+  color: var(--nz-text-muted);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.case-card-cvss-score {
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+/* === Framework Badge === */
+.case-card-framework {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--nz-font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--nz-lotus-light);
+  background: rgba(157, 78, 221, 0.06);
+  border: 1px solid rgba(157, 78, 221, 0.15);
+  padding: 3px var(--nz-gap-sm);
+  border-radius: var(--nz-radius-sm);
+  width: fit-content;
+  margin-bottom: var(--nz-gap-sm);
+  letter-spacing: 0.03em;
+  transition: all var(--nz-transition-fast);
+}
+
+.case-card:hover .case-card-framework {
+  border-color: rgba(157, 78, 221, 0.3);
+  background: rgba(157, 78, 221, 0.1);
+}
+
+.case-card-framework i {
+  font-size: 0.85em;
+  opacity: 0.7;
+}
+
+/* === Card Body === */
+.case-card-body {
+  flex: 1;
+  padding: var(--nz-gap-sm) var(--nz-gap-lg) var(--nz-gap-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* === Section Count Meta === */
+.case-card-meta-item--sections {
+  color: var(--nz-lotus-light);
+}
+
+/* === Tag Color Variants via data-color === */
+.case-card-tag[data-color="red"] {
+  background: rgba(255, 45, 45, 0.08);
+  color: var(--nz-fire-red);
+  border-color: rgba(255, 45, 45, 0.2);
+}
+
+.case-card-tag[data-color="blue"] {
+  background: rgba(0, 120, 255, 0.08);
+  color: #5b9aff;
+  border-color: rgba(0, 120, 255, 0.2);
+}
+
+.case-card-tag[data-color="green"] {
+  background: rgba(0, 230, 118, 0.08);
+  color: var(--nz-low);
+  border-color: rgba(0, 230, 118, 0.2);
+}
+
+.case-card-tag[data-color="purple"] {
+  background: rgba(157, 78, 221, 0.08);
+  color: var(--nz-lotus-light);
+  border-color: rgba(157, 78, 221, 0.2);
+}
+
+.case-card-tag[data-color="yellow"] {
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--nz-fire-gold);
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
+.case-card-tag[data-color="pink"] {
+  background: rgba(255, 105, 180, 0.08);
+  color: #ff69b4;
+  border-color: rgba(255, 105, 180, 0.2);
+}
+
+.case-card-tag[data-color="orange"] {
+  background: rgba(255, 107, 26, 0.08);
+  color: var(--nz-fire-orange);
+  border-color: rgba(255, 107, 26, 0.2);
 }
 
 /* === Card Footer === */

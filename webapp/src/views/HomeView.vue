@@ -178,7 +178,11 @@ onMounted(() => {
       <div class="section-header">
         <i class="fas fa-bug"></i>
         <h2 class="section-title">漏洞案例</h2>
+        <span class="section-count">{{ filteredCases.length }} 项</span>
       </div>
+      <p class="section-subtitle">
+        真实渗透测试中发现的安全漏洞 — 每一个案例都包含完整的技术分析、PoC 验证与修复建议
+      </p>
       <div v-if="filteredCases.length > 0" class="cases-grid">
         <div
           v-for="(caseItem, idx) in filteredCases"
