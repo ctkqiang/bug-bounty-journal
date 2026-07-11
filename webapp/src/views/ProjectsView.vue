@@ -34,7 +34,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="projects-view">
+  <div class="projects">
     <!-- PAGE HEADER -->
     <section ref="headerRef" class="projects-header scroll-hidden">
       <h1 class="projects-title">
@@ -45,30 +45,30 @@ onMounted(() => {
     </section>
 
     <!-- STATS BAR -->
-    <section ref="statsRef" class="projects-stats scroll-hidden">
-      <div v-for="(stat, idx) in statItems" :key="idx" class="proj-stat">
-        <div class="proj-stat-icon"><i :class="stat.icon"></i></div>
-        <div class="proj-stat-value">{{ stat.value }}</div>
-        <div class="proj-stat-label">{{ stat.label }}</div>
+    <section ref="statsRef" class="projects-stats-bar scroll-hidden">
+      <div v-for="(stat, idx) in statItems" :key="idx" class="projects-stat">
+        <div class="projects-stat-icon"><i :class="stat.icon"></i></div>
+        <div class="projects-stat-value">{{ stat.value }}</div>
+        <div class="projects-stat-label">{{ stat.label }}</div>
       </div>
     </section>
 
     <!-- CONTROLS -->
     <div class="projects-controls">
-      <div class="proj-search-wrapper">
-        <i class="fas fa-search proj-search-icon"></i>
+      <div class="projects-search-wrapper">
+        <i class="fas fa-search projects-search-icon"></i>
         <input
           v-model="searchQuery"
           type="text"
-          class="proj-search-input"
+          class="projects-search-input"
           placeholder="搜索项目名称、描述、标签..."
         />
       </div>
 
-      <div class="lang-chips">
+      <div class="language-filters">
         <button
-          class="lang-chip"
-          :class="{ active: languageFilter === null }"
+          class="language-chip"
+          :class="{ 'is-active': languageFilter === null }"
           @click="languageFilter = null"
         >
           全部语言
@@ -76,18 +76,18 @@ onMounted(() => {
         <button
           v-for="lang in availableLanguages"
           :key="lang"
-          class="lang-chip"
-          :class="{ active: languageFilter === lang }"
+          class="language-chip"
+          :class="{ 'is-active': languageFilter === lang }"
           @click="languageFilter = lang"
         >
           {{ lang }}
         </button>
       </div>
 
-      <label class="fork-toggle">
-        <input v-model="showForks" type="checkbox" />
-        <span class="toggle-switch"></span>
-        <span class="fork-toggle-label">
+      <label class="projects-fork-toggle">
+        <input v-model="showForks" type="checkbox" class="projects-fork-toggle-input" />
+        <span class="projects-fork-toggle-switch"></span>
+        <span class="projects-fork-toggle-label">
           <i class="fas fa-code-fork"></i>
           显示 Fork 仓库
         </span>
@@ -96,20 +96,17 @@ onMounted(() => {
 
     <!-- PROJECTS GRID -->
     <section ref="gridRef" class="projects-grid scroll-hidden">
-      <div
-        v-for="(project, idx) in displayedProjects"
+      <ProjectCard
+        v-for="project in displayedProjects"
         :key="project.id"
-        class="project-item"
-        :style="{ animationDelay: `${idx * 0.06}s` }"
-      >
-        <ProjectCard :project="project" />
-      </div>
+        :project="project"
+      />
     </section>
 
     <!-- NO RESULTS -->
-    <div v-if="displayedProjects.length === 0" class="no-projects">
-      <i class="fas fa-box-open"></i>
-      <p>未找到匹配的项目</p>
+    <div v-if="displayedProjects.length === 0" class="projects-empty">
+      <div class="projects-empty-icon"><i class="fas fa-box-open"></i></div>
+      <p class="projects-empty-text">未找到匹配的项目</p>
     </div>
   </div>
 </template>
