@@ -7,6 +7,13 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const assetBase = import.meta.env.BASE_URL
+
+const resolveImageSrc = (src: string): string => {
+  if (src.startsWith('http') || src.startsWith('data:')) return src
+  return `${assetBase}${src.replace(/^\/+/, '')}`
+}
 </script>
 
 <template>
@@ -24,6 +31,15 @@ const props = defineProps<Props>()
 
     <p class="incident-description">{{ props.incident.description }}</p>
 
+    <div v-if="props.incident.imageAsset" class="incident-cover">
+      <img
+        :src="resolveImageSrc(props.incident.imageAsset)"
+        :alt="props.incident.title"
+        class="incident-cover-img"
+        loading="lazy"
+      />
+    </div>
+
     <div class="incident-tags">
       <span
         v-for="tag in props.incident.tags"
@@ -33,16 +49,5 @@ const props = defineProps<Props>()
         {{ tag }}
       </span>
     </div>
-
-    <a
-      :href="props.incident.originalUrl"
-      class="incident-link"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      <i class="fas fa-file-lines"></i>
-      查看原始报告
-      <i class="fas fa-arrow-right incident-link-icon"></i>
-    </a>
   </article>
 </template>

@@ -15,4 +15,5 @@ export interface IncidentPhase {
   description: string
   dialogues?: { speaker: string; text: string; isAttacker: boolean }[]
   listItems?: string[]
+  images?: string[]
 }

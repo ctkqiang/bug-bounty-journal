@@ -34,6 +34,7 @@ export type ReportContentType =
   | 'success-box'
   | 'impact-grid'
   | 'conclusion'
+  | 'image'
 
 export interface ReportContentBase {
   type: ReportContentType
@@ -102,6 +103,13 @@ export interface ConclusionContent extends ReportContentBase {
   text: string
 }
 
+export interface ImageContent extends ReportContentBase {
+  type: 'image'
+  src: string
+  alt?: string
+  caption?: string
+}
+
 export type ReportContent =
   | ParagraphContent
   | SubheadingContent
@@ -113,6 +121,7 @@ export type ReportContent =
   | SuccessBoxContent
   | ImpactGridContent
   | ConclusionContent
+  | ImageContent
 
 export interface ReportSection {
   heading: string

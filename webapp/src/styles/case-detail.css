@@ -938,6 +938,83 @@
   box-shadow: 0 6px 24px rgba(255, 45, 45, 0.4);
 }
 
+/* ---- Report Images ---- */
+.report-image-wrap {
+  margin: 1.25rem 0;
+}
+
+.report-image {
+  width: 100%;
+  max-width: 700px;
+  border-radius: var(--nz-radius-md);
+  border: 1px solid rgba(255, 215, 0, 0.1);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  cursor: zoom-in;
+  transition: transform var(--nz-transition-normal), box-shadow var(--nz-transition-normal);
+}
+
+.report-image:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 32px rgba(0, 0, 0, 0.5);
+  border-color: rgba(255, 215, 0, 0.2);
+}
+
+.report-image-caption {
+  font-size: 0.8rem;
+  color: var(--nz-text-muted);
+  text-align: center;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+/* ---- Lightbox ---- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.92);
+  backdrop-filter: blur(8px);
+  animation: nz-reveal-up 0.2s ease-out;
+}
+
+.lightbox-img {
+  max-width: 92vw;
+  max-height: 88vh;
+  border-radius: var(--nz-radius-md);
+  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.6);
+}
+
+.lightbox-close {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all var(--nz-transition-fast);
+}
+
+.lightbox-close:hover {
+  background: rgba(255, 107, 26, 0.2);
+  border-color: rgba(255, 107, 26, 0.4);
+}
+
+/* ---- Hero (single column) ---- */
+.hero-content {
+  display: block;
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
   .case-detail {

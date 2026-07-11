@@ -13,6 +13,10 @@ import 'prismjs/components/prism-python'
 import 'prismjs/components/prism-json'
 import 'prismjs/components/prism-yaml'
 import 'prismjs/components/prism-markdown'
+import 'prismjs/components/prism-cpp'
+import 'prismjs/components/prism-dart'
+import 'prismjs/components/prism-nginx'
+import 'prismjs/components/prism-properties'
 import '@/styles/case-detail.css'
 
 const route = useRoute()
@@ -25,6 +29,7 @@ const caseData = computed(() => getCaseById(route.params.id as string))
 const heroRef = ref<HTMLElement>()
 const sectionsRef = ref<HTMLElement>()
 const benevolenceRef = ref<HTMLElement>()
+const lightboxSrc = ref<string | null>(null)
 
 const highlightAll = () => {
   nextTick(() => {
@@ -41,6 +46,7 @@ onMounted(() => {
 
 watch(() => route.params.id, () => {
   highlightAll()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 })
 
 const goBack = () => {
@@ -73,17 +79,40 @@ const prismLang = (lang: string): string => {
     shell: 'bash',
     golang: 'go',
     yml: 'yaml',
+    properties: 'properties',
+    'c++': 'cpp',
+    cplusplus: 'cpp',
   }
   return map[lang.toLowerCase()] || lang.toLowerCase()
+}
+
+const assetBase = import.meta.env.BASE_URL
+
+const resolveImageSrc = (src: string): string => {
+  if (src.startsWith('http') || src.startsWith('data:')) return src
+  return `${assetBase}${src.replace(/^\/+/, '')}`
+}
+
+const openLightbox = (src: string) => {
+  lightboxSrc.value = src
+}
+
+const closeLightbox = () => {
+  lightboxSrc.value = null
 }
 
 const benevolenceContent = computed(() => {
   if (!caseData.value?.reportSections) return null
   for (const section of caseData.value.reportSections) {
-    const found = section.contents?.find(
-      c => c.type === 'info-box' && c.text.includes('善意')
-    )
-    if (found && found.type === 'info-box') return found
+    if (section.contents) {
+      const found = section.contents.find(
+        c => c.type === 'info-box' && c.text.includes('善意')
+      )
+      if (found && found.type === 'info-box') return found
+    }
+    if (section.body && section.heading.includes('善意')) {
+      return { type: 'info-box' as const, icon: 'fas fa-heart', text: section.body }
+    }
   }
   return null
 })
@@ -94,7 +123,7 @@ const displaySections = computed(() => {
     if (s.contents) {
       return !s.contents.some(c => c.type === 'info-box' && c.text.includes('善意'))
     }
-    return true
+    return !(s.body && s.heading.includes('善意'))
   })
 })
 
@@ -133,87 +162,66 @@ async function copyCode(code: string, e: MouseEvent) {
       </button>
 
       <div class="hero-content">
-        <div class="hero-left">
-          <h1 class="case-title">
-            <span v-if="caseData.cnvdId" class="case-title-id">{{ caseData.cnvdId }}</span>
-            <span class="case-title-main">{{ caseData.title }}</span>
-          </h1>
+        <h1 class="case-title">
+          <span v-if="caseData.cnvdId" class="case-title-id">{{ caseData.cnvdId }}</span>
+          <span class="case-title-main">{{ caseData.title }}</span>
+        </h1>
 
-          <p class="case-description">{{ caseData.description }}</p>
+        <p class="case-description">{{ caseData.description }}</p>
 
-          <div class="case-badges">
-            <span class="severity-badge" :data-level="caseData.severity">
-              <i :class="severityIcon[caseData.severity]"></i>
-              {{ severityCn[caseData.severity] }}
-            </span>
+        <div class="case-badges">
+          <span class="severity-badge" :data-level="caseData.severity">
+            <i :class="severityIcon[caseData.severity]"></i>
+            {{ severityCn[caseData.severity] }}
+          </span>
 
-            <span v-if="caseData.cvss" class="cvss-badge">
-              <i class="fas fa-chart-line"></i>
-              CVSS {{ caseData.cvss.toFixed(1) }}
-            </span>
+          <span v-if="caseData.cvss" class="cvss-badge">
+            <i class="fas fa-chart-line"></i>
+            CVSS {{ caseData.cvss.toFixed(1) }}
+          </span>
 
-            <span v-if="caseData.cnvdId" class="cnvd-badge">
-              <i class="fas fa-shield-halved"></i>
-              {{ caseData.cnvdId }}
-            </span>
-          </div>
+          <span v-if="caseData.cnvdId" class="cnvd-badge">
+            <i class="fas fa-shield-halved"></i>
+            {{ caseData.cnvdId }}
+          </span>
+        </div>
 
-          <div class="case-meta-grid">
-            <div class="case-meta-item">
-              <i class="fas fa-calendar-alt"></i>
-              <div class="meta-detail">
-                <span class="meta-label">发现日期</span>
-                <span class="meta-value">{{ caseData.date }}</span>
-              </div>
-            </div>
-            <div class="case-meta-item">
-              <i class="fas fa-crosshairs"></i>
-              <div class="meta-detail">
-                <span class="meta-label">攻击目标</span>
-                <span class="meta-value">{{ caseData.target }}</span>
-              </div>
-            </div>
-            <div class="case-meta-item">
-              <i class="fas fa-map-marker-alt"></i>
-              <div class="meta-detail">
-                <span class="meta-label">所属区域</span>
-                <span class="meta-value">{{ caseData.country }}</span>
-              </div>
-            </div>
-            <div v-if="caseData.framework" class="case-meta-item">
-              <i class="fas fa-layer-group"></i>
-              <div class="meta-detail">
-                <span class="meta-label">技术栈</span>
-                <span class="meta-value">{{ caseData.framework }}</span>
-              </div>
+        <div class="case-meta-grid">
+          <div class="case-meta-item">
+            <i class="fas fa-calendar-alt"></i>
+            <div class="meta-detail">
+              <span class="meta-label">发现日期</span>
+              <span class="meta-value">{{ caseData.date }}</span>
             </div>
           </div>
-
-          <div v-if="caseData.tags.length > 0" class="case-tags">
-            <span v-for="tag in caseData.tags" :key="tag.label" class="case-tag" :data-color="tag.color">
-              <i :class="tag.icon"></i>
-              {{ tag.label }}
-            </span>
+          <div class="case-meta-item">
+            <i class="fas fa-crosshairs"></i>
+            <div class="meta-detail">
+              <span class="meta-label">攻击目标</span>
+              <span class="meta-value">{{ caseData.target }}</span>
+            </div>
+          </div>
+          <div class="case-meta-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <div class="meta-detail">
+              <span class="meta-label">所属区域</span>
+              <span class="meta-value">{{ caseData.country }}</span>
+            </div>
+          </div>
+          <div v-if="caseData.framework" class="case-meta-item">
+            <i class="fas fa-layer-group"></i>
+            <div class="meta-detail">
+              <span class="meta-label">技术栈</span>
+              <span class="meta-value">{{ caseData.framework }}</span>
+            </div>
           </div>
         </div>
 
-        <div class="hero-right">
-          <div class="hero-actions">
-            <a
-              v-if="caseData.originalUrl"
-              :href="caseData.originalUrl"
-              class="pdf-download-btn"
-              target="_blank"
-              rel="noopener"
-            >
-              <i class="fas fa-file-pdf"></i>
-              查看原始报告
-            </a>
-            <button class="back-list-btn" @click="goBack">
-              <i class="fas fa-th-list"></i>
-              返回案例列表
-            </button>
-          </div>
+        <div v-if="caseData.tags.length > 0" class="case-tags">
+          <span v-for="tag in caseData.tags" :key="tag.label" class="case-tag" :data-color="tag.color">
+            <i :class="tag.icon"></i>
+            {{ tag.label }}
+          </span>
         </div>
       </div>
     </section>
@@ -329,6 +337,20 @@ async function copyCode(code: string, e: MouseEvent) {
                 </table>
               </div>
 
+              <!-- IMAGE -->
+              <figure v-else-if="content.type === 'image'" class="report-image-wrap">
+                <img
+                  :src="resolveImageSrc(content.src)"
+                  :alt="content.alt || ''"
+                  class="report-image"
+                  loading="lazy"
+                  @click="openLightbox(resolveImageSrc(content.src))"
+                />
+                <figcaption v-if="content.caption" class="report-image-caption">
+                  {{ content.caption }}
+                </figcaption>
+              </figure>
+
               <!-- INFO BOX -->
               <div v-else-if="content.type === 'info-box'" class="callout callout-info">
                 <div class="callout-icon">
@@ -393,6 +415,12 @@ async function copyCode(code: string, e: MouseEvent) {
                   <span class="code-dot"></span>
                 </div>
                 <span v-if="section.codeLang" class="code-lang">{{ section.codeLang }}</span>
+                <button
+                  v-if="section.codeBlock"
+                  class="code-copy-btn"
+                  title="复制代码"
+                  @click="(e) => copyCode(section.codeBlock!, e as MouseEvent)"
+                >复制</button>
               </div>
               <pre><code :class="section.codeLang ? `language-${prismLang(section.codeLang)}` : ''">{{ section.codeBlock }}</code></pre>
             </div>
@@ -415,6 +443,16 @@ async function copyCode(code: string, e: MouseEvent) {
       </div>
       <div class="callout-content">{{ caseData.description }}</div>
     </section>
+
+    <!-- LIGHTBOX -->
+    <Teleport to="body">
+      <div v-if="lightboxSrc" class="lightbox" @click="closeLightbox">
+        <img :src="lightboxSrc" class="lightbox-img" />
+        <button class="lightbox-close" @click="closeLightbox">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </Teleport>
   </div>
 
   <!-- 404 NOT FOUND -->

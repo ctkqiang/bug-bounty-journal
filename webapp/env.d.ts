@@ -49,3 +49,23 @@ declare module 'prismjs/components/prism-markdown' {
   const _empty: void
   export default _empty
 }
+
+declare module 'prismjs/components/prism-cpp' {
+  const _empty: void
+  export default _empty
+}
+
+declare module 'prismjs/components/prism-dart' {
+  const _empty: void
+  export default _empty
+}
+
+declare module 'prismjs/components/prism-nginx' {
+  const _empty: void
+  export default _empty
+}
+
+declare module 'prismjs/components/prism-properties' {
+  const _empty: void
+  export default _empty
+}

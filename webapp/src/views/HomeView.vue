@@ -28,7 +28,7 @@ const ctaRef = ref<HTMLElement>()
 
 const heroStats = [
   { label: '年经验', value: '12+', icon: 'fas fa-calendar-check' },
-  { label: '安全案例', value: '50+', icon: 'fas fa-bug' },
+  { label: '安全案例', value: String(stats.value.total), icon: 'fas fa-bug' },
   { label: 'GitHub Stars', value: '400+', icon: 'fas fa-star' },
   { label: '开源仓库', value: '30+', icon: 'fas fa-code-branch' }
 ]

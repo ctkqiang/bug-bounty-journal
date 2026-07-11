@@ -10,6 +10,22 @@ const { observeElement } = useScrollAnimation()
 
 const headerRef = ref<HTMLElement>()
 const gridRef = ref<HTMLElement>()
+const lightboxSrc = ref<string | null>(null)
+
+const assetBase = import.meta.env.BASE_URL
+
+const resolveImageSrc = (src: string): string => {
+  if (src.startsWith('http') || src.startsWith('data:')) return src
+  return `${assetBase}${src.replace(/^\/+/, '')}`
+}
+
+const openLightbox = (src: string) => {
+  lightboxSrc.value = src
+}
+
+const closeLightbox = () => {
+  lightboxSrc.value = null
+}
 
 onMounted(() => {
   if (headerRef.value) observeElement(headerRef.value, () => {})
@@ -61,6 +77,28 @@ onMounted(() => {
                 <span class="dialogue-text">{{ dialogue.text }}</span>
               </div>
             </div>
+
+            <!-- LIST ITEMS -->
+            <ul v-if="phase.listItems && phase.listItems.length > 0" class="phase-list">
+              <li v-for="(item, li) in phase.listItems" :key="li">{{ item }}</li>
+            </ul>
+
+            <!-- PHASE IMAGES -->
+            <div v-if="phase.images && phase.images.length > 0" class="phase-images">
+              <figure
+                v-for="(img, ii) in phase.images"
+                :key="ii"
+                class="phase-image-wrap"
+              >
+                <img
+                  :src="resolveImageSrc(img)"
+                  :alt="`${incident.title} - ${phase.phase}`"
+                  class="phase-image"
+                  loading="lazy"
+                  @click="openLightbox(resolveImageSrc(img))"
+                />
+              </figure>
+            </div>
           </div>
         </div>
 
@@ -70,5 +108,15 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- LIGHTBOX -->
+    <Teleport to="body">
+      <div v-if="lightboxSrc" class="lightbox" @click="closeLightbox">
+        <img :src="lightboxSrc" class="lightbox-img" />
+        <button class="lightbox-close" @click="closeLightbox">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+    </Teleport>
   </div>
 </template>

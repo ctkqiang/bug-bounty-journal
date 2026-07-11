@@ -1,0 +1,336 @@
+[POTENTIAL RISK] CVE-2021-3129 (https://nvd.nist.gov/vuln/detail/cve-2021-3129)
+
+
+
+WhatWeb report for [1m[34mhttps://myjpj.jpj.gov.my[0m
+Status    : 302 Found
+Title     : [1m[33mRedirecting to https://myjpj.jpj.gov.my/login[0m
+IP        : 110.159.245.15
+Country   : [1m[31mMALAYSIA, MY[0m
+
+Summary   : [1mCookies[0m[[0m[22mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,TS01ce5540,XSRF-TOKEN,laravel_session[0m], [1mF5-BigIP[0m, [1mHTML5[0m, [1mHttpOnly[0m[[0m[22mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,laravel_session[0m], [1mLaravel[0m, [1mMeta-Refresh-Redirect[0m[[0m[22mhttps://myjpj.jpj.gov.my/login[0m], [1mRedirectLocation[0m[[0m[22mhttps://myjpj.jpj.gov.my/login[0m], [1mStrict-Transport-Security[0m[[0m[22mmax-age=31536000; includeSubDomains; preload[0m], [1mUncommonHeaders[0m[[0m[22mx-content-type-options[0m], [1mX-Frame-Options[0m[[0m[22mSAMEORIGIN[0m]
+
+Detected Plugins:
+[ [1mCookies[0m ]
+	Display the names of cookies in the HTTP headers. The 
+	values are not returned to save on space. 
+
+	String       : [1m[36mXSRF-TOKEN[0m
+	String       : [1m[36mlaravel_session[0m
+	String       : [1m[36mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool[0m
+	String       : [1m[36mTS01ce5540[0m
+
+[ [1mF5-BigIP[0m ]
+	F5 BIG IP provides application delivery networking (ADN) 
+	technology for the delivery of web applications and the 
+	security, performance, availability of servers, data 
+	storage devices, and other network and cloud resources. 
+
+	Website     : https://f5.com/products/big-ip
+
+[ [1mHTML5[0m ]
+	HTML version 5, detected by the doctype declaration 
+
+
+[ [1mHttpOnly[0m ]
+	If the HttpOnly flag is included in the HTTP set-cookie 
+	response header and the browser supports it then the cookie 
+	cannot be accessed through client side script - More Info: 
+	http://en.wikipedia.org/wiki/HTTP_cookie 
+
+	String       : [1m[36mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,laravel_session[0m
+
+[ [1mLaravel[0m ]
+	Laravel PHP Framework 
+
+	Website     : http://laravel.com/
+
+[ [1mMeta-Refresh-Redirect[0m ]
+	Meta refresh tag is a deprecated URL element that can be 
+	used to optionally wait x seconds before reloading the 
+	current page or loading a new page. More info: 
+	https://secure.wikimedia.org/wikipedia/en/wiki/Meta_refresh 
+
+	String       : [1m[36mhttps://myjpj.jpj.gov.my/login[0m
+
+[ [1mRedirectLocation[0m ]
+	HTTP Server string location. used with http-status 301 and 
+	302 
+
+	String       : [1m[36mhttps://myjpj.jpj.gov.my/login[0m (from location)
+
+[ [1mStrict-Transport-Security[0m ]
+	Strict-Transport-Security is an HTTP header that restricts 
+	a web browser from accessing a website without the security 
+	of the HTTPS protocol. 
+
+	String       : [1m[36mmax-age=31536000; includeSubDomains; preload[0m
+
+[ [1mUncommonHeaders[0m ]
+	Uncommon HTTP server headers. The blacklist includes all 
+	the standard headers and many non standard but common ones. 
+	Interesting but fairly common headers should have their own 
+	plugins, eg. x-powered-by, server and x-aspnet-version. 
+	Info about headers can be found at www.http-stats.com 
+
+	String       : [1m[36mx-content-type-options[0m (from headers)
+
+[ [1mX-Frame-Options[0m ]
+	This plugin retrieves the X-Frame-Options value from the 
+	HTTP header. - More Info: 
+	http://msdn.microsoft.com/en-us/library/cc288472%28VS.85%29.
+	aspx
+
+	String       : [1m[36mSAMEORIGIN[0m
+
+HTTP Headers:
+	HTTP/1.1 302 Found
+	Content-Type: text/html; charset=UTF-8
+	Connection: close
+	Cache-Control: no-cache, private
+	Date: Wed, 04 Jun 2025 15:04:10 GMT
+	Location: https://myjpj.jpj.gov.my/login
+	X-Content-Type-Options: nosniff
+	X-Frame-Options: SAMEORIGIN
+	Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+	Set-Cookie: XSRF-TOKEN=eyJpdiI6ImEwOXZrWGttQndxRFE5OHRpZUtYcmc9PSIsInZhbHVlIjoiYWI2MDE5enRseTZ0Nm5XWnhvUlAwSDFuTTVXOCtLTE4rTHJWK3RDZ2VJbVBQYzVHdFR5VGxsbG12Z3lYM3IwT2ZHSkN4SUtjb1ZzUFFaYlJYajVRMHFvTGUyR2szdk9WdXBPTWNyRWFwbDcxbmFzUi82WHVVYkxDQ1EzMFlCMlYiLCJtYWMiOiIzMTMyODFkMmJmYzkwYmIzYjE0MWFiNGU5OGZjN2ZhOGY1MzM4YmNhNzVmYzg0OThlNjlkNmM5NDlhNTgwMjcxIiwidGFnIjoiIn0%3D; expires=Wed, 04 Jun 2025 17:04:10 GMT; Max-Age=7200; path=/; secure; samesite=lax
+	Set-Cookie: laravel_session=eyJpdiI6InNwRm54Y1RpV3hpdUd5aUptN0NxMGc9PSIsInZhbHVlIjoidHB5TG5lMmNDNy82aHpBREVUd2t3TWtCNVNCN3RtMEJCWnltRi9Ld2VLYnlQR1lEcmtZb3RTWGJpM0xscFZqVUNsN0NVL0FOL2VqZUh1MjJGTVpibXplTHVrRkVHVGtSb2QvalllUTFmN1RGeUdsbmM2dnpnbjVZL3lFNkxTcGsiLCJtYWMiOiI3Yjk4ODFkOWFhZDY0NzEzNzg5ZDUyNWJlYjA2YTAwMjg4NTE2YTA1NDlkMDg0MmNlMDUxMWVlZDU5NmM1ZjhiIiwidGFnIjoiIn0%3D; expires=Wed, 04 Jun 2025 17:04:10 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax
+	Set-Cookie: BIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool=285258762.47873.0000; path=/; Httponly; Secure
+	Set-Cookie: TS01ce5540=01b94e0ddf6700383a0882ee02978381cfaef2380831b3ad2bafe73f78eed5bda41c2262f59e6f39669bc908542012e647b8ff10b4; Path=/;
+	Vary: Accept-Encoding
+	Content-Encoding: gzip
+	Transfer-Encoding: chunked
+	
+WhatWeb report for [1m[34mhttps://myjpj.jpj.gov.my/login[0m
+Status    : 200 OK
+Title     : [1m[33mLaravel[0m
+IP        : 110.159.245.15
+Country   : [1m[31mMALAYSIA, MY[0m
+
+Summary   : [1mCookies[0m[[0m[22mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,TS01ce5540,TS01ce5540026,XSRF-TOKEN,laravel_session[0m], [1mF5-BigIP[0m, [1mHTML5[0m, [1mHttpOnly[0m[[0m[22mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,laravel_session[0m], [1mLaravel[0m, [1mPasswordField[0m[[0m[22mpassword[0m], [1mScript[0m, [1mStrict-Transport-Security[0m[[0m[22mmax-age=31536000; includeSubDomains; preload[0m], [1mUncommonHeaders[0m[[0m[22mcontent-security-policy,x-content-type-options[0m], [1mX-Frame-Options[0m[[0m[22mSAMEORIGIN[0m]
+
+Detected Plugins:
+[ [1mCookies[0m ]
+	Display the names of cookies in the HTTP headers. The 
+	values are not returned to save on space. 
+
+	String       : [1m[36mXSRF-TOKEN[0m
+	String       : [1m[36mlaravel_session[0m
+	String       : [1m[36mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool[0m
+	String       : [1m[36mTS01ce5540[0m
+	String       : [1m[36mTS01ce5540026[0m
+
+[ [1mF5-BigIP[0m ]
+	F5 BIG IP provides application delivery networking (ADN) 
+	technology for the delivery of web applications and the 
+	security, performance, availability of servers, data 
+	storage devices, and other network and cloud resources. 
+
+	Website     : https://f5.com/products/big-ip
+
+[ [1mHTML5[0m ]
+	HTML version 5, detected by the doctype declaration 
+
+
+[ [1mHttpOnly[0m ]
+	If the HttpOnly flag is included in the HTTP set-cookie 
+	response header and the browser supports it then the cookie 
+	cannot be accessed through client side script - More Info: 
+	http://en.wikipedia.org/wiki/HTTP_cookie 
+
+	String       : [1m[36mBIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool,laravel_session[0m
+
+[ [1mLaravel[0m ]
+	Laravel PHP Framework 
+
+	Website     : http://laravel.com/
+
+[ [1mPasswordField[0m ]
+	find password fields 
+
+	String       : [1m[36mpassword[0m (from field name)
+
+[ [1mScript[0m ]
+	This plugin detects instances of script HTML elements and 
+	returns the script language/type. 
+
+
+[ [1mStrict-Transport-Security[0m ]
+	Strict-Transport-Security is an HTTP header that restricts 
+	a web browser from accessing a website without the security 
+	of the HTTPS protocol. 
+
+	String       : [1m[36mmax-age=31536000; includeSubDomains; preload[0m
+
+[ [1mUncommonHeaders[0m ]
+	Uncommon HTTP server headers. The blacklist includes all 
+	the standard headers and many non standard but common ones. 
+	Interesting but fairly common headers should have their own 
+	plugins, eg. x-powered-by, server and x-aspnet-version. 
+	Info about headers can be found at www.http-stats.com 
+
+	String       : [1m[36mcontent-security-policy,x-content-type-options[0m (from headers)
+
+[ [1mX-Frame-Options[0m ]
+	This plugin retrieves the X-Frame-Options value from the 
+	HTTP header. - More Info: 
+	http://msdn.microsoft.com/en-us/library/cc288472%28VS.85%29.
+	aspx
+
+	String       : [1m[36mSAMEORIGIN[0m
+
+HTTP Headers:
+	HTTP/1.1 200 OK
+	Content-Type: text/html; charset=UTF-8
+	Connection: close
+	Vary: Accept-Encoding
+	Cache-Control: no-cache, private
+	Date: Wed, 04 Jun 2025 15:04:15 GMT
+	Content-Security-Policy: default-src 'self'; script-src 'self' https://ajax.googleapis.com https://maxcdn.bootstrapcdn.com 'nonce-IHqEIUn88EIGzlGUSnwRLQ==' blob:; style-src 'self' https://maxcdn.bootstrapcdn.com 'nonce-IHqEIUn88EIGzlGUSnwRLQ==' 'unsafe-hashes'; connect-src 'self' https://www.google-analytics.com https://overbridgenet.com; img-src 'self' https://public.jpj.gov.my; object-src 'none'; frame-ancestors 'self'; base-uri 'self'; font-src 'self' https://maxcdn.bootstrapcdn.com;
+	X-Content-Type-Options: nosniff
+	X-Frame-Options: SAMEORIGIN
+	Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+	Set-Cookie: XSRF-TOKEN=eyJpdiI6Im9GZGlvQ3FnMVdEWDdMb2lRUmhRQWc9PSIsInZhbHVlIjoiMjNiOTYrQ28rOGJ2cjc3bXdyOFRacWZYcmFQbnJaL2w2NElrc1hzaTZuTFZHT1VsS3RCQ3R0TTVXMktXelJlWWtMa24yODVuVHowNHBidEJ2NUs3WnVzYXpGNFhoU2l2Sm9uZXlPLzVlVlRkaXAxRE1mYkxEN09JREFlQ1RxN0IiLCJtYWMiOiI4MTk5ODUyMzJlZTQ5NzI5ZjJhZjM2ZGNjN2JjYmE5NTY5NmVkMGIzODM5NGFkODI4Njc3NzBhMzkyMTBkYTcyIiwidGFnIjoiIn0%3D; expires=Wed, 04 Jun 2025 17:04:15 GMT; Max-Age=7200; path=/; secure; samesite=lax
+	Set-Cookie: laravel_session=eyJpdiI6IlFjeld2T2EweGFlWWhjZVY2ZzZubVE9PSIsInZhbHVlIjoiSVR2RGF2UWxHaUljNStqbDI5Qzlxa21PcmZOYUo5bFE3WkZJaU9OMW9MNmFTNGE5d3FOTXJaY0xpNUNtS2tta3pUaUNVZXVRM09XTnhTQmlQWE5RNlpBcWNDRmtJdGRPQmUvMVJxU3lQRmh0M045MDY1SHpYNG45MURNKzNDYjgiLCJtYWMiOiJhODk2NTE2MWU0MmI3YTI2ZDBiNDY4YjRjNGQ4MDMwMzgwNGYxY2I2MzY0NmE2MzY0OGIyYTgxMjdiYTE3YzQyIiwidGFnIjoiIn0%3D; expires=Wed, 04 Jun 2025 17:04:15 GMT; Max-Age=7200; path=/; secure; httponly; samesite=lax
+	Set-Cookie: BIGipServermyjpj.jpj.gov.my.app~myjpj.jpj.gov.my_pool=285258762.47873.0000; path=/; Httponly; Secure
+	Set-Cookie: TS01ce5540=01b94e0ddf3bd5e2c0328feb73e6ca003b9d9e0782dcafbc7605e22cc5f7f60bef5cdd10dbec61dd7df864863f2e4931a98beee0ec; Path=/;
+	Set-Cookie: TS01ce5540026=017086ce22d90b4fbd3d0e2880f6ad9f360695180669e53ea2bd120a447be2d1392e109a65ca5548f9daa640ee3fefb90dd5ae0f0572cddcc87179f4978cc90adfb08d9e90; Path=/;
+	Content-Encoding: gzip
+	Transfer-Encoding: chunked
+	
+paymentdev.jpj.gov.my
+ns1.jpj.gov.my
+ebidu.jpj.gov.my
+jpjlink.jpj.gov.my
+mx2.jpj.gov.my
+partners.jpj.gov.my
+mx1.jpj.gov.my
+jpjeplate.jpj.gov.my
+app-stagepkjr.jpj.gov.my
+app-epkjr.jpj.gov.my
+bina.jpj.gov.my
+jpjeq.jpj.gov.my
+saman.jpj.gov.my
+stagepkjr.jpj.gov.my
+iitis.jpj.gov.my
+jpjebid.jpj.gov.my
+myjpj.jpj.gov.my
+vepams.jpj.gov.my
+www.jpj.gov.my
+payment.jpj.gov.my
+employees.jpj.gov.my
+egate.jpj.gov.my
+employees2.jpj.gov.my
+mx.jpj.gov.my
+qbm.jpj.gov.my
+vep.jpj.gov.my
+epkjr.jpj.gov.my
+smed.jpj.gov.my
+mobile.jpj.gov.my
+kpp.jpj.gov.my
+fpx.jpj.gov.my
+academy.jpj.gov.my
+public.jpj.gov.my
+webmail.jpj.gov.my
+ns2.jpj.gov.my
+employee.jpj.gov.my
+gateway.jpj.gov.my
+counter.jpj.gov.my
+qb.jpj.gov.my
+putramail.jpj.gov.my
+https://myjpj.jpj.gov.my [[33m302[0m] [[36mRedirecting to https://myjpj.jpj.gov.my/login[0m] [] [[35mHSTS,Laravel,PHP[0m]
+-e 
+🔍 Starting Laravel .env exposure check...
+
+-e [--] https://paymentdev.jpj.gov.my/.env (No response or 404)
+-e [--] https://ns1.jpj.gov.my/.env (No response or 404)
+-e [--] https://ebidu.jpj.gov.my/.env (No response or 404)
+-e [--] https://jpjlink.jpj.gov.my/.env (No response or 404)
+-e [--] https://mx2.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://partners.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://mx1.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://jpjeplate.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://app-stagepkjr.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://app-epkjr.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://bina.jpj.gov.my/.env (No response or 404)
+-e [--] https://jpjeq.jpj.gov.my/.env (No response or 404)
+-e [--] https://saman.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://stagepkjr.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://iitis.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://jpjebid.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://myjpj.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://vepams.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://www.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://payment.jpj.gov.my/.env (No response or 404)
+-e [--] https://employees.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://egate.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://employees2.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://mx.jpj.gov.my/.env (No response or 404)
+-e [--] https://qbm.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://vep.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://epkjr.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://smed.jpj.gov.my/.env (No response or 404)
+-e [--] https://mobile.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://kpp.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://fpx.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://academy.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://public.jpj.gov.my/.env (200 OK, but not .env)
+-e [0;32m[NO LEAK][0m https://webmail.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://ns2.jpj.gov.my/.env (No response or 404)
+-e [--] https://employee.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://gateway.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://counter.jpj.gov.my/.env (No response or 404)
+-e [0;32m[NO LEAK][0m https://qb.jpj.gov.my/.env (200 OK, but not .env)
+-e [--] https://putramail.jpj.gov.my/.env (No response or 404)
+-e 
+✅ Done. Always double-check manually before reporting.
+
+-e 
+🔍 Starting Laravel Debug exposure check...
+
+-e [--] https://paymentdev.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://ns1.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://ebidu.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://jpjlink.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://mx2.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;31m[VULN][0m https://partners.jpj.gov.my/thispagedoesnotexist999 - Laravel debug info exposed!
+-e [1;33mError 404: java.io.FileNotFoundException: SRVE0190E: File not found: /thispagedoesnotexist999[0m
+-e [--] https://mx1.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://jpjeplate.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://app-stagepkjr.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://app-epkjr.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://bina.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://jpjeq.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://saman.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://stagepkjr.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://iitis.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://jpjebid.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [0;32m[OK][0m https://myjpj.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://vepams.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://www.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://payment.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://employees.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://egate.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [0;32m[OK][0m https://employees2.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://mx.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://qbm.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://vep.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://epkjr.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://smed.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://mobile.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://kpp.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://fpx.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://academy.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [0;31m[VULN][0m https://public.jpj.gov.my/thispagedoesnotexist999 - Laravel debug info exposed!
+-e [1;33mError 404: java.io.FileNotFoundException: SRVE0190E: File not found: /thispagedoesnotexist999[0m
+-e [0;32m[OK][0m https://webmail.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://ns2.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;31m[VULN][0m https://employee.jpj.gov.my/thispagedoesnotexist999 - Laravel debug info exposed!
+-e [1;33mLiferay.SPA.navigationExceptionSelectors = ':not([target="_blank"]):not([data-senna-off]):not([data-resource-href]):not([data-cke-saved-href]):not([data-cke-saved-href])';[0m
+-e [--] https://gateway.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [--] https://counter.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e [0;32m[OK][0m https://qb.jpj.gov.my/thispagedoesnotexist999 - Normal 404
+-e [--] https://putramail.jpj.gov.my/thispagedoesnotexist999 - No response / unhandled
+-e 
+✅ Debug scan done.
+

